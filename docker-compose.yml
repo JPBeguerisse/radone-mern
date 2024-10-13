@@ -1,0 +1,33 @@
+#docker-compose
+services:
+  client:
+    build: ./CLIENT
+    container_name: RANDO_CLIENT
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/
+    ports:
+      - '3000:3000'
+
+  server:
+    build: ./SERVER
+    container_name: RANDO_SERVER
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./SERVER:/app  # Monte le code local dans le conteneur
+      - /app/node_modules  # Évite les problèmes avec node_modules
+    environment:
+      - REACT_APP_CLIENT_URL=http://localhost:3000
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: RANDO_MONGO
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db  # Volume pour stocker les données MongoDB
+
+volumes:
+  mongo-data:
