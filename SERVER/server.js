@@ -6,6 +6,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocs = require("./swagger"); // Importer la configuration Swagger
 
 const userRoutes = require("./routes/user.routes");
+const postRoutes = require("./routes/post.routes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/api", (req, res) => {
 });
 
 app.use("/api/user", userRoutes);
+app.use("/api/post", postRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Listenning on port ${process.env.PORT}`);

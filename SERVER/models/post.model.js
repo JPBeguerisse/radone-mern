@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
 
-    description: {
+    message: {
       type: String,
       trim: true, // Retire les espaces superflus en début et fin de texte
       maxLength: 500, // Limite la description à 500 caractères

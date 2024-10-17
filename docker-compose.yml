@@ -16,6 +16,7 @@ services:
     volumes:
       - ./SERVER:/app  # Monte le code local dans le conteneur
       - /app/node_modules  # Évite les problèmes avec node_modules
+      - ./server/uploads:/app/uploads
     environment:
       - REACT_APP_CLIENT_URL=http://localhost:3000
     depends_on:
