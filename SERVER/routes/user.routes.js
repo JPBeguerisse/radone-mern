@@ -3,7 +3,7 @@ const router = require("express").Router();
 const authController = require("../controllers/auth.controller");
 const uploadController = require("../controllers/upload.controller");
 const userController = require("../controllers/user.controller");
-const { verifyToken } = require("../middlewares/checkToken");
+const { verifyToken, requireAuth } = require("../middlewares/checkToken");
 
 /**
  * @swagger
@@ -62,6 +62,7 @@ const { verifyToken } = require("../middlewares/checkToken");
  */
 router.post("/login", authController.login);
 
+//DECONNEXION
 /**
  * @swagger
  * /api/user/logout:
@@ -84,6 +85,7 @@ router.post("/login", authController.login);
  */
 router.post("/logout", authController.logout);
 
+//S'INSCRIRE - CREATE
 /**
  * @swagger
  * /api/user/register:
@@ -151,6 +153,7 @@ router.post("/logout", authController.logout);
  */
 router.post("/register", authController.signUp);
 
+//RECUPERER LES USERS
 /**
  * @swagger
  * /api/user:
@@ -186,6 +189,7 @@ router.post("/register", authController.signUp);
  */
 router.get("/", userController.getUsers);
 
+//RECUPERER LES INFOS D'UN USER
 /**
  * @swagger
  * /api/user/{id}:

@@ -25,7 +25,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #ff7b77;
 }
 
 @keyframes App-logo-spin {
@@ -35,4 +35,285 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* .nav-container {
+  display: block;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.logo img{
+  width: 40px;
+  height: 40px;
+}
+
+.nav-link a{
+  color: #282c34;
+  text-decoration: none;
+  padding: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.nav-link a:hover{
+  background-color: #ff7b77;
+  color: white;
+  border-radius: 5px;
+}
+
+.nav-link a.active {
+  background-color: #ff7b77;
+  font-weight: bold;
+  color: white;
+} */
+
+.sidebar-container {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-right: solid 1px #d9d9d9;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Espace entre les éléments du haut et du bas */
+  padding: 20px;
+  height: 100%; /* Occuper tout l'espace disponible */
+}
+
+.logo img{
+  width: 40px;
+  height: 40px;
+}
+
+
+.nav-link a{
+  color: #282c34;
+  text-decoration: none;
+  padding: 10px 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: block;
+  align-items: center;
+  text-align: center;
+}
+
+.nav-link a:hover{
+  background-color: #ff7b77;
+  color: white;
+  border-radius: 5px;
+}
+
+.nav-link a.active {
+  background-color: #ff7b77;
+  font-weight: bold;
+  color: white;
+} 
+
+
+/* Main content styles */
+.main {
+  margin-left: 250px; /* Espace pour le sidebar */
+  padding: 20px;
+  background-color: #f4f4f4;
+  height: 100vh; /* Optionnel pour étendre sur toute la hauteur */
+  padding-top: 100px;
+}
+
+
+/* Styles pour le conteneur principal */
+.connection-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* pleine hauteur de l'écran */
+  background-color: #f4f4f4;
+}
+
+/* Styles pour la boîte du formulaire */
+.form-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  text-align: center;
+}
+
+/* Styles pour les onglets de sélection (inscription/connexion) */
+ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+ul li {
+  cursor: pointer;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  margin: 0 5px;
+  border-radius: 5px;
+  background-color: #e0e0e0;
+  transition: background-color 0.3s;
+}
+
+/* Changement de style pour l'onglet actif */
+ul li.active-btn {
+  background-color: #ff7b77; /* Couleur pour l'onglet actif */
+  color: white;
+  border-color: #ff7b77;
+}
+
+ul li:hover {
+  background-color: #b45754;
+  color: #fff;
+}
+
+
+/********FORM*******/
+/* Styles du formulaire */
+.form {
+  display: flex; /* Utilise flexbox pour aligner les éléments à l'intérieur du formulaire */
+  flex-direction: column; /* Aligne les éléments verticalement (en colonne) */
+  gap: 15px; /* Ajoute un espacement de 15px entre chaque champ du formulaire */
+  background-color: #fff; /* Définit un fond blanc pour le formulaire */
+  padding: 20px; /* Ajoute un espace intérieur de 20px autour des éléments du formulaire */
+  border-radius: 8px; /* Arrondit les coins du formulaire */
+  max-width: 400px; /* Limite la largeur maximale du formulaire à 400px */
+  margin: 0 auto; /* Centre le formulaire horizontalement sur la page */
+}
+
+.form div {
+  display: flex; /* Utilise flexbox pour aligner les éléments à l'intérieur des divs */
+  flex-direction: column; /* Aligne les labels et les inputs verticalement */
+}
+
+.form label {
+  margin-bottom: 5px; /* Ajoute un espace de 5px sous chaque label */
+  font-size: 14px; /* Définit la taille de la police des labels à 14px */
+  font-weight: bold; /* Rend le texte des labels en gras */
+  color: #333; /* Utilise une couleur de texte gris foncé pour les labels */
+}
+
+.form input {
+  padding: 10px; /* Ajoute un espace intérieur de 10px à chaque champ de texte */
+  border: 1px solid #ccc; /* Définit une bordure grise claire autour des champs de texte */
+  border-radius: 5px; /* Arrondit légèrement les coins des champs de texte */
+  font-size: 16px; /* Définit la taille de la police à 16px pour les champs de texte */
+  outline: none; /* Retire la bordure par défaut lorsque l'élément est actif (focus) */
+  transition: border-color 0.3s; /* Ajoute une transition fluide pour changer la couleur de la bordure */
+  font-weight: 700;
+
+}
+
+.form input:focus {
+  border-color: #ff7b77; /* Change la couleur de la bordure en vert lorsque l'input est actif */
+}
+
+.form input[type="submit"] {
+  background-color: #ff7b77; /* Définit un fond vert pour le bouton de soumission */
+  color: white; /* Met le texte du bouton de soumission en blanc */
+  border: none; /* Retire la bordure autour du bouton de soumission */
+  cursor: pointer; /* Change le curseur en main lors du survol du bouton */
+  font-weight: 700;
+  transition: background-color 0.3s; /* Ajoute une transition fluide pour changer la couleur de fond */
+}
+
+.form input[type="submit"]:hover {
+  background-color: #b45754; /* Change la couleur de fond du bouton lorsqu'on le survole */
+}
+
+
+.error {
+  color: red;
+}
+
+.success {
+  color: rgb(5, 199, 5);
+}
+
+.nav-footer {
+  margin-top: auto; /* Pousse le Logout vers le bas */
+  padding-top: 20px;
+}
+
+.nav-footer li, a {
+  list-style: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: #282c34;
+}
+
+
+
+.nav-footer li:hover, a:hover {
+  color: #ff7b77;
+}
+
+
+/*************PROFIL VIEW*****************/
+.profil-view{
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.user-name{
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.user-name button{
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background-color: #d7d7d7;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-name button:hover{
+  background-color: #ff7b77;
+  color: #fff;
+}
+
+.user-followers{
+  display: flex;
+  justify-content: space-between;
+}
+
+.user-bio{
+  margin-top: 15px;
+}
+
+
+.posts-user-container{
+  margin-top: 75px;
+  gap: 0;
+}
+
+.posts-user-container ul {
+  border-top: solid #d7d7d7;
+}
+
+.posts-user-container li {
+  border: none;
+  font-weight: 500;
+}
+
+.user-picture img{
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
 }
