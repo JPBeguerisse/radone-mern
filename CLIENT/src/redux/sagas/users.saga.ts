@@ -1,16 +1,19 @@
 import axios, { AxiosResponse } from 'axios';
-import { put, takeLatest } from "redux-saga/effects";
+import { put, takeEvery, takeLatest } from "redux-saga/effects";
 import { User } from '../types/user.types';
+import { getUsersFailed, getUsersRequested, getUsersSuccess } from '../reducers/users.reducer';
 
 function* getUsers() {
     try {
       const response: AxiosResponse<User[]> = yield axios.get("http://localhost:8000/api/user/");
-      yield put({ type: "GET_USERS_SUCCESS", payload: response.data });
+      yield put(getUsersSuccess(response.data));
+      console.log(response.data)
+
     } catch (error: any) {
-      yield put({ type: "GET_USERS_FAILED", message: error.message });
+      yield put(getUsersFailed(error.message));
     }
   }
   
   export default function* usersSaga() {
-    yield takeLatest("GET_USERS_REQUESTED", getUsers);
+    yield takeEvery(getUsersRequested.type, getUsers);
   }

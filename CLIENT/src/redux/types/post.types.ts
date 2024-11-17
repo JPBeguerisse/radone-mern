@@ -15,3 +15,9 @@ interface Comment {
     text: string;        // Le texte du commentaire
     timestamp: string;   // La date et l'heure du commentaire
 }
+
+
+export interface PostsState {
+    posts: Post[] | null;
+    error : string | null;
+}

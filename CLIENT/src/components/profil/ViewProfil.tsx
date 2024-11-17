@@ -9,8 +9,12 @@ interface RootState {
 }
 
 const ViewProfil = () => {
-  const userData = useSelector((state: any) => state.userReducer.user);
-  if (!userData) {
+  // const user = useSelector((state: any) => state.userReducer.user);
+  const { user, error, loading } = useSelector(
+    (state: RootState) => state.userReducer
+  );
+
+  if (!user) {
     return (
       <p className="text-center text-gray-500">Chargement des données...</p>
     );
@@ -22,7 +26,7 @@ const ViewProfil = () => {
         {/* Section de l'image de profil */}
         <div className="user-picture flex-shrink-0">
           <img
-            src={`${process.env.REACT_APP_API_URL}${userData.picture.replace(
+            src={`${process.env.REACT_APP_API_URL}${user.picture.replace(
               /^\//,
               ""
             )}`}
@@ -36,7 +40,7 @@ const ViewProfil = () => {
           {/* Nom de l'utilisateur et bouton de modification */}
           <div className="user-name">
             <h1 className="text-2xl font-semibold">
-              {userData.firstName} {userData.lastName}
+              {user.firstName} {user.lastName}
             </h1>
             <button className="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition duration-200">
               Modifier le profil
@@ -58,7 +62,7 @@ const ViewProfil = () => {
 
           {/* Biographie de l'utilisateur */}
           <div className="user-bio text-gray-700">
-            <p>{userData.bio} La vie c'est simple, c'est beau la vie 🖖🏽✨</p>
+            <p>{user.bio} La vie c'est simple, c'est beau la vie 🖖🏽✨</p>
           </div>
         </div>
       </div>
