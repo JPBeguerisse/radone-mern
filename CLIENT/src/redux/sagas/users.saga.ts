@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { put, takeLatest } from "redux-saga/effects";
-import { User } from '../actions/users/user';
+import { User } from '../types/user.types';
 
 function* getUsers() {
     try {
@@ -11,6 +11,6 @@ function* getUsers() {
     }
   }
   
-  export function* usersSaga() {
+  export default function* usersSaga() {
     yield takeLatest("GET_USERS_REQUESTED", getUsers);
   }

@@ -1,5 +1,4 @@
-import { GET_USERS_SUCCESS } from "../users/users.actions";
-import { Post } from "./post.interface";
+import { Post } from "../types/post.types";
 
 export const GET_POSTS_REQUESTED = "GET_POSTS_REQUESTED";
 export const GET_POSTS_SUCCESS = "GET_POSTS_SUCCESS";

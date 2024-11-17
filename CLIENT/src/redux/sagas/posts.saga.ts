@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { Post } from "../actions/posts/post.interface";
 import { put, takeLatest } from "redux-saga/effects";
+import { Post } from "../types/post.types";
 
 function* getPosts() {
     try {
@@ -11,6 +11,6 @@ function* getPosts() {
     }
 }
 
-export function* postsSaga(){
+export default function* postsSaga(){
     yield takeLatest("GET_POSTS_REQUESTED", getPosts);
 }

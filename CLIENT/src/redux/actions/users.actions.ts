@@ -1,5 +1,5 @@
 
-import { User } from './user'; 
+import { User } from '../types/user.types'; 
 
 export const GET_USERS_SUCCESS = "GET_USERS_SUCCESS";
 export const GET_USERS_FAILED = "GET_USERS_FAILED";

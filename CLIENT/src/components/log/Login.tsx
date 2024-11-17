@@ -2,114 +2,155 @@ import axios from "axios";
 import { useState } from "react";
 
 const Login = () => {
-    // Déclaration de l'état pour stocker les données du formulaire (email et mot de passe)
-    const [formData, setFormData] = useState({
-        email: "",
-        password: ""
+  // Déclaration de l'état pour stocker les données du formulaire (email et mot de passe)
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // Déclaration de l'état pour stocker les erreurs des champs du formulaire
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  // Fonction qui gère le changement de valeur dans les champs du formulaire
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    // Mise à jour des données du formulaire pour le champ modifié
+    setFormData({
+      ...formData,
+      [name]: value, // Le champ modifié reçoit sa nouvelle valeur
     });
 
-    // Déclaration de l'état pour stocker les erreurs des champs du formulaire
-    const [errors, setErrors] = useState({
-        email: "",
-        password: "",
+    // Réinitialisation des erreurs pour le champ modifié dès qu'on tape
+    setErrors({
+      ...errors,
+      [name]: "", // Efface l'erreur pour ce champ
     });
+  };
 
-    // Fonction qui gère le changement de valeur dans les champs du formulaire
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value} = e.target;
+  // Fonction qui valide les champs du formulaire avant soumission
+  const validateForm = () => {
+    let valid = true; // Variable pour savoir si le formulaire est valide
+    const newErrors = { email: "", password: "" }; // Initialisation d'un objet d'erreurs
 
-        // Mise à jour des données du formulaire pour le champ modifié
-        setFormData({
-            ...formData,
-            [name]: value, // Le champ modifié reçoit sa nouvelle valeur
-        });
+    // Validation du champ email : vérifier s'il est vide
+    if (!formData.email) {
+      newErrors.email = "L'adresse email est requise."; // Message d'erreur pour email vide
+      valid = false;
+    }
 
-        // Réinitialisation des erreurs pour le champ modifié dès qu'on tape
-        setErrors({
-            ...errors,
-            [name]: "", // Efface l'erreur pour ce champ
-        });
-    };
+    // Validation du champ mot de passe : vérifier s'il est vide
+    if (!formData.password) {
+      newErrors.password = "Le mot de passe est requis."; // Message d'erreur pour mot de passe vide
+      valid = false; // Remarque : ici, il faut mettre 'valid = false' au lieu de 'valid = true'
+    }
 
-    // Fonction qui valide les champs du formulaire avant soumission
-    const validateForm = () => {
-        let valid = true; // Variable pour savoir si le formulaire est valide
-        const newErrors = { email: "", password: "" }; // Initialisation d'un objet d'erreurs
+    // Mise à jour de l'état des erreurs avec les nouveaux messages d'erreur
+    setErrors(newErrors);
+    return valid; // Retourne 'true' si valide, sinon 'false'
+  };
 
-        // Validation du champ email : vérifier s'il est vide
-        if (!formData.email) {
-            newErrors.email = "L'adresse email est requise."; // Message d'erreur pour email vide
-            valid = false;
+  // Fonction appelée lors de la soumission du formulaire
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Empêche le rechargement de la page lors de la soumission
+
+    // Valide le formulaire avant d'envoyer les données
+    if (!validateForm()) {
+      return; // Si le formulaire n'est pas valide, arrêter la soumission
+    }
+
+    try {
+      // Envoi des données du formulaire au serveur via une requête POST
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}api/user/login`,
+        {
+          email: formData.email,
+          password: formData.password,
         }
+      );
 
-        // Validation du champ mot de passe : vérifier s'il est vide
-        if (!formData.password) {
-            newErrors.password = "Le mot de passe est requis."; // Message d'erreur pour mot de passe vide
-            valid = false; // Remarque : ici, il faut mettre 'valid = false' au lieu de 'valid = true'
+      // Récupération du token d'authentification dans la réponse du serveur
+      const accessToken = res.data.token;
+      console.log(accessToken);
+
+      // Stockage du token dans le localStorage du navigateur
+      localStorage.setItem("accessToken", accessToken);
+
+      // Redirection vers la page d'accueil après connexion réussie
+      window.location.href = "/";
+    } catch (error: any) {
+      if (error.response) {
+        const errorData = error.response.data;
+
+        // Gérer les erreurs spécifiques de login (email ou mot de passe incorrects)
+        if (
+          errorData.message.includes("Mot de passe") ||
+          errorData.message.includes("Utilisateur")
+        ) {
+          setErrors((prev) => ({
+            ...prev,
+            password: "Email ou mot de passe incorrect.",
+          })); // Mise à jour de l'erreur pour le mot de passe
         }
+      }
+    }
+  };
 
-        // Mise à jour de l'état des erreurs avec les nouveaux messages d'erreur
-        setErrors(newErrors);
-        return valid; // Retourne 'true' si valide, sinon 'false'
-    };
-
-    // Fonction appelée lors de la soumission du formulaire
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); // Empêche le rechargement de la page lors de la soumission
-
-        // Valide le formulaire avant d'envoyer les données
-        if (!validateForm()) {
-            return; // Si le formulaire n'est pas valide, arrêter la soumission
-        }
-
-        try {
-            // Envoi des données du formulaire au serveur via une requête POST
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}api/user/login`, {
-                email: formData.email,
-                password: formData.password
-            });
-
-            // Récupération du token d'authentification dans la réponse du serveur
-            const accessToken = res.data.token;
-            console.log(accessToken);
-
-            // Stockage du token dans le localStorage du navigateur
-            localStorage.setItem("accessToken", accessToken);
-
-            // Redirection vers la page d'accueil après connexion réussie
-            window.location.href = "/";
-        } catch (error: any) {
-            if (error.response) {
-                const errorData = error.response.data;
-
-                // Gérer les erreurs spécifiques de login (email ou mot de passe incorrects)
-                if (errorData.message.includes("Mot de passe") || errorData.message.includes("Utilisateur")) {
-                    setErrors((prev) => ({...prev, password: "Email ou mot de passe incorrect."})); // Mise à jour de l'erreur pour le mot de passe
-                }
-            }
-        }
-    };
-
-    // Rendu du formulaire de connexion
-    return (
-        <div className="">
-            <form action="" className="form" onSubmit={handleSubmit}>
-                <h1>Connexion</h1>
-                <div className="">
-                    <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" value={formData.email} onChange={handleChange}/>
-                </div>
-                <div className="">
-                    <label htmlFor="password">Mot de passe</label>
-                    <input type="password" id="password" name="password" value={formData.password} onChange={handleChange}/>
-                </div>
-                <input type="submit" value="Se connecter" />
-
-                {/* Affiche l'erreur si elle existe */}
-                {errors.password && <div className="login error">{errors.password}</div>}
-            </form>
-        </div>
-    );
+  // Rendu du formulaire de connexion
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+        Connexion
+      </h2>
+      <div>
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-600"
+        >
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+        />
+        {errors.email && (
+          <div className="text-red-500 text-sm">{errors.email}</div>
+        )}
+      </div>
+      <div>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-600"
+        >
+          Mot de passe
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+        />
+        {errors.password && (
+          <div className="text-red-500 text-sm">{errors.password}</div>
+        )}
+      </div>
+      <button
+        type="submit"
+        className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+      >
+        Se connecter
+      </button>
+    </form>
+  );
 };
 
 export default Login;

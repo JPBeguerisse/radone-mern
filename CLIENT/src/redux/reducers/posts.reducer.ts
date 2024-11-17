@@ -1,4 +1,4 @@
-import { PostsActions } from "../actions/posts/posts.action";
+import { PostsActions } from "../actions/posts.action";
 
 const initialState = {
     posts: [],

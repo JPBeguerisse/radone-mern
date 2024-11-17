@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .App {
   text-align: center;
 }
@@ -167,11 +171,11 @@ ul li {
 }
 
 /* Changement de style pour l'onglet actif */
-ul li.active-btn {
-  background-color: #ff7b77; /* Couleur pour l'onglet actif */
+/* ul li.active-btn {
+  background-color: #ff7b77; 
   color: white;
   border-color: #ff7b77;
-}
+} */
 
 ul li:hover {
   background-color: #b45754;

@@ -1,4 +1,4 @@
-import { UsersActions } from "../actions/users/users.actions";
+import { UsersActions } from "../actions/users.actions";
 
 
 const initialState = {

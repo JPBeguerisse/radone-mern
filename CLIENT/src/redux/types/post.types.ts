@@ -1,8 +1,8 @@
 export interface Post {
     _id: string;              // ID unique de la publication
     posterId: string;         // ID de l'utilisateur qui a créé la publication
-    message: string;          // Le message de la publication
-    picture?: string;         // Lien vers une image (optionnel)
+    message?: string;          // Le message de la publication
+    picture: string;         // Lien vers une image (optionnel)
     likers: string[];         // Liste des ID des utilisateurs qui ont aimé la publication
     comments: Comment[];      // Liste des commentaires sur la publication
     createdAt: string;        // Date de création de la publication

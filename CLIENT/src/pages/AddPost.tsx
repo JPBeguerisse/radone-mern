@@ -2,26 +2,19 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const AddPost = () => {
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
+
+    // const uid = "670c1e0df124b9909ecab78f"; 
+
+    // useEffect(() => {
+    //     dispatch({type: "GET_USER_REQUESTED", uid: uid})
+    // }, [dispatch, uid])
     
-    const userData = useSelector((state: any ) => state.userReducer.user);
-    if(!userData)
-        return <p>Chargement</p>
+    // const user = useSelector((state: any ) => state.userReducer.user);
+    // console.log(user);
     return (
-        
         <div>
-            <div className="user-picture">
-                <img src={userData.picture}/>
-            </div>
-            <div className="user-info">
-                <div className="user-name">
-                    <h1>{userData.firstName} {userData.lastName}</h1>
-                    <button>Modifier le profil</button>
-                </div>
-                <div className="user-bio">
-                    <p>{userData.bio}</p>
-                </div>
-            </div>
+            
         </div>
     );
 };

@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "../types/user.types";
 
 export const GET_USER_REQUESTED = "GET_USER_REQUESTED";
 export const GET_USER_SUCCESS = "GET_USER_SUCCESS";

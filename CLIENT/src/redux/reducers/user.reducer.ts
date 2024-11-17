@@ -1,5 +1,5 @@
-import { User } from "../actions/users/user";
-import { UserActions } from "../actions/users/user.actions";
+import { User } from "../types/user.types";
+import { UserActions } from "../actions/user.actions";
 
 const initialState = {
     user: null as User | null,

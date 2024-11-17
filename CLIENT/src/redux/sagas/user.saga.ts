@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { User } from "../actions/users/user";
 import { put, takeLatest } from "redux-saga/effects";
+import { User } from "../types/user.types";
 
 // `action` est passé à `getUser`, qui contient le `uid` dans `action.uid`
 function* getUser(action: {uid: string; type: string}) {
@@ -26,7 +26,7 @@ function* getUser(action: {uid: string; type: string}) {
 
 
 // Watcher saga : surveille les actions de type "GET_USER_REQUESTED" et appelle `getUser`
-export function* userSaga() {
+export default function* userSaga() {
     // `takeLatest` va écouter "GET_USER_REQUESTED" et appeler `getUser` avec l'action dispatchée
     yield takeLatest("GET_USER_REQUESTED", getUser);
 }
