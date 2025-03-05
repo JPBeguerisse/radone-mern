@@ -23,3 +23,4 @@
 //     | GetPostsSucessAction 
 //     | GetPostsFailedAction
 // ;
+export {};

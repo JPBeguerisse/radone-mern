@@ -65,7 +65,7 @@ const Login = () => {
     try {
       // Envoi des données du formulaire au serveur via une requête POST
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}api/user/login`,
+        `${process.env.REACT_APP_API_URL}/user/login`,
         {
           email: formData.email,
           password: formData.password,

@@ -21,3 +21,4 @@
 
 
 // export type UserActions = GetUserAction | GetUserSucessAction | GetUserFailedAction;
+export {};

@@ -13,6 +13,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
+  const [isOpenModalAdd, setIsOpenModalAdd] = useState<boolean>();
   return (
     <div className="relative">
       {/* Bouton pour ouvrir la sidebar en mode mobile */}

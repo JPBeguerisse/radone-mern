@@ -23,7 +23,7 @@ function App() {
         if (token) {
           // Si le token existe, faire une requête au serveur pour récupérer le profil de l'utilisateur
           axios
-            .get(`${process.env.REACT_APP_API_URL}profile`, {
+            .get(`${process.env.REACT_APP_API_URL}/profile`, {
               headers: {
                 Authorization: `Bearer ${token}`, // Ajouter le token dans les en-têtes de la requête
               },

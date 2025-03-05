@@ -12,6 +12,11 @@ module.exports.createPost = async (req, res) => {
   //       .status(400)
   //       .json({ message: "Le message et l'ID du posteur sont obligatoires." });
   //   }
+  // const { posterId } = req.body;
+
+  // if (!posterId) {
+  //   return res.status(400).json({ error: "Le poster ID  est requis" });
+  // }
 
   //GERER L'UPLOAD
   const storage = multer.diskStorage({
@@ -77,6 +82,7 @@ module.exports.createPost = async (req, res) => {
       console.log(error);
       res.status(500).json({
         message: "Une erreur est survenue lors de la création du post.",
+        error,
       });
     }
   });
@@ -104,7 +110,7 @@ module.exports.getPost = async (req, res) => {
   }
 
   try {
-    const post = await PostModel.findByIdAndUpdate({ _id: postId });
+    const post = await PostModel.findById({ _id: postId });
     if (post) res.status(200).json(post);
     else res.status(404).send("Post not found");
   } catch (error) {

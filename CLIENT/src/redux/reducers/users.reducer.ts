@@ -2,29 +2,28 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User, UsersState } from "../types/user.types";
 
 const initialState: UsersState = {
-    users: [],
-    error: null
+  users: [],
+  error: null,
 };
 
-
 const usersSlice = createSlice({
-  name: "users",
-  initialState, 
+  name: "Users",
+  initialState,
   reducers: {
-    getUsersRequested : (state) => {},
-    getUsersSuccess : (state, action: PayloadAction<User[]>) => {
+    getUsersRequested: (state) => {},
+    getUsersSuccess: (state, action: PayloadAction<User[]>) => {
       state.users = action.payload;
       state.error = null;
     },
-    getUsersFailed : (state, action: PayloadAction<string>) => {
+    getUsersFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
-    }
-  }
-})
+    },
+  },
+});
 
-export const { getUsersRequested, getUsersFailed, getUsersSuccess} = usersSlice.actions;
+export const { getUsersRequested, getUsersFailed, getUsersSuccess } =
+  usersSlice.actions;
 export const usersReducer = usersSlice.reducer;
-
 
 // export default function usersReducer(state = initialState, action: UsersActions) {
 //   switch (action.type) {

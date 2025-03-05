@@ -20,9 +20,12 @@ const PostLikedUser = () => {
       ) : (
         <div className="">
           {posts && posts.length > 0 ? (
-            posts.some((post: Post) => post.likers.includes(userData._id)) ? (
+            posts.some(
+              (post: Post) => post.likers && post.likers.includes(userData._id)
+            ) ? (
               posts.map(
                 (post: Post) =>
+                  post.likers &&
                   post.likers.includes(userData._id) && (
                     <div key={post._id}>
                       <p>{post.message}</p>
