@@ -29,12 +29,12 @@ export interface PostModalViewProps {
   isOpen: boolean;
   onClose: () => void;
   message?: string;
-  setEditedMessage: (message: string) => void;
+  setEditedMessage?: (message: string) => void;
   isEditing?: boolean;
-  setIsEditing: (edit: boolean) => void;
-  onSave: () => void;
-  onDelete: (id: string) => void;
-  currentUser: User;
+  setIsEditing?: (edit: boolean) => void;
+  onSave?: () => void;
+  onDelete?: (id: string) => void;
+  currentUser?: User;
 }
 
 export interface PostModalCreateProps {

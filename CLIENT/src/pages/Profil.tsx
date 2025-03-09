@@ -13,7 +13,10 @@ const Profil: React.FC = () => {
   //  const users = useSelector((state: any ) => state.usersReducer.users);
   //  console.log(users);
   return (
-    <div>
+    <div
+      className="
+    bg-gray-100"
+    >
       <ViewProfil />
     </div>
   );

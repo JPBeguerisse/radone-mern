@@ -9,7 +9,6 @@ interface RootState {
 }
 
 const ViewProfil = () => {
-  // const user = useSelector((state: any) => state.userReducer.user);
   const { user, error, loading } = useSelector(
     (state: RootState) => state.userReducer
   );
@@ -68,7 +67,7 @@ const ViewProfil = () => {
       </div>
 
       {/* Section des posts */}
-      <div className="">
+      <div className="border-t-2 border-gray-300">
         <NavProfil />
       </div>
     </>

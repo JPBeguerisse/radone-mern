@@ -1,33 +1,107 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Post } from "../../redux/types/post.types";
-import CardPostProfile from "./CardPostProfile";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deletePostRequested,
+  getPostRequested,
+  getPostsRequested,
+  updatePostRequested,
+  updatePostSuccess,
+} from "../../redux/reducers/posts.reducer";
+import { PostModal } from "./PostModalView";
+import { Card } from "./Card";
 
-const PostsUser = () => {
+export const PostsUser = () => {
+  const userData = useSelector((state: any) => state.userReducer.user);
   const posts = useSelector((state: any) => state.postsReducer.posts);
-  const [isLoading, setIsLoading] = useState(true); // Gère l'état de chargement
+  const [isOpen, setIsOpen] = useState<boolean>();
+  const selectedPost = useSelector((state: any) => state.postsReducer.post);
+
+  console.log("Post sélectionné", selectedPost);
+  const [editedMessage, setEditedMessage] = useState<string>("");
+  const [editMode, setEditMode] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleOpenModal = (post: Post) => {
+    setIsOpen(true);
+    const postSelect = dispatch(getPostRequested(post._id!));
+    console.log("POST ", postSelect);
+  };
 
   useEffect(() => {
-    if (posts.length > 0) {
-      setIsLoading(false);
+    if (selectedPost) {
+      setEditedMessage(selectedPost.message || ""); // ✅ Met à jour `editedMessage` quand Redux change
     }
-  }, [posts]);
+  }, [selectedPost]);
+
+  const closeModal = () => {
+    setEditMode(false);
+    setIsOpen(false);
+  };
+
+  const handleDelete = (id: string) => {
+    dispatch(deletePostRequested(id));
+  };
+  const handleSave = () => {
+    try {
+      const updatedData = { message: editedMessage };
+      dispatch(
+        updatePostRequested({ _id: selectedPost?._id, data: updatedData })
+      );
+    } catch (error: any) {
+      console.error("Erreur lors de la mise à jour du post :", error.message);
+    }
+    setEditMode(false);
+  };
 
   return (
-    <div className="p-4">
-      {isLoading ? (
-        <p className="text-center text-gray-500">Chargement des données...</p>
+    <div className="flex flex-wrap gap-4 justify-center">
+      {posts && posts.length > 0 && userData ? (
+        posts.some((post: Post) => post.posterId === userData._id) ? (
+          posts.map(
+            (post: Post) =>
+              post.posterId === userData._id && (
+                // <div
+                //   key={post._id}
+                //   onClick={() => handleOpenModal(post)}
+                //   className="cursor-pointer"
+                // >
+                //   <img
+                //     className="w-48 h-48 md:w-96 md:h-96 object-cover rounded-lg"
+                //     src={
+                //       post.picture
+                //         ? `${
+                //             process.env.REACT_APP_API_URL
+                //           }/${post.picture.replace(/^\//, "")}`
+                //         : undefined
+                //     }
+                //     alt="post-picture"
+                //   />
+                // </div>
+                <Card post={post} onOpen={handleOpenModal} />
+              )
+          )
+        ) : (
+          <p>Aucun post</p>
+        )
       ) : (
-        <div className="flex flex-wrap gap-4 justify-center">
-          {posts && posts.length > 0 ? (
-            <CardPostProfile />
-          ) : (
-            <p className="text-center">Aucun post</p>
-          )}
-        </div>
+        <p>Aucun post</p>
+      )}
+
+      {isOpen && selectedPost && (
+        <PostModal
+          post={selectedPost}
+          isOpen={isOpen}
+          onClose={closeModal}
+          message={editedMessage}
+          setEditedMessage={setEditedMessage}
+          isEditing={editMode}
+          setIsEditing={setEditMode}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          currentUser={userData}
+        />
       )}
     </div>
   );
 };
-
-export default PostsUser;

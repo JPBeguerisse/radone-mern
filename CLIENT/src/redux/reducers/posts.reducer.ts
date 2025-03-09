@@ -30,11 +30,14 @@ const postsSlice = createSlice({
       state.post = action.payload;
       // console.log("Récupération du post demandée :", action.payload);
     },
+    getPostFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
 
     /** ✅ Ajouter l'action `updatePostSuccess` */
     updatePostRequested: (
       state,
-      action: PayloadAction<{ _id?: string; data: Partial<Post> }>
+      action: PayloadAction<{ _id: string; data: Partial<Post> }>
     ) => {
       console.log("updatePostRequested dispatched", action.payload);
     },
@@ -49,7 +52,6 @@ const postsSlice = createSlice({
       state.error = action.payload;
     },
 
-    /*DELETE POST */
     // Action pour demander la suppression d'un post
     deletePostRequested: (state, action: PayloadAction<string>) => {
       console.log("Suppression en cour...", action.payload);
@@ -67,11 +69,6 @@ const postsSlice = createSlice({
     deletePostFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
-
-    //CREATION DE POST
-    // createPostRequested: (state, action: PayloadAction<FormData>) => {
-    //   console.log("Creation du post lancé", action.payload);
-    // },
 
     createPostRequested: (
       state,

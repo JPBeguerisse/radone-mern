@@ -13,21 +13,19 @@ export const PostModal: React.FC<PostModalViewProps> = ({
   onDelete,
   currentUser,
 }) => {
-  //   const [showOptions, setShowOptions] = useState(false);
-  //   const [editMode, setEditMode] = useState(false);
-  //   const [editedMessage, setEditedMessage] = useState<string>("");
-
   const [showOptions, setShowOptions] = useState<boolean>(false);
 
   return (
     <div>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg max-w-sm md:max-w-lg w-full mx-4 relative">
+          {/* ✅ Fixer la taille du modal */}
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-sm md:max-w-lg lg:max-w-2xl max-h-[90vh] overflow-auto mx-4 relative">
+            {/* ✅ Boutons fermer et options */}
             <div className="flex justify-between items-center mb-4">
               <button
                 onClick={onClose}
-                className="text-gray-500 font-bold text-lg self-end"
+                className="text-gray-500 font-bold text-lg"
               >
                 X
               </button>
@@ -42,7 +40,7 @@ export const PostModal: React.FC<PostModalViewProps> = ({
                   <button
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     onClick={() => {
-                      setIsEditing(true);
+                      setIsEditing && setIsEditing(true);
                       setShowOptions(false);
                     }}
                   >
@@ -51,7 +49,7 @@ export const PostModal: React.FC<PostModalViewProps> = ({
                   <button
                     className="block px-4 py-2 text-red-500 hover:bg-gray-100"
                     onClick={() => {
-                      onDelete(post._id!);
+                      onDelete && onDelete(post._id!);
                       onClose();
                     }}
                   >
@@ -61,37 +59,44 @@ export const PostModal: React.FC<PostModalViewProps> = ({
               )}
             </div>
 
+            {/* ✅ Image responsive */}
             <img
-              className="w-full h-auto mb-4 rounded-lg"
-              src={`${process.env.REACT_APP_API_URL}/${
-                post && post.picture && post.picture.replace(/^\//, "")
-              }`}
+              className="w-full max-h-[60vh] object-contain rounded-lg"
+              src={`${process.env.REACT_APP_API_URL}/${post?.picture?.replace(
+                /^\//,
+                ""
+              )}`}
               alt="Post"
             />
-            <div className="text-sm md:text-base">
-              {post && currentUser._id === post.posterId && (
+
+            {/* ✅ Contenu texte */}
+            <div className="text-sm md:text-base mt-4">
+              {post && currentUser && currentUser._id === post.posterId && (
                 <p className="mb-2">
-                  <strong>Posté par :</strong> {currentUser.firstName}{" "}
-                  {currentUser.lastName}
+                  <strong>Posté par :</strong>{" "}
+                  {currentUser && currentUser.firstName}{" "}
+                  {currentUser && currentUser.lastName}
                 </p>
               )}
               <div className="mb-2">
                 {isEditing ? (
                   <textarea
                     value={message}
-                    onChange={(e) => setEditedMessage(e.target.value)}
+                    onChange={(e) =>
+                      setEditedMessage && setEditedMessage(e.target.value)
+                    }
                     className="w-full p-2 border rounded mb-4"
                   />
                 ) : (
                   <p>
-                    <strong>Message :</strong> {post && post.message}
+                    <strong>Message :</strong> {post?.message}
                   </p>
                 )}
                 <div className="flex gap-4">
                   {isEditing && (
                     <>
                       <button
-                        onClick={() => setIsEditing(false)}
+                        onClick={() => setIsEditing && setIsEditing(false)}
                         className="px-4 py-2 border rounded"
                       >
                         Annuler
@@ -107,7 +112,7 @@ export const PostModal: React.FC<PostModalViewProps> = ({
                 </div>
               </div>
               <p>
-                <strong>Date :</strong> {post && post.createdAt}
+                <strong>Date :</strong> {post?.createdAt}
               </p>
             </div>
           </div>

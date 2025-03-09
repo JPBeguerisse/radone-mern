@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import PostsUser from "../posts/PostsUser";
+// import PostsUser from "../posts/PostsUserOld";
 import PostLikedUser from "../posts/PostLikedUser";
+import { PostsUser } from "../../components/posts/PostsUser";
 
 const NavProfil = () => {
   const [postsUserModal, setPostsUserModal] = useState<boolean>(true);
@@ -10,8 +11,8 @@ const NavProfil = () => {
 
   const posts = useSelector((state: any) => state.postsReducer.pots);
 
-  const handleModals = (e: React.MouseEvent<HTMLLIElement>) => {
-    const target = e.target as HTMLElement;
+  const handleModals = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const target = e.target as HTMLButtonElement;
 
     if (target.id === "posts-user") {
       setPostsUserModal(true);
@@ -24,30 +25,29 @@ const NavProfil = () => {
 
   return (
     <div>
-      <ul>
-        <li
+      <div className="flex gap-4 items-center justify-center">
+        <button
           onClick={handleModals}
           id="posts-user"
-          className={`${
-            postsUserModal
-              ? "bg-primary text-white font-bold"
-              : "bg-white text-gray-800"
-          } hover:bg-secondary font-bold p-3 hover:text-white cursor-pointer p-2 rounded`}
+          className={`p-3 transition duration-300 ${
+            postsUserModal && "text-black border-t-2 border-black font-bold"
+          } `}
         >
           Mes posts
-        </li>
-        <li
+        </button>
+
+        <button
           onClick={handleModals}
           id="posts-liked-user"
-          className={`${
-            postsLikedUserModal
-              ? "bg-primary text-white font-bold"
-              : "bg-white text-gray-800"
-          } hover:bg-secondary font-bold p-3 hover:text-white cursor-pointer p-2 rounded`}
+          className={`p-3 transition duration-300 ${
+            postsLikedUserModal &&
+            "text-black border-t-2 border-black font-bold"
+          } `}
         >
           Posts likés
-        </li>
-      </ul>
+        </button>
+      </div>
+
       {postsUserModal && <PostsUser />}
       {postsLikedUserModal && <PostLikedUser />}
     </div>

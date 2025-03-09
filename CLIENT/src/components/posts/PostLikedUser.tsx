@@ -1,24 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { Post } from "../../redux/types/post.types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Card } from "./Card";
+import { getPostRequested } from "../../redux/reducers/posts.reducer";
+import { PostModal } from "./PostModalView";
 
 const PostLikedUser = () => {
-  const userData = useSelector((state: any) => state.userReducer.user);
-  const userDataError = useSelector((state: any) => state.userReducer.error);
+  //const userData = useSelector((state: any) => state.userReducer.user);
+  //const userDataError = useSelector((state: any) => state.userReducer.error);
   const posts = useSelector((state: any) => state.postsReducer.posts);
   const [isLoading, setIsLoading] = useState(true); // Gère l'état de chargement
+  const userData = useSelector((state: any) => state.userReducer.user);
+  const [isOpen, setIsOpen] = useState<boolean>();
+  const selectedPost = useSelector((state: any) => state.postsReducer.post);
 
+  const dispatch = useDispatch();
   useEffect(() => {
-    if ((userData && posts && posts.length > 0) || userDataError) {
-      setIsLoading(false);
-    }
-  }, [userData, posts, userDataError]);
+    if (posts.length > 0) setIsLoading(false);
+  }, [posts]);
+
+  const handleOpenModal = (post: Post) => {
+    setIsOpen(true);
+    const postSelect = dispatch(getPostRequested(post._id!));
+    console.log("POST ", postSelect);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <div>
+    <div className="p-4">
       {isLoading ? (
-        <p>Chargement des données...</p>
+        <p className="text-center text-gray-500">Chargement des données...</p>
       ) : (
-        <div className="">
+        <div className="flex flex-wrap gap-4 justify-center">
           {posts && posts.length > 0 ? (
             posts.some(
               (post: Post) => post.likers && post.likers.includes(userData._id)
@@ -27,9 +43,7 @@ const PostLikedUser = () => {
                 (post: Post) =>
                   post.likers &&
                   post.likers.includes(userData._id) && (
-                    <div key={post._id}>
-                      <p>{post.message}</p>
-                    </div>
+                    <Card post={post} onOpen={handleOpenModal} />
                   )
               )
             ) : (
@@ -40,8 +54,42 @@ const PostLikedUser = () => {
           )}
         </div>
       )}
+
+      {isOpen && selectedPost && (
+        <PostModal post={selectedPost} isOpen={isOpen} onClose={closeModal} />
+      )}
     </div>
   );
 };
 
 export default PostLikedUser;
+
+// return (
+//   <div className="p-4">
+//     {isLoading ? (
+//       <p className="text-center text-gray-500">Chargement des données...</p>
+//     ) : (
+//       <div className="">
+//         {posts && posts.length > 0 ? (
+//           posts.some(
+//             (post: Post) => post.likers && post.likers.includes(userData._id)
+//           ) ? (
+//             posts.map(
+//               (post: Post) =>
+//                 post.likers &&
+//                 post.likers.includes(userData._id) && (
+//                   <div key={post._id}>
+//                     <p>{post.message}</p>
+//                   </div>
+//                 )
+//             )
+//           ) : (
+//             <p>Aucun post liké</p>
+//           )
+//         ) : (
+//           <p>Aucun post</p>
+//         )}
+//       </div>
+//     )}
+//   </div>
+// );

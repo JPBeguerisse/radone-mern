@@ -66,7 +66,7 @@ const AddPost: React.FC = () => {
               {picture && !isNext && (
                 <button
                   onClick={() => setIsNext(true)}
-                  className="text-white bg-blue-500 px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+                  className="text-white bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition"
                 >
                   Suivant
                 </button>
@@ -75,7 +75,7 @@ const AddPost: React.FC = () => {
               {isNext && (
                 <button
                   onClick={handlePost}
-                  className="text-white bg-blue-500 px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+                  className="text-white bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition"
                 >
                   Partager
                 </button>
@@ -124,7 +124,7 @@ const AddPost: React.FC = () => {
                   />
                   <label
                     htmlFor="file-upload"
-                    className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition duration-300"
+                    className="cursor-pointer px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300"
                   >
                     Importer une photo
                   </label>

@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 import UserContext from "./components/AppContext";
 import { getUserRequested } from "./redux/reducers/user.reducer";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   // Utilisation du hook `useState` pour gérer l'état de l'UID, initialisé à `null`
@@ -50,6 +51,11 @@ function App() {
   return (
     // Fournir l'UID au contexte UserContext pour le rendre accessible aux autres composants
     <UserContext.Provider value={uid}>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        aria-label={undefined}
+      />
       {/* Rend les routes de l'application */}
       <Routes />
     </UserContext.Provider>
