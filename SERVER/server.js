@@ -88,7 +88,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
  *                   description: Token invalide
  *                   example: "Token invalide"
  */
-app.get("/profile", verifyToken, (req, res) => {
+app.get("/api/profile", verifyToken, (req, res) => {
   res.send(req.userId);
 });
 
@@ -99,7 +99,7 @@ app.get("/api", (req, res) => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(process.env.PORT, () => {
   console.log(`Listenning on port ${process.env.PORT}`);

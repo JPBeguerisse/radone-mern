@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .App {
   text-align: center;
 }
@@ -25,7 +29,7 @@
 }
 
 .App-link {
-  color: #ff7b77;
+  color: #0a2d61;
 }
 
 @keyframes App-logo-spin {
@@ -58,13 +62,13 @@
 }
 
 .nav-link a:hover{
-  background-color: #ff7b77;
+  background-color: #0a2d61;
   color: white;
   border-radius: 5px;
 }
 
 .nav-link a.active {
-  background-color: #ff7b77;
+  background-color: #0a2d61;
   font-weight: bold;
   color: white;
 } */
@@ -106,13 +110,13 @@
 }
 
 .nav-link a:hover{
-  background-color: #ff7b77;
+  background-color: #0a2d61;
   color: white;
   border-radius: 5px;
 }
 
 .nav-link a.active {
-  background-color: #ff7b77;
+  background-color: #0a2d61;
   font-weight: bold;
   color: white;
 } 
@@ -167,14 +171,14 @@ ul li {
 }
 
 /* Changement de style pour l'onglet actif */
-ul li.active-btn {
-  background-color: #ff7b77; /* Couleur pour l'onglet actif */
+/* ul li.active-btn {
+  background-color: #0a2d61; 
   color: white;
-  border-color: #ff7b77;
-}
+  border-color: #0a2d61;
+} */
 
 ul li:hover {
-  background-color: #b45754;
+  background-color: #0a2d61;
   color: #fff;
 }
 
@@ -216,11 +220,11 @@ ul li:hover {
 }
 
 .form input:focus {
-  border-color: #ff7b77; /* Change la couleur de la bordure en vert lorsque l'input est actif */
+  border-color: #0a2d61; /* Change la couleur de la bordure en vert lorsque l'input est actif */
 }
 
 .form input[type="submit"] {
-  background-color: #ff7b77; /* Définit un fond vert pour le bouton de soumission */
+  background-color: #0a2d61; /* Définit un fond vert pour le bouton de soumission */
   color: white; /* Met le texte du bouton de soumission en blanc */
   border: none; /* Retire la bordure autour du bouton de soumission */
   cursor: pointer; /* Change le curseur en main lors du survol du bouton */
@@ -256,7 +260,7 @@ ul li:hover {
 
 
 .nav-footer li:hover, a:hover {
-  color: #ff7b77;
+  color: #0a2d61;
 }
 
 
@@ -283,7 +287,7 @@ ul li:hover {
 }
 
 .user-name button:hover{
-  background-color: #ff7b77;
+  background-color: #0a2d61;
   color: #fff;
 }
 

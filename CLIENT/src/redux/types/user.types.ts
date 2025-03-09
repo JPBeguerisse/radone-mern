@@ -11,3 +11,15 @@ export interface User {
     updatedAt: Date;      // Date de mise à jour de l'utilisateur
   }
   
+
+
+export interface UserState {
+  user: User | null;
+  error: string | null;
+}
+
+
+export interface UsersState {
+  users: User[] | null;
+  error: string | null;
+}
