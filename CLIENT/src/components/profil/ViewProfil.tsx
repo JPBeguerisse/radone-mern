@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { User } from "../../redux/types/user.types";
+import { User } from "../../types/user.types";
 import NavProfil from "./NavProfil";
 
 // Type de l'état global, qui inclut userReducer

@@ -1,6 +1,6 @@
-import { Post } from "@/redux/types/post.types";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { Post } from "src/types/post.types";
 
 interface CardProps {
   post: Post;

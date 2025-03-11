@@ -12,7 +12,7 @@ export interface Post {
 }
 
 // Interface pour un commentaire
-interface Comment {
+export interface Comment {
   commenterId: string; // ID de l'utilisateur qui a commenté
   text: string; // Le texte du commentaire
   timestamp: string; // La date et l'heure du commentaire

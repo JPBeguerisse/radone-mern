@@ -1,4 +1,4 @@
-import { Post } from "@/redux/types/post.types";
+import { Post } from "src/types/post.types";
 import { api } from "../api/api";
 
 //creation de post

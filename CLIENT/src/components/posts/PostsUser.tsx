@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Post } from "../../redux/types/post.types";
+import { Post } from "../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deletePostRequested,

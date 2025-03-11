@@ -1,5 +1,5 @@
 import { call, put, takeLatest } from "redux-saga/effects";
-import { Post } from "../types/post.types";
+import { Post } from "../../types/post.types";
 import {
   getPostsSuccess,
   getPostsFailed,

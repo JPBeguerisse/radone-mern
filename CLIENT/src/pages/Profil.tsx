@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { User } from "../redux/types/user.types";
+import { User } from "../types/user.types";
 import ViewProfil from "../components/profil/ViewProfil";
 
 const Profil: React.FC = () => {
