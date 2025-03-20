@@ -13,9 +13,10 @@ export interface Post {
 
 // Interface pour un commentaire
 export interface Comment {
+  _id: string;
   commenterId: string; // ID de l'utilisateur qui a commenté
   text: string; // Le texte du commentaire
-  timestamp: string; // La date et l'heure du commentaire
+  timestamp?: string; // La date et l'heure du commentaire
 }
 
 export interface PostsState {
@@ -33,8 +34,7 @@ export interface PostModalViewProps {
   isEditing?: boolean;
   setIsEditing?: (edit: boolean) => void;
   onSave?: () => void;
-  onDelete?: (id: string) => void;
-  currentUser?: User;
+  // onDelete?: (id: string) => void;
 }
 
 export interface PostModalCreateProps {
@@ -44,3 +44,9 @@ export interface PostModalCreateProps {
   onSave: () => void;
   currentUser: User;
 }
+
+export type AddCommentProps = {
+  postId: string;
+  commenterId: string;
+  message?: string;
+};

@@ -21,16 +21,16 @@ const ViewProfil = () => {
 
   return (
     <>
-      <div className="profil-view flex flex-col md:flex-row items-center md:items-start p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto my-8 space-y-6 md:space-y-0 md:space-x-6">
+      <div className="profil-view flex flex-col md:flex-row items-center md:items-start p-5 m-5 bg-white shadow-lg rounded-lg max-w-4xl md:mx-auto  space-y-6 md:space-y-0 md:space-x-6">
         {/* Section de l'image de profil */}
-        <div className="user-picture flex-shrink-0">
+        <div className="user-picture flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-24 h-24 md:w-36 md:h-36">
           <img
             src={`${process.env.REACT_APP_API_URL}${user.picture.replace(
               /^\//,
               ""
             )}`}
             alt="user"
-            className="w-32 h-32 md:w-48 md:h-48 rounded-full object-cover border-2 border-gray-300"
+            className="w-full h-full rounded-full object-cover object-center"
           />
         </div>
 

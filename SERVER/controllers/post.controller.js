@@ -91,8 +91,16 @@ module.exports.createPost = async (req, res) => {
 //Fonction pour récupérer les posts
 module.exports.getPosts = async (req, res) => {
   try {
-    const posts = await PostModel.find().sort({ createdAt: -1 }); // Trier par date de création;
-    res.status(200).json(posts);
+    const posts = await PostModel.find().sort({ createdAt: -1 }).lean(); // Trier par date de création;
+    // Trier les commentaires dans chaque post en ordre croissant (du plus ancien au plus récent)
+    const sortedPosts = posts.map((post) => ({
+      ...post,
+      comments: post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      ), // ✅ Tri des commentaires par timestamp croissant
+    }));
+
+    res.status(200).json(sortedPosts);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -110,9 +118,18 @@ module.exports.getPost = async (req, res) => {
   }
 
   try {
-    const post = await PostModel.findById({ _id: postId });
-    if (post) res.status(200).json(post);
-    else res.status(404).send("Post not found");
+    const post = await PostModel.findById(postId).lean(); // ✅ Utilisation de `.lean()` pour un objet JS pur
+
+    if (!post) {
+      return res.status(404).send("Post not found");
+    }
+
+    // ✅ Trier les commentaires en ordre décroissant (du plus récent au plus ancien)
+    post.comments = post.comments.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    res.status(200).json(post);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -266,7 +283,9 @@ module.exports.unlike = async (req, res) => {
 // Fonction pour ajouter un commentaire à un post
 module.exports.addCommentPost = async (req, res) => {
   const postId = req.params.id;
-  const { text, commenterId } = req.body;
+  const { commenterId, text } = req.body;
+
+  console.log("BODY", req.body);
 
   // Vérifier si l'ID du post et l'ID du commentateur sont valides
   if (!ObjectID.isValid(postId) || !ObjectID.isValid(commenterId)) {

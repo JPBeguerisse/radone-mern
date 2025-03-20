@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React from "react";
 import { Post } from "src/types/post.types";
 
 interface CardProps {
@@ -9,16 +8,20 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ post, onOpen }) => {
   return (
-    <div key={post._id} onClick={() => onOpen(post)} className="cursor-pointer">
+    <div
+      key={post._id}
+      onClick={() => onOpen(post)}
+      className="cursor-pointer overflow-hidden flex items-center justify-center w-32 h-32 md:w-80 md:h-80 rounded-lg bg-gray-200"
+    >
       <img
-        className="w-48 h-48 md:w-96 md:h-96 object-cover rounded-lg"
+        className="w-full h-full object-cover aspect-square rounded-lg"
         src={
           post.picture
             ? `${process.env.REACT_APP_API_URL}/${post.picture.replace(
                 /^\//,
                 ""
               )}`
-            : undefined
+            : "/placeholder.jpg" // 🔹 Ajoute une image par défaut si `post.picture` est vide
         }
         alt="post-picture"
       />
