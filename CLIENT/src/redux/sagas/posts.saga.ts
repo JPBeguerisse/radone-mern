@@ -24,11 +24,24 @@ import {
   likePostSuccess,
   likePostFailed,
   likePostRequested,
-  disLikePostSuccess,
-  disLikePostRequested,
+  unLikePostSuccess,
+  unLikePostRequested,
+  unLikeCommentFailed,
+  likeCommentSuccess,
+  unLikeCommentSuccess,
+  likeCommentFailed,
+  likeCommentRequested,
+  unLikeCommentRequested,
+  savePostSuccess,
+  savePostFailed,
+  unSavePostSuccess,
+  unSavePostFailed,
+  unSavePostRequested,
+  savePostRequested,
 } from "../reducers/posts.reducer";
 import {
   addCommentPost,
+  addLikeComment,
   addLikePost,
   createPost,
   deleteCommentPost,
@@ -36,6 +49,9 @@ import {
   dislikePost,
   getPost,
   getPosts,
+  savePost,
+  unLikeComment,
+  unSavePost,
   updatePost,
 } from "../../services/postService";
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -196,18 +212,18 @@ function* handleLikePost(
   }
 }
 
-//Fonction pour disliker un post
-function* handleDisLikePost(
+//Fonction pour unliker un post
+function* handleUnLikePost(
   action: PayloadAction<{ postId: string; userId: string }>
 ): Generator<any, void, Post> {
   try {
-    const dislikedPost = yield call(
+    const unlikedPost = yield call(
       dislikePost,
       action.payload.postId,
       action.payload.userId
     );
-    console.log("Post disliké :", dislikedPost);
-    yield put(disLikePostSuccess(dislikedPost));
+    console.log("Post disliké :", unlikedPost);
+    yield put(unLikePostSuccess(unlikedPost));
     yield put(getPostRequested(action.payload.postId));
   } catch (error: any) {
     console.error("Erreur lors de la suppression du like :", error);
@@ -215,6 +231,85 @@ function* handleDisLikePost(
   }
 }
 
+//Fonction pour liker un commentaire
+function* handleLikeComment(
+  action: PayloadAction<{ postId: string; commentId: string; userId: string }>
+): Generator<any, void, Post> {
+  try {
+    const likedComment = yield call(
+      addLikeComment,
+      action.payload.postId,
+      action.payload.commentId,
+      action.payload.userId
+    );
+
+    console.log("Commentaire liké:c", likedComment);
+    yield put(likeCommentSuccess(likedComment));
+    yield put(getPostRequested(action.payload.postId));
+  } catch (error: any) {
+    console.error("Erreur lors de l'ajout du like sur le commentaire :", error);
+    yield put(likeCommentFailed(error.message));
+  }
+}
+
+//Fonction pour unliker un commentaire
+function* handleUnLikeComment(
+  action: PayloadAction<{ postId: string; commentId: string; userId: string }>
+): Generator<any, void, Post> {
+  try {
+    const unLikedComment = yield call(
+      unLikeComment,
+      action.payload.postId,
+      action.payload.commentId,
+      action.payload.userId
+    );
+
+    console.log("Commentaire liké:c", unLikedComment);
+    yield put(unLikeCommentSuccess(unLikedComment));
+    yield put(getPostRequested(action.payload.postId));
+  } catch (error: any) {
+    console.error("Erreur lors de l'ajout du like sur le commentaire :", error);
+    yield put(unLikeCommentFailed(error.message));
+  }
+}
+
+//Fonction sage pour ajouter un post au favoris
+function* handleSavePost(
+  action: PayloadAction<{ postId: string; userId: string }>
+): Generator<any, void, Post> {
+  try {
+    const savedPost = yield call(
+      savePost,
+      action.payload.postId,
+      action.payload.userId
+    );
+    console.log("Post sauvegardé :", savedPost);
+    yield put(savePostSuccess(savedPost));
+    yield put(getPostRequested(action.payload.postId));
+  } catch (error: any) {
+    console.error("Erreur lors de l'ajout du post aux favoris :", error);
+    yield put(savePostFailed(error.message));
+  }
+}
+
+//Fonction sage pour ajouter un post au favoris
+function* handleUnSavePost(
+  action: PayloadAction<{ postId: string; userId: string }>
+): Generator<any, void, Post> {
+  try {
+    const unSavedPost = yield call(
+      unSavePost,
+      action.payload.postId,
+      action.payload.userId
+    );
+    console.log("Post retiré :", unSavedPost);
+    yield put(unSavePostSuccess(unSavedPost));
+    yield put(getPostRequested(action.payload.postId));
+  } catch (error: any) {
+    console.error("Erreur lors de l'ajout du post aux favoris :", error);
+    yield put(unSavePostFailed(error.message));
+  }
+}
 export default function* postsSaga() {
   yield takeLatest(getPostsRequested.type, handleFetchPosts);
   yield takeLatest(updatePostRequested.type, handleUpdatePost);
@@ -224,7 +319,11 @@ export default function* postsSaga() {
   yield takeLatest(createCommentRequested.type, handleAddComment);
   yield takeLatest(deleteCommentRequested.type, handleDeleteComment);
   yield takeLatest(likePostRequested.type, handleLikePost);
-  yield takeLatest(disLikePostRequested.type, handleDisLikePost);
+  yield takeLatest(unLikePostRequested.type, handleUnLikePost);
+  yield takeLatest(likeCommentRequested.type, handleLikeComment);
+  yield takeLatest(unLikeCommentRequested.type, handleUnLikeComment);
+  yield takeLatest(savePostRequested.type, handleSavePost);
+  yield takeLatest(unSavePostRequested.type, handleUnSavePost);
 }
 
 // function* getPosts() {

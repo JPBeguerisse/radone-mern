@@ -5,6 +5,13 @@ import { User } from "src/types/user.types";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import UserContext from "../AppContext";
+import { useDispatch } from "react-redux";
+import {
+  likeCommentRequested,
+  unLikeCommentRequested,
+} from "src/redux/reducers/posts.reducer";
+import { useCommentStatus } from "src/hooks/usePostStatus";
+import { includesUser } from "src/utils/includesUser";
 interface CommentListProps {
   post: Post;
   usersData: User[];
@@ -16,7 +23,7 @@ const CommentList: React.FC<CommentListProps> = ({
   usersData,
   onDelete,
 }) => {
-  const currentUserUid = useContext(UserContext);
+  const currentUserUid = useContext(UserContext)?.toString();
 
   const MAX_LENGTH = 100;
   const [isExpandedText, setIsExpandedText] = React.useState<{
@@ -30,11 +37,13 @@ const CommentList: React.FC<CommentListProps> = ({
     }));
   };
 
+  const dispatch = useDispatch();
   return (
     <div className="flex-1 overflow-auto p-2 gap-4">
       {post && post.comments?.length! > 0 ? (
-        post.comments?.map((comment) =>
-          usersData.map(
+        post.comments?.map((comment) => {
+          // const isLiked = includesUser(comment.likers, currentUserUid!)
+          return usersData.map(
             (user: User) =>
               user._id === comment.commenterId && (
                 <div key={user._id} className="flex gap-4 mb-4">
@@ -74,15 +83,48 @@ const CommentList: React.FC<CommentListProps> = ({
                             locale: fr,
                           })}
                         </p>
-                        <p className="text-xs text-gray-400">3 J'aime</p>
+                        <p className="text-xs text-gray-400">
+                          {comment.likers && comment.likers?.length > 0 && (
+                            <span>{comment.likers.length} J'aime</span>
+                          )}
+                        </p>
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Heart
-                        className="cursor-pointer"
-                        width={15}
-                        height={15}
-                      />
+                      {currentUserUid &&
+                      comment.likers?.includes(currentUserUid) ? (
+                        <Heart
+                          className="text-red-500 transition-all duration-200 ease-in-out"
+                          width={15}
+                          height={15}
+                          fill="currentColor"
+                          onClick={() =>
+                            dispatch(
+                              unLikeCommentRequested({
+                                postId: post._id!,
+                                commentId: comment._id,
+                                userId: currentUserUid,
+                              })
+                            )
+                          }
+                        />
+                      ) : (
+                        <Heart
+                          className="cursor-pointer"
+                          width={15}
+                          height={15}
+                          onClick={() =>
+                            dispatch(
+                              likeCommentRequested({
+                                postId: post._id!,
+                                commentId: comment._id,
+                                userId: currentUserUid!,
+                              })
+                            )
+                          }
+                        />
+                      )}
+
                       {currentUserUid?.toString() === comment.commenterId && (
                         <button
                           onClick={() => onDelete(comment._id, "comment")}
@@ -98,8 +140,8 @@ const CommentList: React.FC<CommentListProps> = ({
                   </div>
                 </div>
               )
-          )
-        )
+          );
+        })
       ) : (
         <div className="flex flex-col items-center justify-center h-full text-center">
           <p className="text-lg font-bold">Aucun commentaire pour l’instant.</p>

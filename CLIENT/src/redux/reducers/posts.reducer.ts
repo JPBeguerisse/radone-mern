@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Post, PostsState } from "../../types/post.types";
 import { act } from "react";
 import { error } from "console";
+import { savePost } from "src/services/postService";
 
 const initialState: PostsState = {
   posts: null,
@@ -179,14 +180,14 @@ const postsSlice = createSlice({
     },
 
     //Action pour disliker un post
-    disLikePostRequested: (
+    unLikePostRequested: (
       state,
       action: PayloadAction<{ postId: string; userId: string }>
     ) => {
       console.log("Dislike en cours...", action.payload);
     },
 
-    disLikePostSuccess: (state, action: PayloadAction<Post>) => {
+    unLikePostSuccess: (state, action: PayloadAction<Post>) => {
       if (state.posts) {
         state.posts = state.posts.map((post) =>
           post._id === action.payload._id ? action.payload : post
@@ -194,9 +195,101 @@ const postsSlice = createSlice({
       }
     },
 
-    disLikePostFailed: (state, action: PayloadAction<string>) => {
+    unLikePostFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       console.log("Dislike échoué...", action.payload);
+    },
+
+    //Action pour liker un commentaire
+    likeCommentRequested: (
+      state,
+      action: PayloadAction<{
+        postId: string;
+        commentId: string;
+        userId: string;
+      }>
+    ) => {
+      console.log("Like commentaire en cours...", action.payload);
+    },
+
+    likeCommentSuccess: (state, action: PayloadAction<Post>) => {
+      if (state.posts) {
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        );
+      }
+    },
+
+    likeCommentFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      console.log("like comment échoué...", action.payload);
+    },
+
+    //Action pour unLiker un commentaire
+    unLikeCommentRequested: (
+      state,
+      action: PayloadAction<{
+        postId: string;
+        commentId: string;
+        userId: string;
+      }>
+    ) => {
+      console.log("Unlike commentaire en cours...", action.payload);
+    },
+
+    unLikeCommentSuccess: (state, action: PayloadAction<Post>) => {
+      if (state.posts) {
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        );
+      }
+    },
+
+    unLikeCommentFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      console.log("Unlike comment échoué...", action.payload);
+    },
+
+    //Action pour aujouter un post au favoris
+    savePostRequested: (
+      state,
+      action: PayloadAction<{ postId: string; userId: string }>
+    ) => {
+      console.log("Ajout du post au favori en cours...", action.payload);
+    },
+
+    savePostSuccess: (state, action: PayloadAction<Post>) => {
+      if (state.posts) {
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        );
+      }
+    },
+
+    savePostFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      console.log("Ajout du post au favori  échoué...", action.payload);
+    },
+
+    //Action pour retiré le poste des favoris
+    unSavePostRequested: (
+      state,
+      action: PayloadAction<{ postId: string; userId: string }>
+    ) => {
+      console.log("Retrait du post des favoris en cours...", action.payload);
+    },
+
+    unSavePostSuccess: (state, action: PayloadAction<Post>) => {
+      if (state.posts) {
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        );
+      }
+    },
+
+    unSavePostFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      console.log("Retrait du post des favoris  échoué...", action.payload);
     },
   },
 });
@@ -225,9 +318,21 @@ export const {
   likePostRequested,
   likePostSuccess,
   likePostFailed,
-  disLikePostRequested,
-  disLikePostSuccess,
-  disLikePostFailed,
+  unLikePostRequested,
+  unLikePostSuccess,
+  unLikePostFailed,
+  likeCommentRequested,
+  likeCommentSuccess,
+  likeCommentFailed,
+  unLikeCommentRequested,
+  unLikeCommentSuccess,
+  unLikeCommentFailed,
+  savePostRequested,
+  savePostSuccess,
+  savePostFailed,
+  unSavePostRequested,
+  unSavePostSuccess,
+  unSavePostFailed,
 } = postsSlice.actions;
 export const postsReducer = postsSlice.reducer;
 

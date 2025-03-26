@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 // import PostsUser from "../posts/PostsUserOld";
-import PostLikedUser from "../posts/PostLikedUser";
+import PostSaved from "../posts/PostSaved";
 import { PostsUser } from "../../components/posts/PostsUser";
+import { Bookmark, GalleryVerticalEnd } from "lucide-react";
 
 const NavProfil = () => {
   const [postsUserModal, setPostsUserModal] = useState<boolean>(true);
@@ -29,27 +30,29 @@ const NavProfil = () => {
         <button
           onClick={handleModals}
           id="posts-user"
-          className={`p-3 transition duration-300 ${
+          className={`p-3 transition duration-300 flex items-center gap-3  ${
             postsUserModal && "text-black border-t-2 border-black font-bold"
           } `}
         >
-          Mes posts
+          <GalleryVerticalEnd width={15} height={15} />
+          Publications
         </button>
 
         <button
           onClick={handleModals}
           id="posts-liked-user"
-          className={`p-3 transition duration-300 ${
+          className={`p-3 transition duration-300 flex items-center gap-2 ${
             postsLikedUserModal &&
             "text-black border-t-2 border-black font-bold"
           } `}
         >
-          Posts likés
+          <Bookmark width={15} height={15} />
+          Enregistrements
         </button>
       </div>
 
       {postsUserModal && <PostsUser />}
-      {postsLikedUserModal && <PostLikedUser />}
+      {postsLikedUserModal && <PostSaved />}
     </div>
   );
 };

@@ -75,11 +75,55 @@ export const addLikePost = async (
   return response.data;
 };
 
-// Dislike une publication
+// Unlike une publication
 export const dislikePost = async (
   id: string,
   userId: string
 ): Promise<Post> => {
   const response = await api.patch(`post/unlike/${id}`, { userId });
+  return response.data;
+};
+
+//Aimer un commentaire
+export const addLikeComment = async (
+  postId: string,
+  commentId: string,
+  userId: string
+): Promise<Post> => {
+  const response = await api.patch(`post/comment/like/${postId}`, {
+    commentId,
+    userId,
+  });
+  return response.data;
+};
+
+//Unliker un commentaire
+export const unLikeComment = async (
+  postId: string,
+  commentId: string,
+  userId: string
+): Promise<Post> => {
+  const response = await api.patch(`post/comment/unlike/${postId}`, {
+    commentId,
+    userId,
+  });
+  return response.data;
+};
+
+//Ajouter un post aux favoris
+export const savePost = async (
+  postId: string,
+  userId: string
+): Promise<Post> => {
+  const response = await api.patch(`post/save/${postId}`, { userId });
+  return response.data;
+};
+
+// Retirer un post des favoris
+export const unSavePost = async (
+  postId: string,
+  userId: string
+): Promise<Post> => {
+  const response = await api.patch(`post/unsave/${postId}`, { userId });
   return response.data;
 };

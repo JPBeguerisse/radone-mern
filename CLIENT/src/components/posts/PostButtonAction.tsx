@@ -1,4 +1,4 @@
-import { Heart, MessageCircle } from "lucide-react";
+import { Album, Bookmark, Heart, MessageCircle } from "lucide-react";
 import React, { useContext } from "react";
 import { Post } from "src/types/post.types";
 import { format, formatDistanceToNow } from "date-fns";
@@ -7,10 +7,12 @@ import { current } from "@reduxjs/toolkit";
 import UserContext from "../AppContext";
 import { useDispatch } from "react-redux";
 import {
-  disLikePostRequested,
+  unLikePostRequested,
   likePostRequested,
+  savePostRequested,
+  unSavePostRequested,
 } from "src/redux/reducers/posts.reducer";
-import { dislikePost } from "src/services/postService";
+import { usePostStatus } from "src/hooks/usePostStatus";
 
 interface PostButtonActionProps {
   showComments: boolean;
@@ -28,44 +30,99 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
   const currentUserUid = useContext(UserContext)?.toString();
   const dispatch = useDispatch();
 
+  // Fonction utilitaire qui vérifie si l'utilisateur a enregistré le post
+  // const isPostSaved = (post: Post, userId: string): boolean => {
+  //   if (!post.savedBy) return false;
+  //   if (typeof post.savedBy[0] === "string") {
+  //     return post.savedBy.includes(userId);
+  //   }
+  //   return post.savedBy.some((user: any) => user._id === userId);
+  // };
+
+  // const isPostLiked = (post: Post, userId: string): boolean => {
+  //   if (!post.likers) return false;
+  //   if (typeof post.likers[0] === "string") {
+  //     return post.likers.includes(userId);
+  //   }
+  //   return post.likers.some((user: any) => user._id === userId);
+  // };
+
+  const { isLiked } = usePostStatus(post, currentUserUid!);
+  const { isSaved } = usePostStatus(post, currentUserUid!);
   return (
     <div>
-      <div className="flex gap-2 mt-4">
-        {currentUserUid && post.likers?.includes(currentUserUid.toString()) ? (
-          <button
-            onClick={() =>
-              dispatch(
-                disLikePostRequested({
-                  postId: post._id!,
-                  userId: currentUserUid!,
-                })
-              )
-            }
-          >
-            <Heart
-              className="text-red-500 "
+      <div className="flex justify-between">
+        <div className="flex gap-2 mt-4">
+          {isLiked ? (
+            <button
+              onClick={() =>
+                dispatch(
+                  unLikePostRequested({
+                    postId: post._id!,
+                    userId: currentUserUid!,
+                  })
+                )
+              }
+            >
+              <Heart
+                className="text-red-500 transition-all duration-200 ease-in-out"
+                width={30}
+                height={30}
+                fill="currentColor"
+              />
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                dispatch(
+                  likePostRequested({
+                    postId: post._id!,
+                    userId: currentUserUid!,
+                  })
+                )
+              }
+            >
+              <Heart width={30} height={30} />
+            </button>
+          )}
+          <button onClick={() => onToggleComments(!showComments)}>
+            <MessageCircle width={30} height={30} />
+          </button>
+        </div>
+        {isSaved ? (
+          <div className="flex gap-2 mt-4">
+            <Bookmark
+              className="cursor-pointer text-black-500 transition-all duration-200 ease-in-out"
               width={30}
               height={30}
               fill="currentColor"
+              onClick={() =>
+                dispatch(
+                  unSavePostRequested({
+                    postId: post._id!,
+                    userId: currentUserUid!,
+                  })
+                )
+              }
             />
-          </button>
+          </div>
         ) : (
-          <button
-            onClick={() =>
-              dispatch(
-                likePostRequested({
-                  postId: post._id!,
-                  userId: currentUserUid!,
-                })
-              )
-            }
-          >
-            <Heart width={30} height={30} />
-          </button>
+          <div className="flex gap-2 mt-4">
+            <Bookmark
+              className="cursor-pointer"
+              width={30}
+              height={30}
+              onClick={() =>
+                dispatch(
+                  savePostRequested({
+                    postId: post._id!,
+                    userId: currentUserUid!,
+                  })
+                )
+              }
+            />
+          </div>
         )}
-        <button onClick={() => onToggleComments(!showComments)}>
-          <MessageCircle width={30} height={30} />
-        </button>
       </div>
       <div className="mt-2">
         <p>6880 J'aime</p>
