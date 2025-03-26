@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Post } from "../../redux/types/post.types";
+import { Post } from "../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deletePostRequested,
@@ -8,7 +8,7 @@ import {
   updatePostRequested,
   updatePostSuccess,
 } from "../../redux/reducers/posts.reducer";
-import { PostModal } from "./PostModalView";
+import { PostView } from "./PostView";
 import { Card } from "./Card";
 
 export const PostsUser = () => {
@@ -39,9 +39,10 @@ export const PostsUser = () => {
     setIsOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    dispatch(deletePostRequested(id));
-  };
+  // const handleDelete = (id: string) => {
+  //   dispatch(deletePostRequested(id));
+  // };
+
   const handleSave = () => {
     try {
       const updatedData = { message: editedMessage };
@@ -55,30 +56,13 @@ export const PostsUser = () => {
   };
 
   return (
-    <div className="flex flex-wrap gap-4 justify-center">
+    <div className="flex flex-wrap gap-0.5 justify-center">
       {posts && posts.length > 0 && userData ? (
         posts.some((post: Post) => post.posterId === userData._id) ? (
           posts.map(
             (post: Post) =>
               post.posterId === userData._id && (
-                // <div
-                //   key={post._id}
-                //   onClick={() => handleOpenModal(post)}
-                //   className="cursor-pointer"
-                // >
-                //   <img
-                //     className="w-48 h-48 md:w-96 md:h-96 object-cover rounded-lg"
-                //     src={
-                //       post.picture
-                //         ? `${
-                //             process.env.REACT_APP_API_URL
-                //           }/${post.picture.replace(/^\//, "")}`
-                //         : undefined
-                //     }
-                //     alt="post-picture"
-                //   />
-                // </div>
-                <Card post={post} onOpen={handleOpenModal} />
+                <Card key={post._id} post={post} onOpen={handleOpenModal} />
               )
           )
         ) : (
@@ -89,7 +73,7 @@ export const PostsUser = () => {
       )}
 
       {isOpen && selectedPost && (
-        <PostModal
+        <PostView
           post={selectedPost}
           isOpen={isOpen}
           onClose={closeModal}
@@ -98,8 +82,6 @@ export const PostsUser = () => {
           isEditing={editMode}
           setIsEditing={setEditMode}
           onSave={handleSave}
-          onDelete={handleDelete}
-          currentUser={userData}
         />
       )}
     </div>

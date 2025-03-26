@@ -1,7 +1,7 @@
 //user.saga/ts
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { User } from "../types/user.types";
+import { User } from "../../types/user.types";
 import {
   getUserRequested,
   getUserFailed,

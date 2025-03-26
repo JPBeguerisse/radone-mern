@@ -1,5 +1,5 @@
 //user.reducer.ts
-import { User, UserState } from "../types/user.types";
+import { User, UserState } from "../../types/user.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: UserState = {

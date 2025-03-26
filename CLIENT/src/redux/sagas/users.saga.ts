@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
-import { User } from "../types/user.types";
+import { User } from "../../types/user.types";
 import {
   getUsersFailed,
   getUsersRequested,

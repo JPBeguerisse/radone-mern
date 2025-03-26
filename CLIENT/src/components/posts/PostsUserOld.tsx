@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Post } from "../../redux/types/post.types";
+import { Post } from "../../types/post.types";
 
 const PostsUser = () => {
   const posts = useSelector((state: any) => state.postsReducer.posts);

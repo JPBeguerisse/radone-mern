@@ -20,6 +20,15 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    profilName: {
+      type: String,
+      required: true,
+      minLength: 2,
+      maxLength: 25,
+      trim: true,
+      unique: true,
+    },
+
     email: {
       type: String,
       required: true,
@@ -44,10 +53,6 @@ const userSchema = new mongoose.Schema(
     picture: {
       type: String,
       default: "./uploads/profil/random-user.png",
-    },
-
-    likes: {
-      type: [String],
     },
   },
   {

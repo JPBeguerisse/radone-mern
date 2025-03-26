@@ -23,6 +23,12 @@ const postSchema = new mongoose.Schema(
       default: [], // Initialise à un tableau vide
     },
 
+    savedBy: {
+      type: [mongoose.Schema.Types.ObjectId], // Tableau d'IDs des utilisateurs qui ont enregistré le post
+      ref: "User",
+      default: [],
+    },
+
     comments: {
       type: [
         {
@@ -34,6 +40,35 @@ const postSchema = new mongoose.Schema(
             type: String,
             maxLength: 500, // Limite le texte du commentaire à 500 caractères
           },
+          likers: {
+            type: [String], // Tableau des IDs des utilisateurs qui ont liké
+            default: [],
+          },
+
+          replies: {
+            type: [
+              {
+                replierId: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: "User",
+                },
+                text: {
+                  type: String,
+                  maxLength: 500,
+                },
+                likers: {
+                  types: [String],
+                  default: [],
+                },
+                timestamp: {
+                  type: Date,
+                  default: Date.now,
+                },
+              },
+            ],
+            default: [],
+          },
+
           timestamp: {
             type: Date, // Utilise le type `Date` pour gérer les dates
             default: Date.now, // Valeur par défaut : date/heure actuelle

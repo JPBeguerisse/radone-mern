@@ -91,8 +91,16 @@ module.exports.createPost = async (req, res) => {
 //Fonction pour récupérer les posts
 module.exports.getPosts = async (req, res) => {
   try {
-    const posts = await PostModel.find().sort({ createdAt: -1 }); // Trier par date de création;
-    res.status(200).json(posts);
+    const posts = await PostModel.find().sort({ createdAt: -1 }).lean(); // Trier par date de création;
+    // Trier les commentaires dans chaque post en ordre croissant (du plus ancien au plus récent)
+    const sortedPosts = posts.map((post) => ({
+      ...post,
+      comments: post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      ), // ✅ Tri des commentaires par timestamp croissant
+    }));
+
+    res.status(200).json(sortedPosts);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -110,9 +118,18 @@ module.exports.getPost = async (req, res) => {
   }
 
   try {
-    const post = await PostModel.findById({ _id: postId });
-    if (post) res.status(200).json(post);
-    else res.status(404).send("Post not found");
+    const post = await PostModel.findById(postId).lean(); // ✅ Utilisation de `.lean()` pour un objet JS pur
+
+    if (!post) {
+      return res.status(404).send("Post not found");
+    }
+
+    // ✅ Trier les commentaires en ordre décroissant (du plus récent au plus ancien)
+    post.comments = post.comments.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    res.status(200).json(post);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -266,7 +283,9 @@ module.exports.unlike = async (req, res) => {
 // Fonction pour ajouter un commentaire à un post
 module.exports.addCommentPost = async (req, res) => {
   const postId = req.params.id;
-  const { text, commenterId } = req.body;
+  const { commenterId, text } = req.body;
+
+  console.log("BODY", req.body);
 
   // Vérifier si l'ID du post et l'ID du commentateur sont valides
   if (!ObjectID.isValid(postId) || !ObjectID.isValid(commenterId)) {
@@ -358,5 +377,143 @@ module.exports.deleteComment = async (req, res) => {
     res.status(500).json({
       message: "Une erreur est survenue lors de la suppression du commentaire.",
     });
+  }
+};
+
+//Fonction pour liker un comment
+module.exports.addLikeComment = async (req, res) => {
+  const postId = req.params.id;
+  const { commentId, userId } = req.body;
+
+  if (!ObjectID.isValid(postId)) return res.status(400).send("Post ID inconnu");
+  if (!ObjectID.isValid(commentId))
+    return res.status(400).send("Comment ID inconnu");
+  if (!ObjectID.isValid(userId)) return res.status(400).send("User ID inconnu");
+
+  try {
+    const result = await PostModel.findOneAndUpdate(
+      {
+        _id: postId,
+        "comments._id": commentId,
+      },
+      {
+        $addToSet: {
+          "comments.$.likers": userId,
+        },
+      },
+      { new: true }
+    );
+
+    if (result) {
+      res.status(200).send(result);
+    } else {
+      res.status(404).send("Post ou commentaire non trouvé.");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Une erreur est survenue lors du like du commentaire.",
+    });
+  }
+};
+
+// unliker un comment
+module.exports.unLikeComment = async (req, res) => {
+  const postId = req.params.id;
+  const { commentId, userId } = req.body;
+
+  if (!ObjectID.isValid(postId)) return res.status(400).send("Post ID inconnu");
+  if (!ObjectID.isValid(commentId))
+    return res.status(400).send("Comment ID inconnu");
+  if (!ObjectID.isValid(userId)) return res.status(400).send("User ID inconnu");
+
+  try {
+    const result = await PostModel.findOneAndUpdate(
+      {
+        _id: postId,
+        "comments._id": commentId,
+      },
+      {
+        $pull: {
+          "comments.$.likers": userId,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (result) {
+      res.status(200).send(result);
+    } else {
+      res.status(500).json({});
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Une erreur est survenue lors du unlike du commentaire.",
+    });
+  }
+};
+
+//Saved post by user
+module.exports.savePost = async (req, res) => {
+  const postId = req.params.id;
+  const { userId } = req.body;
+
+  // Vérification des IDs
+  if (!ObjectID.isValid(postId))
+    return res.status(400).send("Post ID invalide");
+  if (!ObjectID.isValid(userId))
+    return res.status(400).send("User ID invalide");
+
+  try {
+    const savedPost = await PostModel.findByIdAndUpdate(
+      postId,
+      {
+        $addToSet: {
+          savedBy: userId,
+        },
+      },
+      { new: true }
+    );
+    if (!savedPost) return res.status(404).send("Post non trouvé");
+
+    res.status(200).json(savedPost);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Erreur serveur lors de l'enregistrement du post." });
+  }
+};
+
+// Unsaved Post
+module.exports.unsavePost = async (req, res) => {
+  const postId = req.params.id;
+  const { userId } = req.body;
+
+  if (!ObjectID.isValid(postId))
+    return res.status(400).send("Post ID invalide");
+  if (!ObjectID.isValid(userId))
+    return res.status(400).send("User ID invalide");
+
+  try {
+    const unSavedPost = await PostModel.findByIdAndUpdate(
+      postId,
+      {
+        $pull: { savedBy: userId }, // Retire l'userId du tableau
+      },
+      { new: true }
+    );
+
+    if (!unSavedPost) return res.status(404).send("Post non trouvé");
+
+    res.status(200).json(unSavedPost);
+  } catch (error) {
+    console.error("Erreur lors du retrait du post :", error);
+    res
+      .status(500)
+      .json({ message: "Erreur serveur lors du retrait du post." });
   }
 };
