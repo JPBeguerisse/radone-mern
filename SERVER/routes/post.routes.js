@@ -1,6 +1,71 @@
 const router = require("express").Router();
 const postController = require("../controllers/post.controller");
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         posterId:
+ *           type: string
+ *         message:
+ *           type: string
+ *         picture:
+ *           type: string
+ *         likers:
+ *           type: array
+ *           items:
+ *             type: string
+ *         savedBy:
+ *           type: array
+ *           items:
+ *             type: string
+ *         comments:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               _id:
+ *                 type: string
+ *               commenterId:
+ *                 type: string
+ *               text:
+ *                 type: string
+ *               likers:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               replies:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     replierId:
+ *                       type: string
+ *                     text:
+ *                       type: string
+ *                     likers:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     timestamp:
+ *                       type: string
+ *                       format: date-time
+ *               timestamp:
+ *                 type: string
+ *                 format: date-time
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ */
+
 //CREATION DE POST
 /**
  * @swagger
@@ -41,31 +106,8 @@ const postController = require("../controllers/post.controller");
  *             schema:
  *               type: object
  *               properties:
- *                 _id:
- *                   type: string
- *                   description: L'ID du post créé
- *                 posterId:
- *                   type: string
- *                   description: L'ID de l'utilisateur qui a créé le post
- *                 message:
- *                   type: string
- *                   description: Le message du post
- *                 picture:
- *                   type: string
- *                   description: Le chemin de l'image uploadée (s'il y en a une)
- *                 video:
- *                   type: string
- *                   description: L'URL de la vidéo du post (facultatif)
- *                 likers:
- *                   type: array
- *                   description: Liste des utilisateurs ayant liké le post
- *                   items:
- *                     type: string
- *                 comments:
- *                   type: array
- *                   description: Liste des commentaires sur le post
- *                   items:
- *                     type: object
+ *                  post:
+ *                   $ref: '#/components/schemas/Post'
  *       400:
  *         description: Erreur lors de la création du post
  *         content:
@@ -114,46 +156,8 @@ router.post("/", postController.createPost);
  *               items:
  *                 type: object
  *                 properties:
- *                   _id:
- *                     type: string
- *                     description: L'ID unique du post
- *                   posterId:
- *                     type: string
- *                     description: L'ID de l'utilisateur qui a posté
- *                   message:
- *                     type: string
- *                     description: Le message du post
- *                   picture:
- *                     type: string
- *                     description: L'URL de l'image associée au post (facultatif)
- *                   likers:
- *                     type: array
- *                     items:
- *                       type: string
- *                     description: Tableau des utilisateurs qui ont liké le post
- *                   comments:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         commenterId:
- *                           type: string
- *                           description: L'ID de l'utilisateur qui a commenté
- *                         text:
- *                           type: string
- *                           description: Le texte du commentaire
- *                         timestamp:
- *                           type: string
- *                           format: date-time
- *                           description: La date et l'heure du commentaire
- *                   createdAt:
- *                     type: string
- *                     format: date-time
- *                     description: Date de création du post
- *                   updatedAt:
- *                     type: string
- *                     format: date-time
- *                     description: Date de la dernière mise à jour du post
+ *                    post:
+ *                      $ref: '#/components/schemas/Post'
  *       500:
  *         description: Erreur interne du serveur lors de la récupération des posts
  *         content:
@@ -191,46 +195,8 @@ router.get("/", postController.getPosts);
  *             schema:
  *               type: object
  *               properties:
- *                 _id:
- *                   type: string
- *                   description: L'ID du post
- *                 posterId:
- *                   type: string
- *                   description: L'ID de l'utilisateur qui a créé le post
- *                 message:
- *                   type: string
- *                   description: Le message du post
- *                 picture:
- *                   type: string
- *                   description: L'URL de l'image associée au post (facultatif)
- *                 likers:
- *                   type: array
- *                   items:
- *                     type: string
- *                   description: Liste des utilisateurs qui ont liké le post
- *                 comments:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       commenterId:
- *                         type: string
- *                         description: L'ID de l'utilisateur qui a commenté
- *                       text:
- *                         type: string
- *                         description: Le texte du commentaire
- *                       timestamp:
- *                         type: string
- *                         format: date-time
- *                         description: La date et l'heure du commentaire
- *                 createdAt:
- *                   type: string
- *                   format: date-time
- *                   description: Date de création du post
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *                   description: Date de la dernière mise à jour du post
+ *                  post:
+ *                   $ref: '#/components/schemas/Post'
  *       404:
  *         description: Le post n'a pas été trouvé
  *         content:
@@ -290,23 +256,8 @@ router.get("/:id", postController.getPost);
  *             schema:
  *               type: object
  *               properties:
- *                 _id:
- *                   type: string
- *                   description: L'ID du post mis à jour
- *                 message:
- *                   type: string
- *                   description: Le message mis à jour du post
- *                 picture:
- *                   type: string
- *                   description: L'URL de l'image mise à jour du post (facultatif)
- *                 createdAt:
- *                   type: string
- *                   format: date-time
- *                   description: Date de création du post
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *                   description: Date de la dernière mise à jour du post
+ *                  post:
+ *                   $ref: '#/components/schemas/Post'
  *       400:
  *         description: Erreur de validation de l'ID ou données manquantes
  *         content:
@@ -419,14 +370,8 @@ router.delete("/:id", postController.deletePost);
  *             schema:
  *               type: object
  *               properties:
- *                 _id:
- *                   type: string
- *                   description: L'ID du post liké
- *                 likers:
- *                   type: array
- *                   items:
- *                     type: string
- *                   description: Liste des utilisateurs qui ont liké le post
+ *                 post:
+ *                   $ref: '#/components/schemas/Post'
  *       400:
  *         description: IDs invalides
  *         content:
@@ -477,10 +422,8 @@ router.patch("/like/:id", postController.like);
  *           schema:
  *             type: object
  *             properties:
- *               userId:
- *                 type: string
- *                 description: L'ID de l'utilisateur qui retire son like du post
- *                 example: 614d6f1c3a6b3f456abc1234
+ *                post:
+ *                   $ref: '#/components/schemas/Post'
  *     responses:
  *       200:
  *         description: Like retiré avec succès
@@ -547,14 +490,8 @@ router.patch("/unlike/:id", postController.unlike);
  *           schema:
  *             type: object
  *             properties:
- *               commenterId:
- *                 type: string
- *                 description: L'ID de l'utilisateur qui commente le post
- *                 example: 614d6f1c3a6b3f456abc1234
- *               text:
- *                 type: string
- *                 description: Le texte du commentaire
- *                 example: "C'est un excellent post !"
+ *                post:
+ *                   $ref: '#/components/schemas/Post'
  *     responses:
  *       200:
  *         description: Commentaire ajouté avec succès
@@ -631,14 +568,8 @@ router.patch("/add-comment/:id", postController.addCommentPost);
  *           schema:
  *             type: object
  *             properties:
- *               commentId:
- *                 type: string
- *                 description: L'ID du commentaire à modifier
- *                 example: 614d6f1c3a6b3f456abc1234
- *               text:
- *                 type: string
- *                 description: Le nouveau texte du commentaire
- *                 example: "Commentaire modifié"
+ *               post:
+ *                   $ref: '#/components/schemas/Post'
  *     responses:
  *       200:
  *         description: Commentaire modifié avec succès
@@ -760,4 +691,212 @@ router.patch("/edit-comment/:id", postController.updateComment);
  */
 router.patch("/comment/delete/:id", postController.deleteComment);
 
+//LIKER UN COMMENT
+/**
+ * @swagger
+ * /api/post/comment/like/{id}:
+ *   patch:
+ *     summary: Liker un commentaire d'un post
+ *     description: Permet d'ajouter un like à un commentaire spécifique dans un post existant.
+ *     tags:
+ *       - Commentaires
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: L'ID du post contenant le commentaire à liker
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *                post:
+ *                   $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         description: Commentaire liké avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Commentaire liké avec succès
+ *                 post:
+ *                   $ref: '#/components/schemas/Post'
+ *
+ *       400:
+ *         description: IDs invalides ou commentaire déjà liké
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: "Comment ID inconnu"
+ *       404:
+ *         description: Post ou commentaire non trouvé
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: "Post ou commentaire non trouvé"
+ *       500:
+ *         description: Erreur interne du serveur lors du like
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Une erreur est survenue lors du like du commentaire."
+ */
+router.patch("/comment/like/:id", postController.addLikeComment);
+
+/**
+ * @swagger
+ * /api/post/comment/unlike/{id}:
+ *   patch:
+ *     summary: Retirer un like d'un commentaire
+ *     description: Permet à un utilisateur de retirer son like d’un commentaire spécifique dans un post.
+ *     tags:
+ *       - Commentaires
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: L'ID du post contenant le commentaire
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               commentId:
+ *                 type: string
+ *                 example: 65f0cadc58f8e5c3c3cde456
+ *               userId:
+ *                 type: string
+ *                 example: 65e8fabc12345678d1f0a222
+ *     responses:
+ *       200:
+ *         description: Like retiré avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Like retiré avec succès du commentaire
+ *                 post:
+ *                   $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: IDs invalides
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: "User ID inconnu"
+ *       500:
+ *         description: Erreur interne du serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Une erreur est survenue lors du unlike du commentaire."
+ */
+router.patch("/comment/unlike/:id", postController.unLikeComment);
+
+/**
+ * @swagger
+ * /api/post/save/{id}:
+ *   patch:
+ *     summary: Enregistrer un post (favori)
+ *     description: Permet à un utilisateur d'enregistrer un post dans ses favoris.
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: L'ID du post à enregistrer
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: 65e8fabc12345678d1f0a999
+ *     responses:
+ *       200:
+ *         description: Post enregistré avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Post ID ou User ID invalide
+ *       404:
+ *         description: Post non trouvé
+ *       500:
+ *         description: Erreur serveur
+ */
+router.patch("/save/:id", postController.savePost);
+
+/**
+ * @swagger
+ * /api/post/unsave/{id}:
+ *   patch:
+ *     summary: Retirer un post des favoris
+ *     description: Permet à un utilisateur de retirer un post de ses favoris.
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: L'ID du post à retirer des favoris
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: 65e8fabc12345678d1f0a999
+ *     responses:
+ *       200:
+ *         description: Post retiré des favoris avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Post ID ou User ID invalide
+ *       404:
+ *         description: Post non trouvé
+ *       500:
+ *         description: Erreur serveur
+ */
+router.patch("/unsave/:id", postController.unsavePost);
 module.exports = router;

@@ -379,3 +379,141 @@ module.exports.deleteComment = async (req, res) => {
     });
   }
 };
+
+//Fonction pour liker un comment
+module.exports.addLikeComment = async (req, res) => {
+  const postId = req.params.id;
+  const { commentId, userId } = req.body;
+
+  if (!ObjectID.isValid(postId)) return res.status(400).send("Post ID inconnu");
+  if (!ObjectID.isValid(commentId))
+    return res.status(400).send("Comment ID inconnu");
+  if (!ObjectID.isValid(userId)) return res.status(400).send("User ID inconnu");
+
+  try {
+    const result = await PostModel.findOneAndUpdate(
+      {
+        _id: postId,
+        "comments._id": commentId,
+      },
+      {
+        $addToSet: {
+          "comments.$.likers": userId,
+        },
+      },
+      { new: true }
+    );
+
+    if (result) {
+      res.status(200).send(result);
+    } else {
+      res.status(404).send("Post ou commentaire non trouvé.");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Une erreur est survenue lors du like du commentaire.",
+    });
+  }
+};
+
+// unliker un comment
+module.exports.unLikeComment = async (req, res) => {
+  const postId = req.params.id;
+  const { commentId, userId } = req.body;
+
+  if (!ObjectID.isValid(postId)) return res.status(400).send("Post ID inconnu");
+  if (!ObjectID.isValid(commentId))
+    return res.status(400).send("Comment ID inconnu");
+  if (!ObjectID.isValid(userId)) return res.status(400).send("User ID inconnu");
+
+  try {
+    const result = await PostModel.findOneAndUpdate(
+      {
+        _id: postId,
+        "comments._id": commentId,
+      },
+      {
+        $pull: {
+          "comments.$.likers": userId,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (result) {
+      res.status(200).send(result);
+    } else {
+      res.status(500).json({});
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Une erreur est survenue lors du unlike du commentaire.",
+    });
+  }
+};
+
+//Saved post by user
+module.exports.savePost = async (req, res) => {
+  const postId = req.params.id;
+  const { userId } = req.body;
+
+  // Vérification des IDs
+  if (!ObjectID.isValid(postId))
+    return res.status(400).send("Post ID invalide");
+  if (!ObjectID.isValid(userId))
+    return res.status(400).send("User ID invalide");
+
+  try {
+    const savedPost = await PostModel.findByIdAndUpdate(
+      postId,
+      {
+        $addToSet: {
+          savedBy: userId,
+        },
+      },
+      { new: true }
+    );
+    if (!savedPost) return res.status(404).send("Post non trouvé");
+
+    res.status(200).json(savedPost);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Erreur serveur lors de l'enregistrement du post." });
+  }
+};
+
+// Unsaved Post
+module.exports.unsavePost = async (req, res) => {
+  const postId = req.params.id;
+  const { userId } = req.body;
+
+  if (!ObjectID.isValid(postId))
+    return res.status(400).send("Post ID invalide");
+  if (!ObjectID.isValid(userId))
+    return res.status(400).send("User ID invalide");
+
+  try {
+    const unSavedPost = await PostModel.findByIdAndUpdate(
+      postId,
+      {
+        $pull: { savedBy: userId }, // Retire l'userId du tableau
+      },
+      { new: true }
+    );
+
+    if (!unSavedPost) return res.status(404).send("Post non trouvé");
+
+    res.status(200).json(unSavedPost);
+  } catch (error) {
+    console.error("Erreur lors du retrait du post :", error);
+    res
+      .status(500)
+      .json({ message: "Erreur serveur lors du retrait du post." });
+  }
+};

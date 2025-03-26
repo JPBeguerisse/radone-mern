@@ -13,8 +13,46 @@ const { verifyToken, requireAuth } = require("../middlewares/checkToken");
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
- * security:
- *   - bearerAuth: []
+ *
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         firstName:
+ *           type: string
+ *           example: "Alex"
+ *         lastName:
+ *           type: string
+ *           example: "Martin"
+ *         profilName:
+ *           type: string
+ *           example: "alexm"
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: "alex.martin@example.com"
+ *         password:
+ *           type: string
+ *           format: password
+ *           example: "$2b$10$hashedvalue..."
+ *         bio:
+ *           type: string
+ *           example: "Passionné de randonnée et de nature"
+ *         picture:
+ *           type: string
+ *           example: "./uploads/profil/random-user.png"
+ *         likes:
+ *           type: array
+ *           items:
+ *             type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
  */
 
 //AUTH
