@@ -36,39 +36,90 @@ module.exports.getUser = async (req, res) => {
   }
 };
 
-//Fonction pour modifier un user
+// Mise à jour d’un utilisateur
 module.exports.updateUser = async (req, res) => {
   const userId = req.params.id;
-  if (!ObjectID.isValid(userId))
-    return res.status(400).send("ID unknow" + userId);
 
-  const { firstName, lastName, email, password } = req.body;
-  // Construire un objet de mise à jour
-  const updateFields = {};
-  if (firstName) updateFields.firstName = firstName;
-  if (lastName) updateFields.lastName = lastName;
-  if (email) updateFields.email = email;
-
-  if (password) {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    updateFields.password = hashedPassword;
+  // Vérifie que l'ID est un ObjectId valide
+  if (!ObjectID.isValid(userId)) {
+    return res.status(400).send("ID invalide : " + userId);
   }
-
   try {
-    const user = await UserModel.findByIdAndUpdate(
-      { _id: userId },
-      {
-        $set: updateFields,
-      },
-      { new: true, upsert: true }
+    // Récupère l'utilisateur depuis la BDD
+    const user = await UserModel.findById(userId);
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+
+    const { name, userName, email, bio, oldPassword, newPassword } = req.body;
+
+    // Création d’un objet contenant uniquement les champs à mettre à jour
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (userName) updateFields.userName = userName;
+    if (email) updateFields.email = email;
+    if (bio) updateFields.bio = bio;
+
+    //Gestion du changement de mot de passe
+    if (oldPassword && newPassword) {
+      // Vérifie la robustesse du nouveau mot de passe
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+      if (!passwordRegex.test(newPassword)) {
+        return res.status(400).json({
+          message:
+            "Le nouveau mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      if (!isPasswordValid) {
+        return res
+          .status(400)
+          .json({ message: "Ancien mot de passe incorrect." });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+      updateFields.password = hashedNewPassword;
+    }
+
+    // Vérifie si l'email existe déjà dans un autre compte
+    if (email) {
+      const isExistEmail = await UserModel.findOne({ email });
+      if (isExistEmail && isExistEmail._id.toString() !== userId) {
+        return res.status(400).json({
+          message: "Cette adresse email est déjà utilisée.",
+        });
+      }
+    }
+
+    // Vérifie si le username existe déjà dans un autre compte
+    if (userName) {
+      const isExistUserName = await UserModel.findOne({ userName });
+      if (isExistUserName && isExistUserName._id.toString() !== userId) {
+        return res.status(400).json({
+          message: "Ce nom d'utilisateur est déjà utilisé.",
+        });
+      }
+    }
+
+    // Mise à jour du user dans la base de données
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true }
     );
-    if (user) res.status(200).send(user);
-    else res.status(400).send("User not found");
+
+    if (!updatedUser) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+
+    // Réponse avec le user mis à jour
+    res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    console.error("Erreur lors de la mise à jour :", error);
     res.status(500).json({
-      error: "Une erreur est survenue lors de la mis à jour de l'utilisateur.",
+      error: "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
     });
   }
 };

@@ -157,7 +157,7 @@ export const PostView: React.FC<PostModalViewProps> = ({
                       />
                       <div className="w-full">
                         <p className="font-bold">
-                          {user?.firstName} {user?.lastName}
+                          {user?.name} {user?.userName}
                         </p>
                         {isEditing ? (
                           <textarea

@@ -6,16 +6,16 @@ const Register = () => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
+    userName: "",
     email: "",
     password: "",
     passwordRepeat: "",
   });
 
   const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
+    userName: "",
     email: "",
     password: "",
     passwordRepeat: "",
@@ -37,15 +37,15 @@ const Register = () => {
 
   // const validateForm = () => {
   //     let valid = true;
-  //     const newErrors = { firstName: "", lastName: "", email: "", password: "", passwordRepeat: "" };
+  //     const newErrors = { name: "", userName: "", email: "", password: "", passwordRepeat: "" };
 
   //     // Vérifications simples côté client
-  //     if (!formData.firstName) {
-  //         newErrors.firstName = "Le prénom est requis.";
+  //     if (!formData.name) {
+  //         newErrors.name = "Le prénom est requis.";
   //         valid = false;
   //     }
-  //     if (!formData.lastName) {
-  //         newErrors.lastName = "Le nom est requis.";
+  //     if (!formData.userName) {
+  //         newErrors.userName = "Le nom est requis.";
   //         valid = false;
   //     }
   //     if (!formData.email) {
@@ -79,10 +79,10 @@ const Register = () => {
     if (formData.password === formData.passwordRepeat) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_API_URL}api/user/register`,
+          `${process.env.REACT_APP_API_URL}/user/register`,
           {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
+            name: formData.name,
+            userName: formData.userName,
             email: formData.email,
             password: formData.password,
           }
@@ -92,34 +92,51 @@ const Register = () => {
       } catch (err: any) {
         if (err.response && err.response.data) {
           const errorData = err.response.data;
-
+          console.log("Errors", errorData);
           // Si le backend renvoie des erreurs pour des champs spécifiques
-          if (errorData.message.includes("Le prénom est requis")) {
+          if (errorData.message.includes("Le nom complet est requis")) {
             setErrors((prev) => ({
               ...prev,
-              firstName: "Le prénom est requis",
+              name: "Le nom complet est requis",
             }));
           }
 
           if (
             errorData.message.includes(
-              "Le Prénom doit contenir 3 caractères minimum."
+              "Le nom complet doit contenir 3 caractères minimum."
             )
           ) {
-            setErrors((prev) => ({ ...prev, firstName: errorData.message }));
+            setErrors((prev) => ({ ...prev, name: errorData.message }));
           }
 
           if (
             errorData.message.includes(
-              "Le nom doit contenir 3 caractères minimum."
+              "Le nom de profil doit contenir 2 caractères minimum."
             )
           ) {
-            setErrors((prev) => ({ ...prev, lastName: errorData.message }));
+            setErrors((prev) => ({ ...prev, userName: errorData.message }));
           }
 
           if (errorData.message.includes("Le nom est requis")) {
-            setErrors((prev) => ({ ...prev, lastName: errorData.message }));
+            setErrors((prev) => ({ ...prev, userName: errorData.message }));
           }
+
+          if (errorData.message.includes("Ce nom de profil existe déjà!")) {
+            setErrors((prev) => ({ ...prev, userName: errorData.message }));
+          }
+
+          if (errorData.message.includes("Le nom de profil est requis.")) {
+            setErrors((prev) => ({ ...prev, userName: errorData.message }));
+          }
+
+          if (
+            errorData.message.includes(
+              "Le username doit contenir 2 caractères minimum."
+            )
+          ) {
+            setErrors((prev) => ({ ...prev, userName: errorData.message }));
+          }
+
           if (errorData.message.includes("L'adresse email est requise")) {
             setErrors((prev) => ({ ...prev, email: errorData.message }));
           }
@@ -159,40 +176,40 @@ const Register = () => {
           </h2>
           <div>
             <label
-              htmlFor="firstName"
+              htmlFor="name"
               className="block text-sm font-medium text-gray-600"
             >
-              Prénom
+              Nom complet
             </label>
             <input
               type="text"
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
             />
-            {errors.firstName && (
-              <div className="text-red-500 text-sm">{errors.firstName}</div>
+            {errors.name && (
+              <div className="text-red-500 text-sm">{errors.name}</div>
             )}
           </div>
           <div>
             <label
-              htmlFor="lastName"
+              htmlFor="userName"
               className="block text-sm font-medium text-gray-600"
             >
-              Nom
+              Nom de profil
             </label>
             <input
               type="text"
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
+              id="userName"
+              name="userName"
+              value={formData.userName.toLocaleLowerCase().replace(/\s/g, "")}
               onChange={handleChange}
               className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
             />
-            {errors.lastName && (
-              <div className="text-red-500 text-sm">{errors.lastName}</div>
+            {errors.userName && (
+              <div className="text-red-500 text-sm">{errors.userName}</div>
             )}
           </div>
           <div>

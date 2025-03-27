@@ -56,7 +56,7 @@ const CommentList: React.FC<CommentListProps> = ({
                   <div className="flex justify-between items-center w-full">
                     <div>
                       <p className="font-bold">
-                        {user.firstName} {user.lastName}
+                        {user.name} {user.userName}
                       </p>
                       <p className="text-gray-800">
                         {isExpandedText[comment._id] ||

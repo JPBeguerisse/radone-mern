@@ -112,7 +112,7 @@ export const PostModal: React.FC<PostModalViewProps> = ({
                         className="w-10 h-10 rounded-full object-cover"
                       />
                       <p className="font-bold">
-                        {user?.firstName} {user?.lastName}
+                        {user?.name} {user?.userName}
                       </p>
                     </div>
                   )
@@ -155,7 +155,7 @@ export const PostModal: React.FC<PostModalViewProps> = ({
                           />
                           <div>
                             <p className="font-bold">
-                              {user.firstName} {user.lastName}
+                              {user.name} {user.userName}
                             </p>
                             <p>{comment.text}</p>
                           </div>

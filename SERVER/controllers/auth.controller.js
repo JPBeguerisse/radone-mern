@@ -6,29 +6,29 @@ const jwt = require("jsonwebtoken");
 const maxAge = 3 * 24 * 60 * 60 * 1000;
 
 module.exports.signUp = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
-  console.log("bODYYYY", firstName, lastName, email, password);
+  const { name, userName, email, password } = req.body;
+  console.log("bODYYYY", name, userName, email, password);
 
   // Vérification de base
   // Vérification des champs requis
-  if (!firstName) {
-    return res.status(400).json({ message: "Le prénom est requis." });
+  if (!name) {
+    return res.status(400).json({ message: "Le nom complet est requis." });
   }
 
-  if (firstName.length < 3) {
+  if (name.length < 3) {
     return res
       .status(400)
-      .json({ message: "Le Prénom doit contenir 3 caractères minimum." });
+      .json({ message: "Le nom complet doit contenir 3 caractères minimum." });
   }
 
-  if (!lastName) {
-    return res.status(400).json({ message: "Le nom est requis." });
+  if (!userName) {
+    return res.status(400).json({ message: "Le nom de profil est requis." });
   }
 
-  if (lastName.length < 2) {
-    return res
-      .status(400)
-      .json({ message: "Le nom doit contenir 2 caractères minimum." });
+  if (userName.length < 2) {
+    return res.status(400).json({
+      message: "Le nom de profil doit contenir 2 caractères minimum.",
+    });
   }
 
   if (!email) {
@@ -60,9 +60,16 @@ module.exports.signUp = async (req, res) => {
         .json({ message: "Cette adresse email existe déjà!" });
     }
 
+    const isExistUserName = await UserModel.findOne({ userName });
+    if (isExistUserName) {
+      return res.status(400).json({
+        message: "Ce username existe déjà!",
+      });
+    }
+
     const user = await UserModel.create({
-      firstName,
-      lastName,
+      name,
+      userName,
       email,
       password,
     });
