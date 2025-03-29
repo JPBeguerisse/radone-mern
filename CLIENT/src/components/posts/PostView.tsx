@@ -29,7 +29,8 @@ export const PostView: React.FC<PostModalViewProps> = ({
   // onDelete,
   //currentUser,
 }) => {
-  const currentUserUid = useContext(UserContext)?.toString();
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
 
   const [showOptions, setShowOptions] = useState<boolean>(false);
   const usersData = useSelector((state: any) => state.usersReducer.users);

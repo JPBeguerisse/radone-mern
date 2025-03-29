@@ -9,11 +9,10 @@ interface SideBarProps {
 }
 
 const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
-  const userId = useContext(UserContext);
+  const user = useContext(UserContext);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  const [isOpenModalAdd, setIsOpenModalAdd] = useState<boolean>();
   return (
     <div className="relative">
       {/* Bouton pour ouvrir la sidebar en mode mobile */}
@@ -44,7 +43,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
               Accueil
             </NavLink>
 
-            {userId ? (
+            {user?.uid ? (
               <>
                 <NavLink
                   to="/ajouter"
@@ -73,7 +72,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
           </div>
 
           <div className="nav-footer mt-auto">
-            {userId && (
+            {user?.uid && (
               <>
                 <NavLink
                   to="/profil"

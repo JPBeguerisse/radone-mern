@@ -23,7 +23,8 @@ const CommentList: React.FC<CommentListProps> = ({
   usersData,
   onDelete,
 }) => {
-  const currentUserUid = useContext(UserContext)?.toString();
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
 
   const MAX_LENGTH = 100;
   const [isExpandedText, setIsExpandedText] = React.useState<{
@@ -125,17 +126,18 @@ const CommentList: React.FC<CommentListProps> = ({
                         />
                       )}
 
-                      {currentUserUid?.toString() === comment.commenterId && (
-                        <button
-                          onClick={() => onDelete(comment._id, "comment")}
-                        >
-                          <Trash2
-                            className="cursor-pointer"
-                            width={15}
-                            height={15}
-                          />
-                        </button>
-                      )}
+                      {currentUserUid &&
+                        currentUserUid === comment.commenterId && (
+                          <button
+                            onClick={() => onDelete(comment._id, "comment")}
+                          >
+                            <Trash2
+                              className="cursor-pointer"
+                              width={15}
+                              height={15}
+                            />
+                          </button>
+                        )}
                     </div>
                   </div>
                 </div>

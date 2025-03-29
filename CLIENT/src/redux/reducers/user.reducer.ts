@@ -24,11 +24,41 @@ const userSlice = createSlice({
       // Cette action est déclenchée lorsqu'il y a une erreur lors de la récupération de l'utilisateur.
       state.error = action.payload; // On met à jour `error` avec le message d'erreur.
     },
+
+    // 🟡 Chargement de la mise à jour
+    updateUserRequested: (
+      state,
+      action: PayloadAction<{ id: string; data: Partial<User> }>
+    ) => {
+      console.log("Mis a jour lancé", action.payload);
+      state.error = null; // ✅ Vider les erreurs avant la requête
+      /*Tu re-soumets avec la même erreur 
+      → Le PayloadAction contient la même string 
+      → Redux voit que la valeur ne change pas 
+      → state ne change pas 
+      → aucune mise à jour de React */
+    },
+
+    // 🟢 Succès de la mise à jour
+    updateUserSuccess: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
+
+    // 🔴 Échec de la mise à jour
+    updateUserFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { getUserRequested, getUserSuccess, getUserFailed } =
-  userSlice.actions;
+export const {
+  getUserRequested,
+  getUserSuccess,
+  getUserFailed,
+  updateUserFailed,
+  updateUserSuccess,
+  updateUserRequested,
+} = userSlice.actions;
 export const userReducer = userSlice.reducer;
 
 // export default function userReducer(state = initialState, action: UserActions){

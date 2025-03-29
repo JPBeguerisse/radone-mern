@@ -27,7 +27,8 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
   post,
   isMobile,
 }) => {
-  const currentUserUid = useContext(UserContext)?.toString();
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
   const dispatch = useDispatch();
 
   // Fonction utilitaire qui vérifie si l'utilisateur a enregistré le post

@@ -14,7 +14,8 @@ const PostSaved = () => {
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
 
-  const currentUserUid = useContext(UserContext)?.toString();
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
 
   const dispatch = useDispatch();
   useEffect(() => {

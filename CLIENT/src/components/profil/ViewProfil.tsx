@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { User } from "../../types/user.types";
 import NavProfil from "./NavProfil";
 import { Post } from "src/types/post.types";
+import { useNavigate } from "react-router-dom";
 
 // Type de l'état global, qui inclut userReducer
 // interface RootState {
@@ -13,7 +14,7 @@ const ViewProfil = () => {
   const user = useSelector((state: User) => state.userReducer.user);
   const posts = useSelector((state: any) => state.postsReducer.posts);
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (posts && user && posts.length > 0) {
       const count = posts.filter(
@@ -50,7 +51,10 @@ const ViewProfil = () => {
           {/* Nom de l'utilisateur et bouton de modification */}
           <div className="user-name">
             <h1 className="text-2xl font-semibold">{user.userName} </h1>
-            <button className="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition duration-200">
+            <button
+              onClick={() => navigate("/edit-profil")}
+              className="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition duration-200"
+            >
               Modifier le profil
             </button>
           </div>
@@ -72,7 +76,7 @@ const ViewProfil = () => {
           {/* Biographie de l'utilisateur */}
           <div className="user-bio text-gray-700">
             <p className="font-bold text-black">{user.name}</p>
-            <p>{user.bio} La vie c'est simple, c'est beau la vie 🖖🏽✨</p>
+            <p>{user.bio}</p>
           </div>
         </div>
       </div>
