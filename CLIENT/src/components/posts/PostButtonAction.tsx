@@ -126,7 +126,9 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
         )}
       </div>
       <div className="mt-2">
-        <p>6880 J'aime</p>
+        {post.likers?.length && post.likers?.length > 0 ? (
+          <p>{post.likers?.length} J'aime</p>
+        ) : null}
         {isMobile && post.comments?.length! > 0 && (
           <p
             onClick={() => onToggleComments(!showComments)}

@@ -6,7 +6,7 @@ export interface User {
   email: string; // L'email de l'utilisateur
   password?: string; // Le mot de passe (peut être optionnel si non requis)
   bio?: string;
-  profilePicture?: string; // Le chemin de l'image de profil (facultatif)
+  picture?: string; // Le chemin de l'image de profil (facultatif)
   likes?: string[]; // Liste des IDs des posts aimés par l'utilisateur
   createdAt?: Date; // Date de création de l'utilisateur
   updatedAt?: Date; // Date de mise à jour de l'utilisateur

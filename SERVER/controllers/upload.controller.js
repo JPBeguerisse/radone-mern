@@ -45,15 +45,17 @@ module.exports.uploadProfil = async (req, res) => {
 
   upload(req, res, async (err) => {
     if (err) {
-      const errors = uploadErrors(err);
+      //const errors = {};
       return res
         .status(500)
-        .json({ message: "Erreur lors de l'upload du fichier.", errors });
+        .json({ message: "Erreur lors de l'upload du fichier.", err });
     }
 
     try {
       const imagePath = `/uploads/profil/${req.file.filename}`;
       const userId = req.body.userId;
+
+      console.log("ROUTE img", imagePath);
 
       // Récupérer l'utilisateur pour obtenir le chemin de l'ancienne image
       const user = await UserModel.findById(userId);
@@ -65,6 +67,59 @@ module.exports.uploadProfil = async (req, res) => {
       // Si l'utilisateur a déjà une image de profil, la supprimer
       if (user.picture) {
         const oldImagePath = path.join(__dirname, "../", user.picture);
+        console.log("img", oldImagePath);
+        if (oldImagePath !== "/app/uploads/profil/random-user.jpeg") {
+          fs.unlink(oldImagePath, (err) => {
+            if (err) {
+              console.error(
+                "Erreur lors de la suppression de l'ancienne image:",
+                err
+              );
+            } else {
+              console.log("Ancienne image supprimée:", user.picture);
+            }
+          });
+        }
+      }
+
+      // Mettre à jour l'utilisateur avec le chemin de la nouvelle image
+      if (imagePath) {
+        user.picture = imagePath;
+        await user.save();
+      } else {
+        user.picture = "/uploads/profil/";
+      }
+
+      res.status(200).json({ message: "Image uploadée avec succès.", user });
+    } catch (error) {
+      res.status(500).json({
+        message: "Erreur lors de la mise à jour de l'utilisateur.",
+        error,
+      });
+    }
+  });
+};
+
+module.exports.removePicture = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await UserModel.findById(userId);
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+
+    // Supprimer l'image physiquement si elle existe
+    // if (user.picture) {
+    //   const fs = require("fs");
+    //   const path = require("path");
+    //   const picturePath = path.join(__dirname, "./uploads", user.picture);
+    //   if (fs.existsSync(picturePath)) {
+    //     fs.unlinkSync(picturePath);
+    //   }
+    // }
+    if (user.picture) {
+      const oldImagePath = path.join(__dirname, "../", user.picture);
+      if (oldImagePath !== "/app/uploads/profil/random-user.jpeg") {
         fs.unlink(oldImagePath, (err) => {
           if (err) {
             console.error(
@@ -76,17 +131,17 @@ module.exports.uploadProfil = async (req, res) => {
           }
         });
       }
-
-      // Mettre à jour l'utilisateur avec le chemin de la nouvelle image
-      user.picture = imagePath;
-      await user.save();
-
-      res.status(200).json({ message: "Image uploadée avec succès.", user });
-    } catch (error) {
-      res.status(500).json({
-        message: "Erreur lors de la mise à jour de l'utilisateur.",
-        error,
-      });
     }
-  });
+
+    // Réinitialiser la photo dans la base
+    user.picture = "uploads/profil/random-user.jpeg";
+    await user.save();
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la suppression de la photo" });
+  }
 };

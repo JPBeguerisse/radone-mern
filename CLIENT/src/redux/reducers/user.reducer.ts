@@ -1,4 +1,5 @@
 //user.reducer.ts
+import { removePicture } from "src/services/userService";
 import { User, UserState } from "../../types/user.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -14,7 +15,9 @@ const userSlice = createSlice({
     // Les reducers définissent comment l'état évolue en réponse aux actions.
     // Cette action est appelée lorsqu'une requête pour obtenir un utilisateur est déclenchée.
     // Aucun changement dans l'état pour l'instant.
-    getUserRequested: (state) => state,
+    getUserRequested: (state, action: PayloadAction<string>) => {
+      console.log("Get user lancé", action.payload);
+    },
     getUserSuccess: (state, action: PayloadAction<User>) => {
       // Cette action est déclenchée lorsqu'un utilisateur est récupéré avec succès.
       state.user = action.payload; // On met à jour `user` avec les données récupérées.
@@ -48,6 +51,42 @@ const userSlice = createSlice({
     updateUserFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
+
+    // Mis a jour photo profil
+    updatePictureRequested: (
+      state,
+      action: PayloadAction<{ userId: string; profileImage?: File }>
+    ) => {
+      console.log("Mis a jour photo de profil lancé...", action.payload);
+    },
+
+    updatePictureSuccess: (state, action: PayloadAction<User>) => {
+      if (state.user) {
+        state.user = action.payload;
+      }
+    },
+
+    updatePictureFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+
+    //Suppression de la photo de profil
+    removePictureRequested: (state, action: PayloadAction<string>) => {
+      console.log(
+        "Suppression de la photo de profil lancée...",
+        action.payload
+      );
+    },
+
+    removePictureSuccess: (state, action: PayloadAction<User>) => {
+      if (state.user) {
+        state.user = action.payload;
+      }
+    },
+
+    removePictureFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
   },
 });
 
@@ -58,6 +97,12 @@ export const {
   updateUserFailed,
   updateUserSuccess,
   updateUserRequested,
+  updatePictureFailed,
+  updatePictureRequested,
+  updatePictureSuccess,
+  removePictureFailed,
+  removePictureRequested,
+  removePictureSuccess,
 } = userSlice.actions;
 export const userReducer = userSlice.reducer;
 

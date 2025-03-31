@@ -50,7 +50,7 @@ const CommentList: React.FC<CommentListProps> = ({
                 <div key={user._id} className="flex gap-4 mb-4">
                   <div className="">
                     <img
-                      src={`${process.env.REACT_APP_API_URL}/${user?.profilePicture}`}
+                      src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </div>

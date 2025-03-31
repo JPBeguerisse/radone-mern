@@ -39,6 +39,7 @@ module.exports.getUser = async (req, res) => {
 // Mise à jour d’un utilisateur
 module.exports.updateUser = async (req, res) => {
   const userId = req.params.id;
+  const errors = {}; // un objet pour collecter les erreurs
 
   // Vérifie que l'ID est un ObjectId valide
   if (!ObjectID.isValid(userId)) {
@@ -57,7 +58,7 @@ module.exports.updateUser = async (req, res) => {
     if (name) updateFields.name = name;
     if (userName) updateFields.userName = userName;
     if (email) updateFields.email = email;
-    if (bio) updateFields.bio = bio;
+    if (bio !== undefined) updateFields.bio = bio;
 
     //Gestion du changement de mot de passe
     if (oldPassword && newPassword) {
@@ -65,17 +66,13 @@ module.exports.updateUser = async (req, res) => {
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
       if (!passwordRegex.test(newPassword)) {
-        return res.status(400).json({
-          message:
-            "Le nouveau mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
-        });
+        errors.newPassword =
+          "Le nouveau mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.";
       }
 
       const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
       if (!isPasswordValid) {
-        return res
-          .status(400)
-          .json({ message: "Ancien mot de passe incorrect." });
+        errors.oldPassword = "Ancien mot de passe incorrect.";
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -87,9 +84,7 @@ module.exports.updateUser = async (req, res) => {
     if (email) {
       const isExistEmail = await UserModel.findOne({ email });
       if (isExistEmail && isExistEmail._id.toString() !== userId) {
-        return res.status(400).json({
-          message: "Cette adresse email est déjà utilisée.",
-        });
+        errors.email = "Cette adresse email est déjà utilisée.";
       }
     }
 
@@ -97,10 +92,13 @@ module.exports.updateUser = async (req, res) => {
     if (userName) {
       const isExistUserName = await UserModel.findOne({ userName });
       if (isExistUserName && isExistUserName._id.toString() !== userId) {
-        return res.status(400).json({
-          message: "Ce nom d'utilisateur est déjà utilisé.",
-        });
+        errors.userName = "Ce nom d'utilisateur est déjà utilisé.";
       }
+    }
+
+    // ✅ S’il y a des erreurs, on les renvoie toutes en une seule fois
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
     }
 
     // Mise à jour du user dans la base de données
@@ -115,7 +113,7 @@ module.exports.updateUser = async (req, res) => {
     }
 
     // Réponse avec le user mis à jour
-    res.status(200).json(user);
+    res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Erreur lors de la mise à jour :", error);
     res.status(500).json({

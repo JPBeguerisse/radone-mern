@@ -274,8 +274,8 @@ router.get("/:id", verifyToken, userController.getUser);
 
 /**
  * @swagger
- * /api/user/update/{id}:
- *   patch:
+ * /api/user/{id}:
+ *   put:
  *     summary: Met à jour les informations d'un utilisateur
  *     description: |
  *       Cette route permet de mettre à jour les informations d'un utilisateur, y compris son mot de passe s'il fournit l'ancien et le nouveau.
@@ -345,7 +345,7 @@ router.get("/:id", verifyToken, userController.getUser);
  *       500:
  *         description: Erreur serveur
  */
-router.put("/:id", userController.updateUser);
+router.patch("/:id", userController.updateUser);
 
 /**
  * @swagger
@@ -460,5 +460,63 @@ router.delete("/:id", userController.deleteUser);
  *                   description: Détails des erreurs
  */
 router.post("/upload-profil", uploadController.uploadProfil);
+
+/**
+ * @swagger
+ * /api/user/remove-profil-picture/{id}:
+ *   delete:
+ *     summary: Supprimer l'image de profil d'un utilisateur
+ *     description: Supprime physiquement le fichier image de l'utilisateur ainsi que la référence dans la base de données.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: L'identifiant de l'utilisateur
+ *         example: "614d6f1c3a6b3f456abc1234"
+ *     responses:
+ *       200:
+ *         description: Photo de profil supprimée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "614d6f1c3a6b3f456abc1234"
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 picture:
+ *                   type: string
+ *                   example: ""
+ *                 # ... ajoute ici les autres champs que tu renvoies dans ton user
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Utilisateur non trouvé"
+ *       500:
+ *         description: Erreur serveur lors de la suppression de la photo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Erreur lors de la suppression de la photo"
+ */
+router.delete("/remove-profil-picture/:id", uploadController.removePicture);
 
 module.exports = router;

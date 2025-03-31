@@ -9,9 +9,18 @@ import {
   updateUserFailed,
   updateUserSuccess,
   updateUserRequested,
+  updatePictureSuccess,
+  updatePictureRequested,
+  removePictureSuccess,
+  removePictureRequested,
 } from "../reducers/user.reducer";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { getUser, updateUser } from "../../services/userService";
+import {
+  getUser,
+  removePicture,
+  updatePicture,
+  updateUser,
+} from "../../services/userService";
 import { any } from "zod";
 import { toast } from "react-toastify";
 
@@ -54,11 +63,46 @@ function* handleUpdateUser(
   }
 }
 
+function* handleUpdatePictureUser(
+  action: PayloadAction<{ userId: string; profileImage?: File }>
+): Generator<any, void, User> {
+  try {
+    const formData = new FormData();
+    formData.append("userId", action.payload.userId);
+    formData.append("profileImage", action.payload.profileImage!);
+    // console.log(action.payload);
+
+    const updatedPicture = yield call(updatePicture, formData);
+    yield put(updatePictureSuccess(updatedPicture));
+    yield put(getUserRequested(action.payload.userId));
+    toast.success("Votre photo de profil a été modifié.");
+  } catch (error: any) {
+    yield put(updateUserFailed(error.message));
+    toast.error("Échec de la mise à jour de la photo de profil.");
+  }
+}
+
+function* handleRemovePictureUser(
+  action: PayloadAction<string>
+): Generator<any, void, User> {
+  try {
+    const removedPicture = yield call(removePicture, action.payload);
+    yield put(removePictureSuccess(removedPicture));
+    yield put(getUserRequested(action.payload));
+    toast.success("Votre photo de profil a été supprimé.");
+  } catch (error: any) {
+    yield put(updateUserFailed(error.message));
+    toast.error("Échec de la mise à jour de la photo de profil.");
+  }
+}
+
 // Watcher saga : surveille les actions de type "GET_USER_REQUESTED" et appelle `getUser`
 export default function* userSaga() {
   // `takeLatest` va écouter "GET_USER_REQUESTED" et appeler `getUser` avec l'action dispatchée
   yield takeLatest(getUserRequested.type, handleGetUser);
   yield takeLatest(updateUserRequested.type, handleUpdateUser);
+  yield takeLatest(updatePictureRequested.type, handleUpdatePictureUser);
+  yield takeLatest(removePictureRequested.type, handleRemovePictureUser);
 }
 
 // // `action` est passé à `getUser`, qui contient le `uid` dans `action.uid`

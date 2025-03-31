@@ -17,7 +17,7 @@ export const PostsUser = () => {
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
 
-  console.log("Post sélectionné", selectedPost);
+  //console.log("Post sélectionné", selectedPost);
   const [editedMessage, setEditedMessage] = useState<string>("");
   const [editMode, setEditMode] = useState(false);
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ export const PostsUser = () => {
   const handleOpenModal = (post: Post) => {
     setIsOpen(true);
     const postSelect = dispatch(getPostRequested(post._id!));
-    console.log("POST ", postSelect);
+    //console.log("POST ", postSelect);
   };
 
   useEffect(() => {

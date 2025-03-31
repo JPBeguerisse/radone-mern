@@ -1,10 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, UseSelector, useSelector } from "react-redux";
 import { User } from "src/types/user.types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateUserRequested } from "src/redux/reducers/user.reducer";
+import {
+  removePictureRequested,
+  updatePictureRequested,
+  updateUserRequested,
+} from "src/redux/reducers/user.reducer";
 import { toast } from "react-toastify";
 
 export const updateUserSchema = z.object({
@@ -32,7 +36,15 @@ export const EditProfil = () => {
   const currentUser: User = useSelector((state: any) => state.userReducer.user);
   const errorsServer = useSelector((state: any) => state.userReducer.error);
 
-  console.log("Erreur server", errorsServer);
+  const defaultPicture = "uploads/profil/random-user.jpeg";
+  //   console.log("Erreur server", errorsServer);
+
+  console.log(currentUser);
+
+  if (currentUser) {
+    console.log(currentUser.picture);
+  }
+
   const dispatch = useDispatch();
   type UpdateUserForm = z.infer<typeof updateUserSchema>;
   const {
@@ -99,6 +111,19 @@ export const EditProfil = () => {
     // optionnel : toast ou redirection ici
   };
 
+  const handleUpdatePicture = (e: any) => {
+    dispatch(
+      updatePictureRequested({
+        userId: currentUser._id!,
+        profileImage: (e.target.files && e.target.files[0]) || undefined,
+      })
+    );
+  };
+
+  const deleteProfilePicture = () => {
+    dispatch(removePictureRequested(currentUser._id!));
+  };
+
   return (
     <div className="px-4 sm:px-8 md:px-48">
       <h1 className="font-bold text-xl sm:text-2xl mb-4">Modifier le profil</h1>
@@ -106,27 +131,52 @@ export const EditProfil = () => {
       {/* 🧍‍♂️ Bloc utilisateur avec image + infos */}
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4 p-4 mt-6 w-full bg-white rounded-lg shadow-sm">
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-          <div className="user-picture flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-20 h-20">
+          <div className="flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-20 h-20">
             <img
               src={`${
-                process.env.REACT_APP_API_URL
-              }${currentUser.profilePicture?.replace(/^\//, "")}`}
+                currentUser && process.env.REACT_APP_API_URL
+              }/${currentUser.picture?.replace(/^\//, "")}`}
               alt="user"
               className="w-full h-full rounded-full object-cover object-center"
             />
           </div>
+
+          <input
+            type="file"
+            id="file-upload"
+            name="profileImage"
+            accept=".png, .jpg, .jpeg"
+            className="hidden"
+            onChange={handleUpdatePicture}
+          />
           <div className="text-center sm:text-left">
             <h3 className="font-bold text-lg">{currentUser.userName}</h3>
             <h5 className="text-gray-600">{currentUser.name}</h5>
           </div>
         </div>
+        <div className="md:flex gap-4">
+          <div className="w-full sm:w-auto flex items-center">
+            <label
+              htmlFor="file-upload"
+              className="w-full  flex textrr-center cursor-pointer px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300"
+            >
+              Modifier la photo
+            </label>
+          </div>
 
-        <div className="w-full sm:w-auto flex items-center">
-          <button className="w-full sm:w-auto bg-primary text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition">
-            Modifier la photo
-          </button>
+          <div className="w-full sm:w-auto flex items-center">
+            {currentUser.picture && currentUser.picture !== defaultPicture && (
+              <button
+                onClick={deleteProfilePicture}
+                className="w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition"
+              >
+                Supprimer la photo
+              </button>
+            )}
+          </div>
         </div>
       </div>
+      {/* <UpdatePictureForm /> */}
 
       {/* 📋 Formulaire */}
       <form
