@@ -53,10 +53,7 @@ const userSlice = createSlice({
     },
 
     // Mis a jour photo profil
-    updatePictureRequested: (
-      state,
-      action: PayloadAction<{ userId: string; profileImage?: File }>
-    ) => {
+    updatePictureRequested: (state, action: PayloadAction<string>) => {
       console.log("Mis a jour photo de profil lancé...", action.payload);
     },
 

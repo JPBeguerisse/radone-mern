@@ -81,7 +81,6 @@ const postsSlice = createSlice({
       action: PayloadAction<{
         message: string;
         posterId: string;
-        postImage?: File;
       }>
     ) => {
       console.log("Creation du post lancé", action.payload);

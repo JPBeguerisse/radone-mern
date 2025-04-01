@@ -10,6 +10,7 @@ import {
   updateUserRequested,
 } from "src/redux/reducers/user.reducer";
 import { toast } from "react-toastify";
+import { setSelectedPicture } from "src/redux/sagas/user.saga";
 
 export const updateUserSchema = z.object({
   name: z.string().min(2, "Le nom est requis"),
@@ -112,12 +113,9 @@ export const EditProfil = () => {
   };
 
   const handleUpdatePicture = (e: any) => {
-    dispatch(
-      updatePictureRequested({
-        userId: currentUser._id!,
-        profileImage: (e.target.files && e.target.files[0]) || undefined,
-      })
-    );
+    const file = e.target.files?.[0];
+    setSelectedPicture(file || null);
+    dispatch(updatePictureRequested(currentUser._id!));
   };
 
   const deleteProfilePicture = () => {

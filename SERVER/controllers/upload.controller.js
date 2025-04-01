@@ -107,16 +107,6 @@ module.exports.removePicture = async (req, res) => {
     const user = await UserModel.findById(userId);
     if (!user)
       return res.status(404).json({ message: "Utilisateur non trouvé" });
-
-    // Supprimer l'image physiquement si elle existe
-    // if (user.picture) {
-    //   const fs = require("fs");
-    //   const path = require("path");
-    //   const picturePath = path.join(__dirname, "./uploads", user.picture);
-    //   if (fs.existsSync(picturePath)) {
-    //     fs.unlinkSync(picturePath);
-    //   }
-    // }
     if (user.picture) {
       const oldImagePath = path.join(__dirname, "../", user.picture);
       if (oldImagePath !== "/app/uploads/profil/random-user.jpeg") {

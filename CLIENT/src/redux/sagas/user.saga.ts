@@ -24,6 +24,12 @@ import {
 import { any } from "zod";
 import { toast } from "react-toastify";
 
+let selectedFile: File | null = null;
+
+export function setSelectedPicture(file: File | null) {
+  selectedFile = file;
+}
+
 function* handleGetUser(
   action: PayloadAction<string>
 ): Generator<any, void, User> {
@@ -64,17 +70,17 @@ function* handleUpdateUser(
 }
 
 function* handleUpdatePictureUser(
-  action: PayloadAction<{ userId: string; profileImage?: File }>
+  action: PayloadAction<string>
 ): Generator<any, void, User> {
   try {
     const formData = new FormData();
-    formData.append("userId", action.payload.userId);
-    formData.append("profileImage", action.payload.profileImage!);
+    formData.append("userId", action.payload);
+    formData.append("profileImage", selectedFile!);
     // console.log(action.payload);
 
     const updatedPicture = yield call(updatePicture, formData);
     yield put(updatePictureSuccess(updatedPicture));
-    yield put(getUserRequested(action.payload.userId));
+    yield put(getUserRequested(action.payload));
     toast.success("Votre photo de profil a été modifié.");
   } catch (error: any) {
     yield put(updateUserFailed(error.message));

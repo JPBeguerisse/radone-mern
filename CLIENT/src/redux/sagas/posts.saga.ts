@@ -57,6 +57,12 @@ import {
 import { PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 
+let selectedFile: File | null = null;
+
+export function setSelectedPicturePost(file: File | null) {
+  selectedFile = file;
+}
+
 // Fonction pour récupérer les posts
 function* handleFetchPosts(): Generator<any, void, Post[]> {
   try {
@@ -101,14 +107,14 @@ function* handleUpdatePost(
 
 // Fonction pour créer un post
 function* handleCreatePost(
-  action: PayloadAction<{ message: string; posterId: string; postImage?: File }>
+  action: PayloadAction<{ message: string; posterId: string }>
 ): Generator<any, void, Post> {
   try {
     const formData = new FormData();
     formData.append("posterId", action.payload.posterId);
     formData.append("message", action.payload.message);
-    if (action.payload.postImage) {
-      formData.append("postImage", action.payload.postImage);
+    if (selectedFile) {
+      formData.append("postImage", selectedFile);
     }
     const createdPost = yield call(createPost, formData);
     yield put(createPostSuccess(createdPost));
