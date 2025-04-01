@@ -20,10 +20,10 @@ const { verifyToken, requireAuth } = require("../middlewares/checkToken");
  *       properties:
  *         _id:
  *           type: string
- *         firstName:
+ *         name:
  *           type: string
  *           example: "Alex"
- *         lastName:
+ *         userName:
  *           type: string
  *           example: "Martin"
  *         profilName:
@@ -139,11 +139,11 @@ router.post("/logout", authController.logout);
  *           schema:
  *             type: object
  *             properties:
- *               firstName:
+ *               name:
  *                 type: string
  *                 description: Le prénom de l'utilisateur
  *                 example: Jean
- *               lastName:
+ *               userName:
  *                 type: string
  *                 description: Le nom de famille de l'utilisateur
  *                 example: Dupont
@@ -213,10 +213,10 @@ router.post("/register", authController.signUp);
  *                   _id:
  *                     type: string
  *                     description: ID de l'utilisateur
- *                   firstName:
+ *                   name:
  *                     type: string
  *                     description: Prénom de l'utilisateur
- *                   lastName:
+ *                   userName:
  *                     type: string
  *                     description: Nom de l'utilisateur
  *                   email:
@@ -256,10 +256,10 @@ router.get("/", userController.getUsers);
  *                 _id:
  *                   type: string
  *                   description: ID de l'utilisateur
- *                 firstName:
+ *                 name:
  *                   type: string
  *                   description: Prénom de l'utilisateur
- *                 lastName:
+ *                 userName:
  *                   type: string
  *                   description: Nom de l'utilisateur
  *                 email:
@@ -276,15 +276,18 @@ router.get("/:id", verifyToken, userController.getUser);
  * @swagger
  * /api/user/{id}:
  *   put:
- *     summary: Mettre à jour un utilisateur
- *     description: Met à jour les informations d'un utilisateur par son ID (prénom, nom, email).
+ *     summary: Met à jour les informations d'un utilisateur
+ *     description: |
+ *       Cette route permet de mettre à jour les informations d'un utilisateur, y compris son mot de passe s'il fournit l'ancien et le nouveau.
+ *       - Le mot de passe doit être robuste (majuscule, minuscule, chiffre, caractère spécial).
+ *       - L'ancien mot de passe doit être fourni pour le changer.
  *     tags:
- *       - Utilisateurs
+ *       - Utilisateur
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
+ *         description: ID de l'utilisateur à modifier
  *         required: true
- *         description: ID de l'utilisateur à mettre à jour
  *         schema:
  *           type: string
  *     requestBody:
@@ -294,44 +297,55 @@ router.get("/:id", verifyToken, userController.getUser);
  *           schema:
  *             type: object
  *             properties:
- *               firstName:
+ *               name:
  *                 type: string
- *                 description: Prénom de l'utilisateur
- *               lastName:
+ *                 example: "Jean"
+ *               userName:
  *                 type: string
- *                 description: Nom de l'utilisateur
+ *                 example: "jean_doe"
  *               email:
  *                 type: string
- *                 description: Email de l'utilisateur
- *               password:
+ *                 example: "jean@example.com"
+ *               bio:
  *                 type: string
- *                 description: Mot de passe de l'utilisateur
+ *                 example: "Développeur passionné par le JS."
+ *               oldPassword:
+ *                 type: string
+ *                 example: "AncienPass123!"
+ *               newPassword:
+ *                 type: string
+ *                 example: "NouveauPass@2024"
  *     responses:
  *       200:
  *         description: Utilisateur mis à jour avec succès
  *         content:
  *           application/json:
  *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Requête invalide ou données déjà utilisées
+ *         content:
+ *           application/json:
+ *             schema:
  *               type: object
  *               properties:
- *                 _id:
+ *                 message:
  *                   type: string
- *                   description: ID de l'utilisateur
- *                 firstName:
+ *                   example: "Cette adresse email est déjà utilisée."
+ *       404:
+ *         description: Utilisateur introuvable
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
  *                   type: string
- *                   description: Prénom de l'utilisateur
- *                 lastName:
- *                   type: string
- *                   description: Nom de l'utilisateur
- *                 email:
- *                   type: string
- *                   description: Email de l'utilisateur
- *       400:
- *         description: Utilisateur non trouvé ou ID invalide
+ *                   example: "Utilisateur non trouvé."
  *       500:
- *         description: Erreur interne du serveur
+ *         description: Erreur serveur
  */
-router.put("/:id", userController.updateUser);
+router.patch("/:id", userController.updateUser);
 
 /**
  * @swagger
@@ -366,10 +380,10 @@ router.put("/:id", userController.updateUser);
  *                     _id:
  *                       type: string
  *                       description: ID de l'utilisateur
- *                     firstName:
+ *                     name:
  *                       type: string
  *                       description: Prénom de l'utilisateur
- *                     lastName:
+ *                     userName:
  *                       type: string
  *                       description: Nom de l'utilisateur
  *                     email:
@@ -446,5 +460,63 @@ router.delete("/:id", userController.deleteUser);
  *                   description: Détails des erreurs
  */
 router.post("/upload-profil", uploadController.uploadProfil);
+
+/**
+ * @swagger
+ * /api/user/remove-profil-picture/{id}:
+ *   delete:
+ *     summary: Supprimer l'image de profil d'un utilisateur
+ *     description: Supprime physiquement le fichier image de l'utilisateur ainsi que la référence dans la base de données.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: L'identifiant de l'utilisateur
+ *         example: "614d6f1c3a6b3f456abc1234"
+ *     responses:
+ *       200:
+ *         description: Photo de profil supprimée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "614d6f1c3a6b3f456abc1234"
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 picture:
+ *                   type: string
+ *                   example: ""
+ *                 # ... ajoute ici les autres champs que tu renvoies dans ton user
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Utilisateur non trouvé"
+ *       500:
+ *         description: Erreur serveur lors de la suppression de la photo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Erreur lors de la suppression de la photo"
+ */
+router.delete("/remove-profil-picture/:id", uploadController.removePicture);
 
 module.exports = router;

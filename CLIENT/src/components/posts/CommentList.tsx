@@ -23,7 +23,8 @@ const CommentList: React.FC<CommentListProps> = ({
   usersData,
   onDelete,
 }) => {
-  const currentUserUid = useContext(UserContext)?.toString();
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
 
   const MAX_LENGTH = 100;
   const [isExpandedText, setIsExpandedText] = React.useState<{
@@ -49,14 +50,14 @@ const CommentList: React.FC<CommentListProps> = ({
                 <div key={user._id} className="flex gap-4 mb-4">
                   <div className="">
                     <img
-                      src={`${process.env.REACT_APP_API_URL}/${user?.profilePicture}`}
+                      src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </div>
                   <div className="flex justify-between items-center w-full">
                     <div>
                       <p className="font-bold">
-                        {user.firstName} {user.lastName}
+                        {user.name} {user.userName}
                       </p>
                       <p className="text-gray-800">
                         {isExpandedText[comment._id] ||
@@ -125,17 +126,18 @@ const CommentList: React.FC<CommentListProps> = ({
                         />
                       )}
 
-                      {currentUserUid?.toString() === comment.commenterId && (
-                        <button
-                          onClick={() => onDelete(comment._id, "comment")}
-                        >
-                          <Trash2
-                            className="cursor-pointer"
-                            width={15}
-                            height={15}
-                          />
-                        </button>
-                      )}
+                      {currentUserUid &&
+                        currentUserUid === comment.commenterId && (
+                          <button
+                            onClick={() => onDelete(comment._id, "comment")}
+                          >
+                            <Trash2
+                              className="cursor-pointer"
+                              width={15}
+                              height={15}
+                            />
+                          </button>
+                        )}
                     </div>
                   </div>
                 </div>

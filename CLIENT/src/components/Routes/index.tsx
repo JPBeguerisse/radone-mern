@@ -4,6 +4,7 @@ import Profil from "../../pages/Profil";
 import AddPost from "../../pages/AddPost";
 import Log from "../log/Form";
 import Layout from "../layout/Layout";
+import { EditProfil } from "src/pages/EditProfil";
 
 const index = () => {
   return (
@@ -14,6 +15,7 @@ const index = () => {
           <Route path="/profil" element={<Profil />} />
           <Route path="/ajouter" element={<AddPost />} />
           <Route path="/login" element={<Log />} />
+          <Route path="/edit-profil" element={<EditProfil />} />
         </Route>
       </Routes>
     </Router>

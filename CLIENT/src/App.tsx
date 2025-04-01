@@ -14,43 +14,44 @@ function App() {
   // Utilisation du hook `useDispatch` pour dispatcher des actions dans le store Redux
   const dispatch = useDispatch();
 
-  // Hook `useEffect` qui exécute un effet après chaque rendu et quand `dispatch` ou `uid` changent
+  //si la page se rechage on récupère le token s'il est toujours disponible
   useEffect(() => {
-    // Fonction asynchrone pour récupérer le token de localStorage et l'UID
     const fetchToken = async () => {
       try {
-        // Récupérer le token depuis localStorage
+        // Récupérer le token du localStorage
         const token = localStorage.getItem("accessToken");
         if (token) {
-          // Si le token existe, faire une requête au serveur pour récupérer le profil de l'utilisateur
-          axios
-            .get(`${process.env.REACT_APP_API_URL}/profile`, {
+          // Requête pour récupérer le profil de l'utilisateur
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/profile`,
+            {
               headers: {
-                Authorization: `Bearer ${token}`, // Ajouter le token dans les en-têtes de la requête
+                Authorization: `Bearer ${token}`, // Ajouter le token dans l'en-tête
               },
-            })
-            .then((res) => {
-              // Si la requête réussit, mettre à jour l'état avec l'UID de l'utilisateur
-              setUid(res.data);
-            });
+            }
+          );
+          // Mise à jour de l'état avec l'UID
+          //console.log("res", response);
+          setUid(response.data);
         }
       } catch (error) {
-        // En cas d'erreur, afficher un message dans la console
-        console.log("No token", error);
+        console.log("Erreur de récupération du token ou du profil", error);
       }
     };
 
-    // Appeler la fonction pour récupérer le token
     fetchToken();
+  }, []); // L'effet est exécuté uniquement au premier rendu
 
-    // Si un UID est disponible, dispatcher une action (getUserRequested) pour récupérer l'utilisateur
-    if (uid) dispatch(getUserRequested(uid));
-  }, [dispatch, uid]); // Le hook se déclenche lorsque `dispatch` ou `uid` changent
-
+  useEffect(() => {
+    // Ne dispatcher l'action que lorsque l'UID est défini
+    if (uid) {
+      dispatch(getUserRequested(uid)); // Dispatch pour récupérer les données utilisateur
+    }
+  }, [uid, dispatch]); // Ce `useEffect` est appelé seulement lorsque `uid` est mis à jour
   // Rendu du composant
   return (
     // Fournir l'UID au contexte UserContext pour le rendre accessible aux autres composants
-    <UserContext.Provider value={uid}>
+    <UserContext.Provider value={{ uid, setUid }}>
       <ToastContainer
         position="top-right"
         autoClose={3000}

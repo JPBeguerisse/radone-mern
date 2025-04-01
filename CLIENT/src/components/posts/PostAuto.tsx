@@ -107,12 +107,12 @@ export const PostModal: React.FC<PostModalViewProps> = ({
                   user._id === post.posterId && (
                     <div key={user._id} className="flex items-center gap-2">
                       <img
-                        src={`${process.env.REACT_APP_API_URL}/${user?.profilePicture}`}
+                        src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover"
                       />
                       <p className="font-bold">
-                        {user?.firstName} {user?.lastName}
+                        {user?.name} {user?.userName}
                       </p>
                     </div>
                   )
@@ -150,12 +150,12 @@ export const PostModal: React.FC<PostModalViewProps> = ({
                       user._id === comment.commenterId && (
                         <div key={user._id} className="flex gap-4 mb-4">
                           <img
-                            src={`${process.env.REACT_APP_API_URL}/${user?.profilePicture}`}
+                            src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
                             className="w-10 h-10 rounded-full object-cover"
                           />
                           <div>
                             <p className="font-bold">
-                              {user.firstName} {user.lastName}
+                              {user.name} {user.userName}
                             </p>
                             <p>{comment.text}</p>
                           </div>

@@ -1,9 +1,9 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
 type UserContextType = {
-    uid: string;
-  };
-  
+  uid?: null;
+  setUid: Dispatch<SetStateAction<any>>;
+};
 
 const UserContext = React.createContext<UserContextType | null>(null);
 

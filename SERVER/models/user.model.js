@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: {
+    name: {
       type: String,
       required: true,
       minLength: 3,
@@ -12,15 +12,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    lastName: {
-      type: String,
-      required: true,
-      minLength: 2,
-      maxLength: 25,
-      trim: true,
-    },
-
-    profilName: {
+    userName: {
       type: String,
       required: true,
       minLength: 2,
@@ -52,7 +44,7 @@ const userSchema = new mongoose.Schema(
 
     picture: {
       type: String,
-      default: "./uploads/profil/random-user.png",
+      default: "./uploads/profil/random-user.jpeg",
     },
   },
   {

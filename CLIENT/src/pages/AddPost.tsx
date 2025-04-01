@@ -2,6 +2,7 @@ import { createPostRequested } from "../redux/reducers/posts.reducer";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setSelectedPicturePost } from "src/redux/sagas/posts.saga";
 
 const AddPost: React.FC = () => {
   const user = useSelector((state: any) => state.userReducer.user);
@@ -33,11 +34,11 @@ const AddPost: React.FC = () => {
       console.error("Erreur : posterId manquant !");
       return;
     }
+    setSelectedPicturePost(selectedFile || null);
     dispatch(
       createPostRequested({
         posterId: user._id,
         message: message,
-        postImage: selectedFile || undefined, // ✅ Le fichier est géré uniquement dans la saga
       })
     );
 

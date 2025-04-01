@@ -4,14 +4,11 @@ import { useContext, useState } from "react";
 import { User } from "src/types/user.types";
 import FormAddComment from "./FormAddComment";
 import useMediaQuery from "../../hooks/useMediaQuery"; // 🔹 Import du hook
-import { Heart, MessageCircle, Trash2 } from "lucide-react";
 import {
   deleteCommentRequested,
   deletePostRequested,
 } from "src/redux/reducers/posts.reducer";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { useNavigate } from "react-router-dom";
-import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import CommentList from "./CommentList";
 import PostButtonAction from "./PostButtonAction";
@@ -26,10 +23,9 @@ export const PostView: React.FC<PostModalViewProps> = ({
   isEditing,
   setIsEditing,
   onSave,
-  // onDelete,
-  //currentUser,
 }) => {
-  const currentUserUid = useContext(UserContext)?.toString();
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
 
   const [showOptions, setShowOptions] = useState<boolean>(false);
   const usersData = useSelector((state: any) => state.usersReducer.users);
@@ -151,13 +147,13 @@ export const PostView: React.FC<PostModalViewProps> = ({
                     */}
                     <div className="flex w-full items-center gap-2">
                       <img
-                        src={`${process.env.REACT_APP_API_URL}/${user?.profilePicture}`}
+                        src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover"
                       />
                       <div className="w-full">
                         <p className="font-bold">
-                          {user?.firstName} {user?.lastName}
+                          {user?.name} {user?.userName}
                         </p>
                         {isEditing ? (
                           <textarea
