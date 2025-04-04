@@ -8,6 +8,8 @@ export interface User {
   bio?: string;
   picture?: string; // Le chemin de l'image de profil (facultatif)
   likes?: string[]; // Liste des IDs des posts aimés par l'utilisateur
+  followers?: string[]; // Liste des IDs des utilisateurs qui suivent cet utilisateur
+  following?: string[]; // Liste des IDs des utilisateurs suivis par cet utilisateur
   createdAt?: Date; // Date de création de l'utilisateur
   updatedAt?: Date; // Date de mise à jour de l'utilisateur
 }

@@ -1,5 +1,5 @@
 //user.reducer.ts
-import { removePicture } from "src/services/userService";
+import { followUser, removePicture } from "src/services/userService";
 import { User, UserState } from "../../types/user.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -84,6 +84,38 @@ const userSlice = createSlice({
     removePictureFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
+
+    //S'abonner à  un utilisateur
+    followUserRequested: (
+      state,
+      action: PayloadAction<{ userId: string; userIdToFollow: string }>
+    ) => {
+      console.log("Follow user lancé...", action.payload);
+    },
+
+    followUserSuccess: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
+
+    followUserFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+
+    //Se désabonner d'un utilisateur
+    unfollowUserRequested: (
+      state,
+      action: PayloadAction<{ userId: string; userIdToUnfollow: string }>
+    ) => {
+      console.log("Follow user lancé...", action.payload);
+    },
+
+    unfollowUserSuccess: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
+
+    unfollowUserFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
   },
 });
 
@@ -100,6 +132,12 @@ export const {
   removePictureFailed,
   removePictureRequested,
   removePictureSuccess,
+  followUserRequested,
+  followUserSuccess,
+  followUserFailed,
+  unfollowUserRequested,
+  unfollowUserSuccess,
+  unfollowUserFailed,
 } = userSlice.actions;
 export const userReducer = userSlice.reducer;
 

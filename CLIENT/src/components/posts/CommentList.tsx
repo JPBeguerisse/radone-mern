@@ -10,7 +10,6 @@ import {
   likeCommentRequested,
   unLikeCommentRequested,
 } from "src/redux/reducers/posts.reducer";
-import { useCommentStatus } from "src/hooks/usePostStatus";
 import { includesUser } from "src/utils/includesUser";
 interface CommentListProps {
   post: Post;

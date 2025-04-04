@@ -13,6 +13,7 @@ import { fr } from "date-fns/locale";
 import CommentList from "./CommentList";
 import PostButtonAction from "./PostButtonAction";
 import UserContext from "../AppContext";
+import { FollowAction } from "../profil/FollowAction";
 
 export const PostView: React.FC<PostModalViewProps> = ({
   post,
@@ -152,9 +153,10 @@ export const PostView: React.FC<PostModalViewProps> = ({
                         className="w-10 h-10 rounded-full object-cover"
                       />
                       <div className="w-full">
-                        <p className="font-bold">
-                          {user?.name} {user?.userName}
-                        </p>
+                        <div className="flex gap-2 items-center">
+                          <p className="font-bold">{user?.userName}</p>
+                          <FollowAction followerId={user._id!} />
+                        </div>
                         {isEditing ? (
                           <textarea
                             value={message}
@@ -191,6 +193,7 @@ export const PostView: React.FC<PostModalViewProps> = ({
                     {/* Affichage du bouton option de l'utilisateur */}
                     {!isMobile &&
                       !isEditing &&
+                      currentUserUid &&
                       currentUserUid === post.posterId && (
                         <button
                           className="text-gray-500 text-xl font-bold"
