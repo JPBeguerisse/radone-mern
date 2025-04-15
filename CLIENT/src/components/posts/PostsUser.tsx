@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Post } from "../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,13 +10,31 @@ import {
 } from "../../redux/reducers/posts.reducer";
 import { PostView } from "./PostView";
 import { Card } from "./Card";
+import { User } from "src/types/user.types";
+import { ProfilUserContext } from "../AppContext";
 
-export const PostsUser = () => {
-  const userData = useSelector((state: any) => state.userReducer.user);
+interface PostsUserProps {
+  userId?: string;
+}
+
+export const PostsUser: React.FC<PostsUserProps> = () => {
+  //const userData = useSelector((state: any) => state.userReducer.user);
+  const userName = useContext(ProfilUserContext);
   const posts = useSelector((state: any) => state.postsReducer.posts);
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
+  const users = useSelector((state: User) => state.usersReducer.users);
+  const [userData, setUserData] = useState<User>();
 
+  useEffect(() => {
+    if (userName && users.length > 0) {
+      //extraire le user dans le state
+      const user = users.find((user: User) => user.userName === userName);
+      setUserData(user); // Met à jour l'état avec les données de l'utilisateur
+    }
+  }, [userName, users]);
+
+  //console.log("userData", userData);
   //console.log("Post sélectionné", selectedPost);
   const [editedMessage, setEditedMessage] = useState<string>("");
   const [editMode, setEditMode] = useState(false);
@@ -24,7 +42,8 @@ export const PostsUser = () => {
 
   const handleOpenModal = (post: Post) => {
     setIsOpen(true);
-    const postSelect = dispatch(getPostRequested(post._id!));
+    //lancer une action pour récupérer le post
+    dispatch(getPostRequested(post._id!));
     //console.log("POST ", postSelect);
   };
 
@@ -57,7 +76,7 @@ export const PostsUser = () => {
 
   return (
     <div className="flex flex-wrap gap-0.5 justify-center">
-      {posts && posts.length > 0 && userData ? (
+      {/* {posts && posts.length > 0 && userData ? (
         posts.some((post: Post) => post.posterId === userData._id) ? (
           posts.map(
             (post: Post) =>
@@ -67,6 +86,17 @@ export const PostsUser = () => {
           )
         ) : (
           <p>Aucun post</p>
+        )
+      ) : (
+        <p>Aucun post</p>
+      )} */}
+
+      {posts && posts.length > 0 && userData ? (
+        posts.map(
+          (post: Post) =>
+            post.posterId === userData._id && (
+              <Card key={post._id} post={post} onOpen={handleOpenModal} />
+            )
         )
       ) : (
         <p>Aucun post</p>

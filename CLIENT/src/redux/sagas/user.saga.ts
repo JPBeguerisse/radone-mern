@@ -13,16 +13,31 @@ import {
   updatePictureRequested,
   removePictureSuccess,
   removePictureRequested,
+  followUserSuccess,
+  followUserFailed,
+  unfollowUserSuccess,
+  unfollowUserFailed,
+  followUserRequested,
+  unfollowUserRequested,
 } from "../reducers/user.reducer";
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
+  followUser,
   getUser,
+  getUserByUsername,
   removePicture,
+  unFollowUser,
   updatePicture,
   updateUser,
 } from "../../services/userService";
 import { any } from "zod";
 import { toast } from "react-toastify";
+import { getUsersRequested } from "../reducers/users.reducer";
+import {
+  getUserByUsernameFailed,
+  getUserByUsernameRequested,
+  getUserByUsernameSuccess,
+} from "../reducers/viewed-user.reducer";
 
 let selectedFile: File | null = null;
 
@@ -30,6 +45,7 @@ export function setSelectedPicture(file: File | null) {
   selectedFile = file;
 }
 
+// fonction pour récupérer un utilisateur
 function* handleGetUser(
   action: PayloadAction<string>
 ): Generator<any, void, User> {
@@ -43,6 +59,21 @@ function* handleGetUser(
   }
 }
 
+// // fonction pour récupérer un utilisateur par son username
+// function* handleGetUserByUsername(
+//   action: PayloadAction<string>
+// ): Generator<any, void, User> {
+//   try {
+//     const token = localStorage.getItem("accessToken");
+//     const user = yield call(getUserByUsername, action.payload);
+//     console.log("USER RES", user);
+//     yield put(getUserByUsernameSuccess(user));
+//   } catch (error: any) {
+//     yield put(getUserByUsernameFailed(error.message));
+//   }
+// }
+
+// fonction pour mettre à jour un utilisateur
 function* handleUpdateUser(
   action: PayloadAction<{ id: string; data: UpdateUserPayload }>
 ): Generator<any, void, User> {
@@ -55,6 +86,7 @@ function* handleUpdateUser(
     );
 
     yield put(updateUserSuccess(updatedUser));
+    yield put(getUsersRequested());
     toast.success("Profil mis à jour avec succès !");
   } catch (error: any) {
     const response = error?.response?.data;
@@ -102,6 +134,61 @@ function* handleRemovePictureUser(
   }
 }
 
+// fonction pour suivre un utilisateur
+// `action` est passé à `handleFollowUser`, qui contient le `userId` et `userIdToFollow`
+// `userId` est l'utilisateur qui suit
+// `userIdToFollow` est l'utilisateur à suivre
+// `action.payload` contient les données nécessaires
+// `action.payload.userId` est l'utilisateur qui suit
+// `action.payload.userIdToFollow` est l'utilisateur à suivre
+// `followUser` est une fonction qui effectue la requête API pour suivre un utilisateur
+// `put` est utilisé pour envoyer une action à Redux
+// `call` est utilisé pour appeler une fonction de manière asynchrone
+// `yield` est utilisé pour attendre la réponse de la fonction appelée
+function* handleFollowUser(
+  action: PayloadAction<{ userId: string; userIdToFollow: string }>
+): Generator<any, void, User> {
+  try {
+    const token = localStorage.getItem("accessToken");
+    const followedUser = yield call(
+      followUser,
+      action.payload.userId,
+      action.payload.userIdToFollow
+    );
+
+    yield put(followUserSuccess(followedUser));
+    yield put(getUsersRequested());
+  } catch (error: any) {
+    yield put(followUserFailed(error.message));
+  }
+}
+
+// fonction pour ne plus suivre un utilisateur
+// `action` est passé à `handleUnfollowUser`, qui contient le `userId` et `userIdToUnfollow`
+// `userId` est l'utilisateur qui ne suit plus
+// `userIdToUnfollow` est l'utilisateur à ne plus suivre
+// `action.payload` contient les données nécessaires
+// `action.payload.userId` est l'utilisateur qui ne suit plus
+// `action.payload.userIdToUnfollow` est l'utilisateur à ne plus suivre
+// `unFollowUser` est une fonction qui effectue la requête API pour ne plus suivre un utilisateur
+function* handleUnfollowUser(
+  action: PayloadAction<{ userId: string; userIdToUnfollow: string }>
+): Generator<any, void, User> {
+  try {
+    const token = localStorage.getItem("accessToken");
+    const unfollowedUser = yield call(
+      unFollowUser,
+      action.payload.userId,
+      action.payload.userIdToUnfollow
+    );
+
+    yield put(unfollowUserSuccess(unfollowedUser));
+    yield put(getUsersRequested());
+  } catch (error: any) {
+    yield put(unfollowUserFailed(error.message));
+  }
+}
+
 // Watcher saga : surveille les actions de type "GET_USER_REQUESTED" et appelle `getUser`
 export default function* userSaga() {
   // `takeLatest` va écouter "GET_USER_REQUESTED" et appeler `getUser` avec l'action dispatchée
@@ -109,6 +196,9 @@ export default function* userSaga() {
   yield takeLatest(updateUserRequested.type, handleUpdateUser);
   yield takeLatest(updatePictureRequested.type, handleUpdatePictureUser);
   yield takeLatest(removePictureRequested.type, handleRemovePictureUser);
+  yield takeLatest(followUserRequested.type, handleFollowUser);
+  yield takeLatest(unfollowUserRequested.type, handleUnfollowUser);
+  // yield takeLatest(getUserByUsernameRequested.type, handleGetUserByUsername);
 }
 
 // // `action` est passé à `getUser`, qui contient le `uid` dans `action.uid`

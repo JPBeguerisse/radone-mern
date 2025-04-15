@@ -11,6 +11,7 @@ import {
 } from "src/redux/reducers/user.reducer";
 import { toast } from "react-toastify";
 import { setSelectedPicture } from "src/redux/sagas/user.saga";
+import { Eye, EyeClosed } from "lucide-react";
 
 export const updateUserSchema = z.object({
   name: z.string().min(2, "Le nom est requis"),
@@ -36,15 +37,9 @@ export const updateUserSchema = z.object({
 export const EditProfil = () => {
   const currentUser: User = useSelector((state: any) => state.userReducer.user);
   const errorsServer = useSelector((state: any) => state.userReducer.error);
-
   const defaultPicture = "uploads/profil/random-user.jpeg";
-  //   console.log("Erreur server", errorsServer);
-
-  console.log(currentUser);
-
-  if (currentUser) {
-    console.log(currentUser.picture);
-  }
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const dispatch = useDispatch();
   type UpdateUserForm = z.infer<typeof updateUserSchema>;
@@ -249,7 +244,7 @@ export const EditProfil = () => {
         </div>
 
         {/* Champ Ancien mot de passe */}
-        <div>
+        <div className="relative">
           <label
             htmlFor="oldPassword"
             className="block text-sm font-semibold mb-1"
@@ -259,16 +254,27 @@ export const EditProfil = () => {
           <input
             {...register("oldPassword")}
             id="oldPassword"
-            type="password"
+            type={showOldPassword ? "text" : "password"}
             className="w-full border border-gray-300 rounded-md p-2"
           />
+          <button
+            type="button"
+            onClick={() => setShowOldPassword(!showOldPassword)}
+            className="absolute right-3 top-10 text-gray-800"
+          >
+            {showOldPassword ? (
+              <EyeClosed width={15} height={15} />
+            ) : (
+              <Eye width={15} height={15} />
+            )}
+          </button>
           {errors.oldPassword && (
             <p className="text-sm text-red-500">{errors.oldPassword.message}</p>
           )}
         </div>
 
         {/* Champ Nouveau mot de passe */}
-        <div>
+        <div className="relative">
           <label
             htmlFor="newPassword"
             className="block text-sm font-semibold mb-1"
@@ -278,9 +284,20 @@ export const EditProfil = () => {
           <input
             {...register("newPassword")}
             id="newPassword"
-            type="password"
+            type={showNewPassword ? "text" : "password"}
             className="w-full border border-gray-300 rounded-md p-2"
           />
+          <button
+            type="button"
+            onClick={() => setShowNewPassword(!showNewPassword)}
+            className="absolute right-3 top-10 text-gray-800"
+          >
+            {showNewPassword ? (
+              <EyeClosed width={15} height={15} />
+            ) : (
+              <Eye width={15} height={15} />
+            )}
+          </button>
           {errors.newPassword && (
             <p className="text-sm text-red-500">{errors.newPassword.message}</p>
           )}

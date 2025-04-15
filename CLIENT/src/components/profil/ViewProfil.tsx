@@ -1,31 +1,61 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { User } from "../../types/user.types";
+import React, { useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ProfilProps, User } from "../../types/user.types";
 import NavProfil from "./NavProfil";
 import { Post } from "src/types/post.types";
 import { useNavigate } from "react-router-dom";
+import { FollowAction } from "./FollowAction";
+import { ProfilUserContext, UserContext } from "../AppContext";
+import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
 
-// Type de l'état global, qui inclut userReducer
-// interface RootState {
-//   userReducer: User;
-// }
-
-const ViewProfil = () => {
-  const user = useSelector((state: User) => state.userReducer.user);
+const ViewProfil: React.FC = () => {
+  const userName = useContext(ProfilUserContext);
+  const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
+  // const users = useSelector((state: User) => state.usersReducer.users);
   const posts = useSelector((state: any) => state.postsReducer.posts);
+  const [userData, setUserData] = useState<User>(); // Met à jour l'état avec les données de l'utilisateur
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (posts && user && posts.length > 0) {
-      const count = posts.filter(
-        (post: Post) => post.posterId === user._id
-      ).length;
-      setPostsUserLenght(count);
-    }
-  }, [posts, user]);
-  console.log("NB", postsUserLenght);
+  const dispatch = useDispatch();
 
-  if (!user) {
+  useEffect(() => {
+    if (userName) {
+      //extraire le user dans le state
+      //const user = users.find((user: User) => user.userName === userName);
+      dispatch(getUserByUsernameRequested(userName));
+      //console.log("user by username", user);
+      //setUserData(user); // Met à jour l'état avec les données de l'utilisateur
+      // if (!user) {
+      //   navigate("/"); // Redirige vers la page d'accueil si l'utilisateur n'existe pas
+      // }
+    }
+  }, [userName, navigate]);
+
+  useEffect(() => {
+    if (posts && viewedUser && posts.length > 0) {
+      const countPost = posts.filter(
+        (post: Post) => post.posterId === viewedUser._id
+      ).length;
+      setPostsUserLenght(countPost);
+    }
+  }, [posts, viewedUser]);
+
+  // useEffect(() => {
+  //   if (userName && users.length > 0) {
+  //     //extraire le user dans le state
+  //     const user = users.find((user: User) => user.userName === userName);
+  //     console.log("user", user);
+  //     setUserData(user); // Met à jour l'état avec les données de l'utilisateur
+  //     if (!user) {
+  //       navigate("/"); // Redirige vers la page d'accueil si l'utilisateur n'existe pas
+  //     }
+  //   }
+  // }, [userName, users, navigate]);
+
+  if (!userName || !viewedUser) {
+    // Si l'utilisateur n'est pas trouvé ou si les données de l'utilisateur ne sont pas disponibles, afficher un message de chargement
     return (
       <p className="text-center text-gray-500">Chargement des données...</p>
     );
@@ -37,10 +67,9 @@ const ViewProfil = () => {
         {/* Section de l'image de profil */}
         <div className="user-picture flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-24 h-24 md:w-36 md:h-36">
           <img
-            src={`${process.env.REACT_APP_API_URL}/${user.picture?.replace(
-              /^\//,
-              ""
-            )}`}
+            src={`${
+              process.env.REACT_APP_API_URL
+            }/${viewedUser?.picture?.replace(/^\//, "")}`}
             alt="user"
             className="w-full h-full rounded-full object-cover object-center"
           />
@@ -50,13 +79,21 @@ const ViewProfil = () => {
         <div className="user-info flex flex-col space-y-4 text-center md:text-left">
           {/* Nom de l'utilisateur et bouton de modification */}
           <div className="user-name">
-            <h1 className="text-2xl font-semibold">{user.userName} </h1>
-            <button
-              onClick={() => navigate("/edit-profil")}
-              className="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition duration-200"
-            >
-              Modifier le profil
-            </button>
+            <h1 className="text-2xl font-semibold">{viewedUser?.userName} </h1>
+            {
+              /* Vérifie si l'utilisateur est connecté et s'il s'agit de son propre profil */
+              currentUserUid && currentUserUid === viewedUser._id && (
+                //currentUserUid === userId &&
+                // Si l'utilisateur est connecté et que c'est son propre profil, afficher le bouton de modification
+                <button
+                  onClick={() => navigate("/edit-profil")}
+                  className="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition duration-200"
+                >
+                  Modifier le profil
+                </button>
+              )
+            }
+            {viewedUser && <FollowAction followerId={viewedUser._id!} />}
           </div>
 
           {/* Informations de suivi */}
@@ -66,24 +103,34 @@ const ViewProfil = () => {
               publications
             </div>
             <div className="user-follower text-gray-600">
-              <span className="font-bold text-lg">134</span> Followers
+              <span className="font-bold text-lg">
+                {viewedUser?.followers?.length}
+              </span>{" "}
+              Followers
             </div>
             <div className="user-following text-gray-600">
-              <span className="font-bold text-lg">134</span> Following
+              <span className="font-bold text-lg">
+                {viewedUser?.following?.length}
+              </span>{" "}
+              Suivi(e)s
             </div>
           </div>
 
           {/* Biographie de l'utilisateur */}
           <div className="user-bio text-gray-700">
-            <p className="font-bold text-black">{user.name}</p>
-            <p>{user.bio}</p>
+            <p className="font-bold text-black">{viewedUser?.name}</p>
+            <p>{viewedUser?.bio}</p>
           </div>
         </div>
       </div>
 
       {/* Section des posts */}
       <div className="border-t-2 border-gray-300">
+        {/* Affichage des posts de l'utilisateur 
+         Passer l'ID de l'utilisateur au composant NavProfil avec le contexte */}
+        {/* <ProfilUserContext.Provider value={userId}> */}
         <NavProfil />
+        {/* </ProfilUserContext.Provider> */}
       </div>
     </>
   );

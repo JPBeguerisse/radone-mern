@@ -12,21 +12,21 @@ export const usePostStatus = (post: Post, userId: string) => {
   };
 };
 
-export const useCommentStatus = (
-  comment: Comment | undefined,
-  userId: string
-) => {
-  const isLiked = includesUser(comment?.likers, userId);
+// export const useCommentStatus = (
+//   comment: Comment | undefined,
+//   userId: string
+// ) => {
+//   const isLiked = includesUser(comment?.likers, userId);
 
-  return isLiked;
-};
+//   return isLiked;
+// };
 
 export const useUserRelations = (targetUser: User, currentUserId: string) => {
   const isFollowing = includesUser(targetUser.followers, currentUserId);
-  const isFollowedBy = includesUser(targetUser.following, currentUserId); // si tu veux aussi ça
+  //const isFollowedBy = includesUser(targetUser.following, currentUserId);
 
   return {
     isFollowing,
-    isFollowedBy,
+    //isFollowedBy,
   };
 };

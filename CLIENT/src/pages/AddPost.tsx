@@ -48,7 +48,7 @@ const AddPost: React.FC = () => {
   // Fermeture du modal
   const handleCloseModal = () => {
     setIsOpen(false);
-    navigate("/profil");
+    navigate("/");
   };
 
   return (
