@@ -7,6 +7,7 @@ import { loginUser } from "src/services/userService";
 import { z } from "zod";
 import { UserContext } from "../AppContext";
 import { api } from "src/api/api";
+import { Eye, EyeClosed } from "lucide-react";
 
 export const userLoginSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -16,8 +17,7 @@ export const userLoginSchema = z.object({
 const Login = () => {
   const navigate = useNavigate();
   const userContext = useContext(UserContext);
-  //console.log("Set", setUid);
-
+  const [showPassword, setShowPassword] = useState(false);
   type userLoginForm = z.infer<typeof userLoginSchema>;
 
   const {
@@ -90,7 +90,7 @@ const Login = () => {
           <div className="text-red-500 text-sm">{errors.email.message}</div>
         )}
       </div>
-      <div>
+      <div className="relative">
         <label
           htmlFor="password"
           className="block text-sm font-medium text-gray-600"
@@ -99,11 +99,22 @@ const Login = () => {
         </label>
         <input
           {...register("password")}
-          type="password"
+          type={showPassword ? "text" : "password"}
           id="password"
           name="password"
           className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
         />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-10 text-gray-800"
+        >
+          {showPassword ? (
+            <EyeClosed width={15} height={15} />
+          ) : (
+            <Eye width={15} height={15} />
+          )}
+        </button>
         {errors.password && (
           <div className="text-red-500 text-sm">{errors.password.message}</div>
         )}

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createUser } from "src/services/userService";
 import { toast } from "react-toastify";
+import { Eye, EyeClosed } from "lucide-react";
 
 export const userRegisterSchema = z
   .object({
@@ -30,7 +31,8 @@ export const userRegisterSchema = z
 
 const Register = () => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
   type userRegisterForm = z.infer<typeof userRegisterSchema>;
 
   const {
@@ -136,7 +138,7 @@ const Register = () => {
               <div className="text-red-500 text-sm">{errors.email.message}</div>
             )}
           </div>
-          <div>
+          <div className="relative">
             <label
               htmlFor="password"
               className="block text-sm font-medium text-gray-600"
@@ -145,18 +147,29 @@ const Register = () => {
             </label>
             <input
               {...register("password")}
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
             />
+            <button
+              type="button"
+              className="absolute right-2 top-10 text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeClosed width={15} height={15} />
+              ) : (
+                <Eye width={15} height={15} />
+              )}
+            </button>
             {errors.password && (
               <div className="text-red-500 text-sm">
                 {errors.password.message}
               </div>
             )}
           </div>
-          <div>
+          <div className="relative">
             <label
               htmlFor="passwordRepeat"
               className="block text-sm font-medium text-gray-600"
@@ -165,11 +178,22 @@ const Register = () => {
             </label>
             <input
               {...register("passwordRepeat")}
-              type="password"
+              type={showPasswordRepeat ? "text" : "password"}
               id="passwordRepeat"
               name="passwordRepeat"
               className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
             />
+            <button
+              type="button"
+              className="absolute right-2 top-10 text-gray-500"
+              onClick={() => setShowPasswordRepeat(!showPasswordRepeat)}
+            >
+              {showPasswordRepeat ? (
+                <EyeClosed width={15} height={15} />
+              ) : (
+                <Eye width={15} height={15} />
+              )}
+            </button>
             {errors.passwordRepeat && (
               <div className="text-red-500 text-sm">
                 {errors.passwordRepeat.message}
