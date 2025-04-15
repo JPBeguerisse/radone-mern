@@ -5,6 +5,5 @@ type UserContextType = {
   setUid: Dispatch<SetStateAction<any>>;
 };
 
-const UserContext = React.createContext<UserContextType | null>(null);
-
-export default UserContext;
+export const UserContext = React.createContext<UserContextType | null>(null);
+export const ProfilUserContext = React.createContext<string | null>(null);

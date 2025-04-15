@@ -37,3 +37,7 @@ export type UpdateUserPayload = {
   oldPassword?: string;
   newPassword?: string;
 };
+
+export interface ProfilProps {
+  userId?: string;
+}

@@ -7,13 +7,14 @@ import useMediaQuery from "../../hooks/useMediaQuery"; // 🔹 Import du hook
 import {
   deleteCommentRequested,
   deletePostRequested,
+  getPostsRequested,
 } from "src/redux/reducers/posts.reducer";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { fr } from "date-fns/locale";
 import CommentList from "./CommentList";
 import PostButtonAction from "./PostButtonAction";
-import UserContext from "../AppContext";
+import { UserContext } from "../AppContext";
 import { FollowAction } from "../profil/FollowAction";
+import { useNavigate } from "react-router-dom";
 
 export const PostView: React.FC<PostModalViewProps> = ({
   post,
@@ -50,6 +51,8 @@ export const PostView: React.FC<PostModalViewProps> = ({
     setShowDeleteModal(true);
   };
 
+  const navigate = useNavigate();
+
   const handleDeleteConfirmed = () => {
     if (itemToDelete) {
       if (itemToDelete.type === "comment") {
@@ -65,6 +68,18 @@ export const PostView: React.FC<PostModalViewProps> = ({
       }
     }
     setShowDeleteModal(false);
+  };
+
+  // const handleGoProfile = (userId: string) => {
+  //   navigate(`/profil/${userId}?tab=posts`);
+  //   onClose();
+  //   dispatch(getPostsRequested());
+  // };
+
+  const handleGoProfile = (userName: string) => {
+    navigate(`/profil/${userName}?tab=posts`);
+    onClose();
+    dispatch(getPostsRequested());
   };
 
   return isOpen ? (
@@ -154,7 +169,12 @@ export const PostView: React.FC<PostModalViewProps> = ({
                       />
                       <div className="w-full">
                         <div className="flex gap-2 items-center">
-                          <p className="font-bold">{user?.userName}</p>
+                          <p
+                            className="font-bold cursor-pointer"
+                            onClick={() => handleGoProfile(user.userName!)}
+                          >
+                            {user?.userName}
+                          </p>
                           <FollowAction followerId={user._id!} />
                         </div>
                         {isEditing ? (
@@ -236,6 +256,7 @@ export const PostView: React.FC<PostModalViewProps> = ({
                 post={post}
                 usersData={usersData}
                 onDelete={confirmDelete}
+                onClose={onClose}
               />
               <div className="w-full border-t border-gray-200 p-4 sticky bottom-0">
                 <FormAddComment
@@ -252,6 +273,7 @@ export const PostView: React.FC<PostModalViewProps> = ({
                 post={post}
                 usersData={usersData}
                 onDelete={confirmDelete}
+                onClose={onClose}
               />
               <div className="p-2 border-t border-gray-200">
                 <PostButtonAction

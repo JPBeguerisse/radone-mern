@@ -139,6 +139,7 @@ export const {
   unfollowUserSuccess,
   unfollowUserFailed,
 } = userSlice.actions;
+
 export const userReducer = userSlice.reducer;
 
 // export default function userReducer(state = initialState, action: UserActions){

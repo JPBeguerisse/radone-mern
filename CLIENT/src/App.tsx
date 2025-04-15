@@ -3,7 +3,7 @@ import "./App.css";
 import Routes from "./components/Routes";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import UserContext from "./components/AppContext";
+import { UserContext } from "./components/AppContext";
 import { getUserRequested } from "./redux/reducers/user.reducer";
 import { ToastContainer } from "react-toastify";
 

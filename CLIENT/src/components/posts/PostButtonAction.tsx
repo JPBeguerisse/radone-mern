@@ -4,7 +4,7 @@ import { Post } from "src/types/post.types";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { current } from "@reduxjs/toolkit";
-import UserContext from "../AppContext";
+import { UserContext } from "../AppContext";
 import { useDispatch } from "react-redux";
 import {
   unLikePostRequested,

@@ -1,17 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { User } from "../types/user.types";
 import ViewProfil from "../components/profil/ViewProfil";
-import UserContext from "src/components/AppContext";
+import { ProfilUserContext, UserContext } from "src/components/AppContext";
+import { useParams } from "react-router-dom";
 
 const Profil: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false); // Gérer l'ouverture de la sidebar
-  const userContext = useContext(UserContext);
-  const currentUserUid = userContext?.uid;
-
+  //const currentUserUid = userContext?.uid;
+  //const { id: userId } = useParams();
+  const { id: userName } = useParams();
+  // console.log("userName profil", userName);
   return (
     <div className="">
-      <ViewProfil userId={currentUserUid!} />
+      <ProfilUserContext.Provider value={userName!}>
+        <ViewProfil />
+      </ProfilUserContext.Provider>
     </div>
   );
 };

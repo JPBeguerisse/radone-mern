@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "src/services/userService";
 import { z } from "zod";
-import UserContext from "../AppContext";
+import { UserContext } from "../AppContext";
 import { api } from "src/api/api";
 
 export const userLoginSchema = z.object({

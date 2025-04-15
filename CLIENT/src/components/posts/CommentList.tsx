@@ -1,27 +1,34 @@
 import { Heart, Trash2 } from "lucide-react";
-import React, { useContext } from "react";
-import { Post } from "src/types/post.types";
+import React, { useCallback, useContext } from "react";
+import { Comment, Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import UserContext from "../AppContext";
+import { UserContext } from "../AppContext";
 import { useDispatch } from "react-redux";
 import {
+  getPostsRequested,
   likeCommentRequested,
   unLikeCommentRequested,
 } from "src/redux/reducers/posts.reducer";
-import { includesUser } from "src/utils/includesUser";
+import { useNavigate } from "react-router-dom";
+
 interface CommentListProps {
   post: Post;
   usersData: User[];
   onDelete: (commentId: string, type: "post" | "comment") => void;
+  onClose: () => void; // pour pouvoir fermer le modal aussi depuis ce composant
 }
 
 const CommentList: React.FC<CommentListProps> = ({
   post,
   usersData,
   onDelete,
+  onClose,
 }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
 
@@ -37,7 +44,38 @@ const CommentList: React.FC<CommentListProps> = ({
     }));
   };
 
-  const dispatch = useDispatch();
+  const handleLikeComment = useCallback(
+    (postId: string, comment: Comment, userId: string) => {
+      dispatch(
+        likeCommentRequested({
+          postId: postId!,
+          commentId: comment._id,
+          userId: userId!,
+        })
+      );
+    },
+    [currentUserUid]
+  );
+
+  const handleUnlikeComment = useCallback(
+    (postId: string, comment: Comment, userId: string) => {
+      dispatch(
+        unLikeCommentRequested({
+          postId: postId!,
+          commentId: comment._id,
+          userId: userId!,
+        })
+      );
+    },
+    [currentUserUid] // relancer la fonction si currentUserUid change sinon on ne relance pas la fonction
+  );
+
+  const handleGoProfile = (userName: string) => {
+    navigate(`/profil/${userName}?tab=posts`);
+    onClose(); //pour fermer le modal
+    dispatch(getPostsRequested());
+  };
+
   return (
     <div className="flex-1 overflow-auto p-2 gap-4">
       {post && post.comments?.length! > 0 ? (
@@ -55,8 +93,11 @@ const CommentList: React.FC<CommentListProps> = ({
                   </div>
                   <div className="flex justify-between items-center w-full">
                     <div>
-                      <p className="font-bold">
-                        {user.name} {user.userName}
+                      <p
+                        className="font-bold cursor-pointer"
+                        onClick={() => handleGoProfile(user.userName!)}
+                      >
+                        {user.userName}
                       </p>
                       <p className="text-gray-800">
                         {isExpandedText[comment._id] ||
@@ -99,12 +140,10 @@ const CommentList: React.FC<CommentListProps> = ({
                           height={15}
                           fill="currentColor"
                           onClick={() =>
-                            dispatch(
-                              unLikeCommentRequested({
-                                postId: post._id!,
-                                commentId: comment._id,
-                                userId: currentUserUid,
-                              })
+                            handleUnlikeComment(
+                              post._id!,
+                              comment,
+                              currentUserUid!
                             )
                           }
                         />
@@ -114,12 +153,10 @@ const CommentList: React.FC<CommentListProps> = ({
                           width={15}
                           height={15}
                           onClick={() =>
-                            dispatch(
-                              likeCommentRequested({
-                                postId: post._id!,
-                                commentId: comment._id,
-                                userId: currentUserUid!,
-                              })
+                            handleLikeComment(
+                              post._id!,
+                              comment,
+                              currentUserUid!
                             )
                           }
                         />

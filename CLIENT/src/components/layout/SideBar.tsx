@@ -1,7 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import UserContext from "../AppContext";
+import { UserContext } from "../AppContext";
 import Logout from "../log/Logout";
+import { useSelector } from "react-redux";
+import { User } from "src/types/user.types";
 
 interface SideBarProps {
   isOpen: boolean;
@@ -9,7 +11,9 @@ interface SideBarProps {
 }
 
 const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
-  const user = useContext(UserContext);
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
+  const currentUser = useSelector((state: User) => state.userReducer.user);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -43,7 +47,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
               Accueil
             </NavLink>
 
-            {user?.uid ? (
+            {currentUserUid ? (
               <>
                 <NavLink
                   to="/ajouter"
@@ -53,7 +57,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                   Créer +
                 </NavLink>
                 <NavLink
-                  to="/profil"
+                  to={currentUser && `/profil/${currentUser.userName}`}
                   className="hover:text-gray-300"
                   onClick={toggleSidebar}
                 >
@@ -72,7 +76,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
           </div>
 
           <div className="nav-footer mt-auto">
-            {user?.uid && (
+            {currentUserUid && (
               <>
                 <NavLink
                   to="/profil"

@@ -24,6 +24,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import {
   followUser,
   getUser,
+  getUserByUsername,
   removePicture,
   unFollowUser,
   updatePicture,
@@ -32,6 +33,11 @@ import {
 import { any } from "zod";
 import { toast } from "react-toastify";
 import { getUsersRequested } from "../reducers/users.reducer";
+import {
+  getUserByUsernameFailed,
+  getUserByUsernameRequested,
+  getUserByUsernameSuccess,
+} from "../reducers/viewed-user.reducer";
 
 let selectedFile: File | null = null;
 
@@ -39,6 +45,7 @@ export function setSelectedPicture(file: File | null) {
   selectedFile = file;
 }
 
+// fonction pour récupérer un utilisateur
 function* handleGetUser(
   action: PayloadAction<string>
 ): Generator<any, void, User> {
@@ -52,6 +59,21 @@ function* handleGetUser(
   }
 }
 
+// // fonction pour récupérer un utilisateur par son username
+// function* handleGetUserByUsername(
+//   action: PayloadAction<string>
+// ): Generator<any, void, User> {
+//   try {
+//     const token = localStorage.getItem("accessToken");
+//     const user = yield call(getUserByUsername, action.payload);
+//     console.log("USER RES", user);
+//     yield put(getUserByUsernameSuccess(user));
+//   } catch (error: any) {
+//     yield put(getUserByUsernameFailed(error.message));
+//   }
+// }
+
+// fonction pour mettre à jour un utilisateur
 function* handleUpdateUser(
   action: PayloadAction<{ id: string; data: UpdateUserPayload }>
 ): Generator<any, void, User> {
@@ -64,6 +86,7 @@ function* handleUpdateUser(
     );
 
     yield put(updateUserSuccess(updatedUser));
+    yield put(getUsersRequested());
     toast.success("Profil mis à jour avec succès !");
   } catch (error: any) {
     const response = error?.response?.data;
@@ -175,6 +198,7 @@ export default function* userSaga() {
   yield takeLatest(removePictureRequested.type, handleRemovePictureUser);
   yield takeLatest(followUserRequested.type, handleFollowUser);
   yield takeLatest(unfollowUserRequested.type, handleUnfollowUser);
+  // yield takeLatest(getUserByUsernameRequested.type, handleGetUserByUsername);
 }
 
 // // `action` est passé à `getUser`, qui contient le `uid` dans `action.uid`
