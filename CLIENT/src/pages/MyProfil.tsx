@@ -1,49 +1,43 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ProfilProps, User, UserState } from "../../types/user.types";
-import NavProfil from "./NavProfil";
-import { Post } from "src/types/post.types";
 import { useNavigate } from "react-router-dom";
-import { FollowAction } from "./FollowAction";
-import { ProfilUserContext, UserContext } from "../AppContext";
+import { ProfilUserContext, UserContext } from "src/components/AppContext";
+import { FollowAction } from "src/components/profil/FollowAction";
+import NavProfil from "src/components/profil/NavProfil";
+import { getUserRequested } from "src/redux/reducers/user.reducer";
 import {
   getPostsByUserRequested,
   getUserByUsernameRequested,
 } from "src/redux/reducers/viewed-user.reducer";
+import { Post } from "src/types/post.types";
+import { User } from "src/types/user.types";
 
-const ViewProfil: React.FC = () => {
-  const userName = useContext(ProfilUserContext);
-  const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
+export const MyProfil: React.FC = () => {
+  const user = useSelector((state: User) => state.userReducer.user);
   // const posts = useSelector((state: any) => state.postsReducer.posts);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
-  const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
+  const postsUser = useSelector((state: any) => state.userReducer.posts);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userName) {
-      dispatch(getPostsByUserRequested(userName!));
+    if (user) {
+      dispatch(getPostsByUserRequested(user!));
     }
-  }, [userName, dispatch]);
+  }, [user, dispatch]);
 
   useEffect(() => {
-    if (userName) {
-      dispatch(getUserByUsernameRequested(userName));
-    }
-  }, [userName, navigate]);
-
-  useEffect(() => {
-    if (postsUser && viewedUser && postsUser.length > 0) {
+    if (postsUser && user && postsUser.length > 0) {
       const countPost = postsUser.filter(
-        (post: Post) => post.posterId === viewedUser._id
+        (post: Post) => post.posterId === user._id
       ).length;
       setPostsUserLenght(countPost);
     }
-  }, [postsUser, viewedUser]);
+  }, [postsUser, user]);
 
-  if (!userName || !viewedUser) {
+  if (!user) {
     // Si l'utilisateur n'est pas trouvé ou si les données de l'utilisateur ne sont pas disponibles, afficher un message de chargement
     return (
       <p className="text-center text-gray-500">Chargement des données...</p>
@@ -56,9 +50,10 @@ const ViewProfil: React.FC = () => {
         {/* Section de l'image de profil */}
         <div className="user-picture flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-24 h-24 md:w-36 md:h-36">
           <img
-            src={`${
-              process.env.REACT_APP_API_URL
-            }/${viewedUser?.picture?.replace(/^\//, "")}`}
+            src={`${process.env.REACT_APP_API_URL}/${user?.picture?.replace(
+              /^\//,
+              ""
+            )}`}
             alt="user"
             className="w-full h-full rounded-full object-cover object-center"
           />
@@ -68,10 +63,10 @@ const ViewProfil: React.FC = () => {
         <div className="user-info flex flex-col space-y-4 text-center md:text-left">
           {/* Nom de l'utilisateur et bouton de modification */}
           <div className="user-name">
-            <h1 className="text-2xl font-semibold">{viewedUser?.userName} </h1>
+            <h1 className="text-2xl font-semibold">{user?.userName} </h1>
             {
               /* Vérifie si l'utilisateur est connecté et s'il s'agit de son propre profil */
-              currentUserUid && currentUserUid === viewedUser._id && (
+              currentUserUid && currentUserUid === user._id && (
                 //currentUserUid === userId &&
                 // Si l'utilisateur est connecté et que c'est son propre profil, afficher le bouton de modification
                 <button
@@ -82,7 +77,6 @@ const ViewProfil: React.FC = () => {
                 </button>
               )
             }
-            {viewedUser && <FollowAction followerId={viewedUser._id!} />}
           </div>
 
           {/* Informations de suivi */}
@@ -93,13 +87,13 @@ const ViewProfil: React.FC = () => {
             </div>
             <div className="user-follower text-gray-600">
               <span className="font-bold text-lg">
-                {viewedUser?.followers?.length}
+                {user?.followers?.length}
               </span>{" "}
               Followers
             </div>
             <div className="user-following text-gray-600">
               <span className="font-bold text-lg">
-                {viewedUser?.following?.length}
+                {user?.following?.length}
               </span>{" "}
               Suivi(e)s
             </div>
@@ -107,8 +101,8 @@ const ViewProfil: React.FC = () => {
 
           {/* Biographie de l'utilisateur */}
           <div className="user-bio text-gray-700">
-            <p className="font-bold text-black">{viewedUser?.name}</p>
-            <p>{viewedUser?.bio}</p>
+            <p className="font-bold text-black">{user?.name}</p>
+            <p>{user?.bio}</p>
           </div>
         </div>
       </div>
@@ -118,11 +112,9 @@ const ViewProfil: React.FC = () => {
         {/* Affichage des posts de l'utilisateur 
          Passer l'ID de l'utilisateur au composant NavProfil avec le contexte */}
         {/* <ProfilUserContext.Provider value={userId}> */}
-        <NavProfil user={viewedUser} />
+        <NavProfil user={user} />
         {/* </ProfilUserContext.Provider> */}
       </div>
     </>
   );
 };
-
-export default ViewProfil;

@@ -16,6 +16,7 @@ interface PostHomeCardProps {
 const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.userReducer.user);
   const users = useSelector((state: any) => state.usersReducer.users);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -29,8 +30,13 @@ const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
   };
 
   const handleGoProfile = (userName: string) => {
-    navigate(`/profil/${userName}?tab=posts`);
-    dispatch(getUserByUsernameRequested(userName));
+    if (userName === user.userName) {
+      navigate("/my-profil");
+    } else {
+      navigate(`/profil/${userName}?tab=posts`);
+
+      dispatch(getUserByUsernameRequested(userName));
+    }
   };
 
   return (

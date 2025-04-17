@@ -57,7 +57,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                   Créer +
                 </NavLink>
                 <NavLink
-                  to={currentUser && `/profil/${currentUser.userName}`}
+                  to={"/my-profil"}
                   className="hover:text-gray-300"
                   onClick={toggleSidebar}
                 >

@@ -22,6 +22,9 @@ import {
   getPostsSavedFailed,
   getPostsSavedSuccess,
   getPostsSavedRequested,
+  getPostsUserFailed,
+  getPostsUserSuccess,
+  getPostsUserRequested,
 } from "../reducers/user.reducer";
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -36,7 +39,12 @@ import {
 import { toast } from "react-toastify";
 import { getUsersRequested } from "../reducers/users.reducer";
 import { Post } from "src/types/post.types";
-import { getSavedPostsByUser } from "src/services/postService";
+import {
+  getPostsByUser,
+  getPostsByUserId,
+  getSavedPostsByUser,
+} from "src/services/postService";
+import { getUserByUsernameRequested } from "../reducers/viewed-user.reducer";
 
 let selectedFile: File | null = null;
 
@@ -71,6 +79,19 @@ function* handleGetUser(
 //     yield put(getUserByUsernameFailed(error.message));
 //   }
 // }
+
+// fonction pour récupérer les publications d'un utilisateur
+function* handleGetPostsUser(
+  action: PayloadAction<string>
+): Generator<any, void, Post[]> {
+  try {
+    const token = localStorage.getItem("accessToken");
+    const posts = yield call(getPostsByUserId, action.payload);
+    yield put(getPostsUserSuccess(posts));
+  } catch (error: any) {
+    yield put(getPostsUserFailed(error.message));
+  }
+}
 
 // fonction pour récupérer les publications sauvegarder d'un utilisateur
 function* handleGetPostsSaved(
@@ -168,8 +189,10 @@ function* handleFollowUser(
       action.payload.userIdToFollow
     );
     yield put(followUserSuccess(followedUser));
-    const user = yield call(getUser, action.payload.userId);
+    const user = yield call(getUser, action.payload.userIdToFollow);
+    console.log("USER FOLLOWED", user);
     yield put(getUsersRequested());
+    yield put(getUserByUsernameRequested(user.userName));
   } catch (error: any) {
     yield put(followUserFailed(error.message));
   }
@@ -196,6 +219,8 @@ function* handleUnfollowUser(
 
     yield put(unfollowUserSuccess(unfollowedUser));
     yield put(getUsersRequested());
+    const user = yield call(getUser, action.payload.userIdToUnfollow);
+    yield put(getUserByUsernameRequested(user.userName));
   } catch (error: any) {
     yield put(unfollowUserFailed(error.message));
   }
@@ -211,5 +236,6 @@ export default function* userSaga() {
   yield takeLatest(followUserRequested.type, handleFollowUser);
   yield takeLatest(unfollowUserRequested.type, handleUnfollowUser);
   yield takeLatest(getPostsSavedRequested.type, handleGetPostsSaved);
+  yield takeLatest(getPostsUserRequested.type, handleGetPostsUser);
   // yield takeLatest(getUserByUsernameRequested.type, handleGetUserByUsername);
 }

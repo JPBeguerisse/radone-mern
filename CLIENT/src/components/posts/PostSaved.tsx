@@ -17,6 +17,8 @@ const PostSaved = () => {
 
   const dispatch = useDispatch();
 
+  console?.log("savedPosts", savedPosts);
+
   // Lance une action pour récupérer les posts sauvegardés de l'utilisateur
   useEffect(() => {
     dispatch(getPostsSavedRequested(currentUserUid!));

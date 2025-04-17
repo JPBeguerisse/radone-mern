@@ -1,46 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Post } from "../../types/post.types";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Post } from "src/types/post.types";
 import {
-  deletePostRequested,
   getPostRequested,
-  getPostsRequested,
   updatePostRequested,
-  updatePostSuccess,
-} from "../../redux/reducers/posts.reducer";
-import { PostView } from "./PostView";
+} from "src/redux/reducers/posts.reducer";
 import { PostImgCard } from "./PostImgCard";
+import { PostView } from "./PostView";
 import { User } from "src/types/user.types";
-import { ProfilUserContext } from "../AppContext";
-import { api } from "src/api/api";
 import { getPostsByUser } from "src/services/postService";
-import { useUserPosts } from "src/hooks/useUserPosts";
-import { getPostsByUserRequested } from "src/redux/reducers/viewed-user.reducer";
+import { UserContext } from "../AppContext";
+import { getPostsUserRequested } from "src/redux/reducers/user.reducer";
 
-interface PostsUserProps {
-  userId?: string;
-}
-
-export const PostsUser: React.FC<PostsUserProps> = () => {
-  //const userData = useSelector((state: any) => state.userReducer.user);
-  const userName = useContext(ProfilUserContext);
-  const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
+export const MyPosts: React.FC = () => {
+  const userContext = React.useContext(UserContext);
+  const currentUserUid = userContext?.uid;
+  const postsUser = useSelector((state: any) => state.userReducer.posts);
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
-  //const [userData, setUserData] = useState<User>();
-  const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
-
-  // useEffect(() => {
-  //   if (viewedUser) {
-  //     setUserData(viewedUser); // Met à jour l'état avec les données de l'utilisateur
-  //   }
-  // }, [userName, viewedUser]);
 
   useEffect(() => {
-    if (userName) {
-      dispatch(getPostsByUserRequested(userName!));
+    if (currentUserUid) {
+      dispatch(getPostsUserRequested(currentUserUid));
     }
-  }, [userName]);
+  }, [currentUserUid]);
 
   const [editedMessage, setEditedMessage] = useState<string>("");
   const [editMode, setEditMode] = useState(false);

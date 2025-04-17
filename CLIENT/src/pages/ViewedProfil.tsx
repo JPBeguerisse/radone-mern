@@ -3,7 +3,7 @@ import ViewProfil from "../components/profil/ViewProfil";
 import { ProfilUserContext, UserContext } from "src/components/AppContext";
 import { useParams } from "react-router-dom";
 
-const Profil: React.FC = () => {
+const ViewedProfil: React.FC = () => {
   //const currentUserUid = userContext?.uid;
   //const { id: userId } = useParams();
   const { id: userName } = useParams();
@@ -17,4 +17,4 @@ const Profil: React.FC = () => {
   );
 };
 
-export default Profil;
+export default ViewedProfil;

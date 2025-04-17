@@ -7,7 +7,7 @@ import {
   unfollowUserRequested,
 } from "src/redux/reducers/user.reducer";
 import { includesUser } from "src/utils/includesUser";
-import Profil from "src/pages/Profil";
+import ViewedProfil from "src/pages/ViewedProfil";
 import { get } from "http";
 import { getUser } from "src/services/userService";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";

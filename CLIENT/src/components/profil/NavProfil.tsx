@@ -6,30 +6,36 @@ import { PostsUser } from "../../components/posts/PostsUser";
 import { Bookmark, GalleryVerticalEnd } from "lucide-react";
 import { ProfilUserContext, UserContext } from "../AppContext";
 import { useSearchParams } from "react-router-dom";
-import { User } from "src/types/user.types";
+import { User, UsersState, UserState } from "src/types/user.types";
+import { MyPosts } from "../posts/MyPosts";
 
-const NavProfil: React.FC = () => {
+interface NavProfilProps {
+  user: User;
+}
+
+const NavProfil: React.FC<NavProfilProps> = ({ user }) => {
   const userName = useContext(ProfilUserContext);
   const currentUserUid = useContext(UserContext)?.uid;
   const users = useSelector((state: User) => state.usersReducer.users);
-  const [userData, setUserData] = useState<User>();
+  //const [userData, setUserData] = useState<User>();
 
   const [postsUser, setPostsUser] = useState<boolean>(true);
   const [postsSavedByUser, setPostsSavedByUser] = useState<boolean>(false);
   //const posts = useSelector((state: any) => state.postsReducer.pots);
 
-  useEffect(() => {
-    if (userName && users.length > 0) {
-      //extraire le user dans le state
-      const user = users.find((user: User) => user.userName === userName);
-      setUserData(user); // Met à jour l'état avec les données de l'utilisateur
-    }
-  }, [userName, users]);
+  // useEffect(() => {
+  //   if (userName && users.length > 0) {
+  //     //extraire le user dans le state
+  //     const user = users.find((user: User) => user.userName === userName);
+  //     setUserData(user); // Met à jour l'état avec les données de l'utilisateur
+  //   }
+  // }, [userName, users]);
 
   // Pour récupérer les paramètres de recherche de l'URL
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = searchParams.get("tab");
 
+  console.log("userData", user);
   useEffect(() => {
     if (tab === "posts") {
       setPostsUser(true);
@@ -68,7 +74,7 @@ const NavProfil: React.FC = () => {
           Publications
         </button>
 
-        {userData?._id === currentUserUid && (
+        {user && user?._id === currentUserUid && (
           <button
             onClick={handleModals}
             id="posts-saved-user"
@@ -82,9 +88,18 @@ const NavProfil: React.FC = () => {
         )}
       </div>
 
-      {postsUser && <PostsUser />}
+      {/* {postsUser && <PostsUser />} */}
+      {/* {postsUser && user && user?._id === currentUserUid ? (
+        <MyPosts />
+      ) : (
+        <PostsUser />
+      )}
 
-      {postsSavedByUser && userData?._id === currentUserUid && <PostSaved />}
+      {postsSavedByUser && user._id === currentUserUid && <PostSaved />} */}
+      {postsUser &&
+        (user && user._id === currentUserUid ? <MyPosts /> : <PostsUser />)}
+
+      {postsSavedByUser && user._id === currentUserUid && <PostSaved />}
     </div>
   );
 };
