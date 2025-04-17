@@ -56,6 +56,7 @@ import {
 } from "../../services/postService";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
+import { getPostsSavedRequested } from "../reducers/user.reducer";
 
 let selectedFile: File | null = null;
 
@@ -291,7 +292,9 @@ function* handleSavePost(
     );
     console.log("Post sauvegardé :", savedPost);
     yield put(savePostSuccess(savedPost));
-    yield put(getPostRequested(action.payload.postId));
+    yield put(getPostRequested(action.payload.postId)); // Mettre à jour le post sauvegardé sur le store
+    // Rafraîchir la liste des posts sauvegardés
+    yield put(getPostsSavedRequested(action.payload.userId));
   } catch (error: any) {
     console.error("Erreur lors de l'ajout du post aux favoris :", error);
     yield put(savePostFailed(error.message));
@@ -310,7 +313,8 @@ function* handleUnSavePost(
     );
     console.log("Post retiré :", unSavedPost);
     yield put(unSavePostSuccess(unSavedPost));
-    yield put(getPostRequested(action.payload.postId));
+    yield put(getPostRequested(action.payload.postId)); // Mettre à jour le post sauvegardé sur le store
+    yield put(getPostsSavedRequested(action.payload.userId)); // Rafraîchir la liste des posts sauvegardés
   } catch (error: any) {
     console.error("Erreur lors de l'ajout du post aux favoris :", error);
     yield put(unSavePostFailed(error.message));

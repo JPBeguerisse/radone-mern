@@ -1,8 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Post, PostsState } from "../../types/post.types";
-import { act } from "react";
-import { error } from "console";
-import { savePost } from "src/services/postService";
 
 const initialState: PostsState = {
   posts: null,

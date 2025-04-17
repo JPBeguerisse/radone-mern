@@ -29,6 +29,18 @@ export const getPost = async (id: string): Promise<Post> => {
   return response.data;
 };
 
+// Récupère les publications d'un utilisateur
+export const getPostsByUser = async (username: string): Promise<Post[]> => {
+  const response = await api.get(`/post/user/${username}`);
+  return response.data;
+};
+
+// Récupère les publications sauvegardées
+export const getSavedPostsByUser = async (userId: string): Promise<Post[]> => {
+  const response = await api.get(`/post/saved/${userId}`);
+  return response.data;
+};
+
 /** ⚙️ Mettre à jour un post */
 export const updatePost = async (
   id: string,

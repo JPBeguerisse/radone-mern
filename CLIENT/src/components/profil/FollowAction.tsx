@@ -1,18 +1,24 @@
 import React, { useCallback, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { UserContext } from "../AppContext";
+import { ProfilUserContext, UserContext } from "../AppContext";
 import { User } from "src/types/user.types";
 import {
   followUserRequested,
   unfollowUserRequested,
 } from "src/redux/reducers/user.reducer";
 import { includesUser } from "src/utils/includesUser";
+import Profil from "src/pages/Profil";
+import { get } from "http";
+import { getUser } from "src/services/userService";
+import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
 
 export interface FollowActionProps {
   followerId?: string;
 }
 
 export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
+  const userName = useContext(ProfilUserContext);
+  console.log("userName", userName);
   const dispatch = useDispatch();
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
@@ -31,6 +37,7 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
         userIdToFollow: followerId!,
       })
     );
+    dispatch(getUserByUsernameRequested(userName!));
   }, [dispatch, currentUserUid, followerId]);
 
   const handleUnfollow = useCallback(() => {
@@ -44,6 +51,7 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
         userIdToUnfollow: followerId!,
       })
     );
+    dispatch(getUserByUsernameRequested(userName!));
   }, [dispatch, currentUserUid, followerId]);
 
   // Vérifie si l'utilisateur est déjà suivi

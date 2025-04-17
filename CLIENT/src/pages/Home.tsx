@@ -2,18 +2,24 @@ import React, { useEffect } from "react";
 import NavBar from "../components/layout/SideBar";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import PostHomeCard from "src/components/posts/PostHomeCard";
 
-const Home: React.FC = () => {
+export const Home: React.FC = () => {
   const dispatch = useDispatch();
+  const posts = useSelector((state: any) => state.postsReducer.posts);
+  const error = useSelector((state: any) => state.postsReducer.error);
 
-  // useEffect(() => {
-  //     dispatch({type: "GET_POSTS_REQUESTED"})
-  // }, [dispatch])
+  const [loadPosts, setLoadPosts] = React.useState(false);
 
-  // const posts = useSelector((state: any) => state.postsReducer.posts);
-  // console.log(posts);
-
-  return <div>hello</div>;
+  if (!posts || posts.length === 0) {
+    return (
+      <p className="text-center text-gray-500">Chargement des données...</p>
+    );
+  }
+  return (
+    <div className="p-8">
+      {posts &&
+        posts.map((post: any) => <PostHomeCard key={post._id} post={post} />)}
+    </div>
+  );
 };
-
-export default Home;

@@ -16,9 +16,10 @@ import { usePostStatus } from "src/hooks/usePostStatus";
 
 interface PostButtonActionProps {
   showComments: boolean;
-  onToggleComments: (value: boolean) => void;
+  onToggleComments?: (value: boolean) => void;
   post: Post;
   isMobile?: boolean;
+  onOpenPostView?: () => void; // Fonction pour ouvrir le modal de la publication
 }
 
 const PostButtonAction: React.FC<PostButtonActionProps> = ({
@@ -26,6 +27,7 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
   onToggleComments,
   post,
   isMobile,
+  onOpenPostView,
 }) => {
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
@@ -86,7 +88,12 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
               <Heart width={30} height={30} />
             </button>
           )}
-          <button onClick={() => onToggleComments(!showComments)}>
+          <button
+            onClick={() => {
+              onToggleComments && onToggleComments(!showComments);
+              onOpenPostView && onOpenPostView(); // Ouvre le modal de la publication = handleOpenModal
+            }}
+          >
             <MessageCircle width={30} height={30} />
           </button>
         </div>
@@ -131,7 +138,10 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
         ) : null}
         {isMobile && post.comments?.length! > 0 && (
           <p
-            onClick={() => onToggleComments(!showComments)}
+            onClick={() => {
+              onToggleComments && onToggleComments(!showComments);
+              onOpenPostView && onOpenPostView(); // Ouvre le modal de la publication = handleOpenModal
+            }}
             className="text-gray-400 text-sm"
           >
             Afficher les {post.comments?.length} commentaires

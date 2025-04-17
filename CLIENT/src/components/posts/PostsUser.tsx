@@ -9,9 +9,13 @@ import {
   updatePostSuccess,
 } from "../../redux/reducers/posts.reducer";
 import { PostView } from "./PostView";
-import { Card } from "./Card";
+import { PostImgCard } from "./PostImgCard";
 import { User } from "src/types/user.types";
 import { ProfilUserContext } from "../AppContext";
+import { api } from "src/api/api";
+import { getPostsByUser } from "src/services/postService";
+import { useUserPosts } from "src/hooks/useUserPosts";
+import { getPostsByUserRequested } from "src/redux/reducers/viewed-user.reducer";
 
 interface PostsUserProps {
   userId?: string;
@@ -20,22 +24,18 @@ interface PostsUserProps {
 export const PostsUser: React.FC<PostsUserProps> = () => {
   //const userData = useSelector((state: any) => state.userReducer.user);
   const userName = useContext(ProfilUserContext);
-  const posts = useSelector((state: any) => state.postsReducer.posts);
+  const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
-  const users = useSelector((state: User) => state.usersReducer.users);
   const [userData, setUserData] = useState<User>();
+  const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
 
   useEffect(() => {
-    if (userName && users.length > 0) {
-      //extraire le user dans le state
-      const user = users.find((user: User) => user.userName === userName);
-      setUserData(user); // Met à jour l'état avec les données de l'utilisateur
+    if (viewedUser) {
+      setUserData(viewedUser); // Met à jour l'état avec les données de l'utilisateur
     }
-  }, [userName, users]);
+  }, [userName, viewedUser]);
 
-  //console.log("userData", userData);
-  //console.log("Post sélectionné", selectedPost);
   const [editedMessage, setEditedMessage] = useState<string>("");
   const [editMode, setEditMode] = useState(false);
   const dispatch = useDispatch();
@@ -58,10 +58,6 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
     setIsOpen(false);
   };
 
-  // const handleDelete = (id: string) => {
-  //   dispatch(deletePostRequested(id));
-  // };
-
   const handleSave = () => {
     try {
       const updatedData = { message: editedMessage };
@@ -76,26 +72,15 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
 
   return (
     <div className="flex flex-wrap gap-0.5 justify-center">
-      {/* {posts && posts.length > 0 && userData ? (
-        posts.some((post: Post) => post.posterId === userData._id) ? (
-          posts.map(
-            (post: Post) =>
-              post.posterId === userData._id && (
-                <Card key={post._id} post={post} onOpen={handleOpenModal} />
-              )
-          )
-        ) : (
-          <p>Aucun post</p>
-        )
-      ) : (
-        <p>Aucun post</p>
-      )} */}
-
-      {posts && posts.length > 0 && userData ? (
-        posts.map(
+      {postsUser && postsUser.length > 0 && userData ? (
+        postsUser.map(
           (post: Post) =>
             post.posterId === userData._id && (
-              <Card key={post._id} post={post} onOpen={handleOpenModal} />
+              <PostImgCard
+                key={post._id}
+                post={post}
+                onOpen={handleOpenModal}
+              />
             )
         )
       ) : (

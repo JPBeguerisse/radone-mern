@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "../../pages/Home";
 import Profil from "../../pages/Profil";
 import AddPost from "../../pages/AddPost";
 import Log from "../log/Form";
 import Layout from "../layout/Layout";
 import { EditProfil } from "src/pages/EditProfil";
+import { Home } from "src/pages/Home";
 
 const index = () => {
   return (

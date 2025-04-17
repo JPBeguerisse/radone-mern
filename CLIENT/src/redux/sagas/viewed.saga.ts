@@ -2,11 +2,16 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { getUserByUsername } from "src/services/userService";
 import { User } from "src/types/user.types";
 import {
+  getPostsByUserFailed,
+  getPostsByUserRequested,
+  getPostsByUserSuccess,
   getUserByUsernameFailed,
   getUserByUsernameRequested,
   getUserByUsernameSuccess,
 } from "../reducers/viewed-user.reducer";
 import { call, put, takeEvery } from "redux-saga/effects";
+import { getPostsByUser } from "src/services/postService";
+import { Post } from "src/types/post.types";
 
 // fonction pour récupérer un utilisateur par son username
 function* handleGetUserByUsername(
@@ -22,6 +27,18 @@ function* handleGetUserByUsername(
   }
 }
 
-export default function* watchGetUserByUsername() {
+function* handleFetchPostsUser(
+  action: PayloadAction<string>
+): Generator<any, void, Post[]> {
+  try {
+    const posts = yield call(getPostsByUser, action.payload);
+    yield put(getPostsByUserSuccess(posts));
+  } catch (error) {
+    yield put(getPostsByUserFailed(error));
+  }
+}
+
+export default function* viewedUserSaga() {
   yield takeEvery(getUserByUsernameRequested, handleGetUserByUsername);
+  yield takeEvery(getPostsByUserRequested, handleFetchPostsUser);
 }

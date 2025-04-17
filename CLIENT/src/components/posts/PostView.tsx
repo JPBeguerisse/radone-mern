@@ -15,6 +15,7 @@ import PostButtonAction from "./PostButtonAction";
 import { UserContext } from "../AppContext";
 import { FollowAction } from "../profil/FollowAction";
 import { useNavigate } from "react-router-dom";
+import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
 
 export const PostView: React.FC<PostModalViewProps> = ({
   post,
@@ -79,7 +80,7 @@ export const PostView: React.FC<PostModalViewProps> = ({
   const handleGoProfile = (userName: string) => {
     navigate(`/profil/${userName}?tab=posts`);
     onClose();
-    dispatch(getPostsRequested());
+    dispatch(getUserByUsernameRequested(userName));
   };
 
   return isOpen ? (

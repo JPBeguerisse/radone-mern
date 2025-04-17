@@ -6,7 +6,7 @@ interface CardProps {
   onOpen: (post: Post) => void;
 }
 
-export const Card: React.FC<CardProps> = ({ post, onOpen }) => {
+export const PostImgCard: React.FC<CardProps> = ({ post, onOpen }) => {
   return (
     <div
       key={post._id}

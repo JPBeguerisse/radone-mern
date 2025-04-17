@@ -19,6 +19,9 @@ import {
   unfollowUserFailed,
   followUserRequested,
   unfollowUserRequested,
+  getPostsSavedFailed,
+  getPostsSavedSuccess,
+  getPostsSavedRequested,
 } from "../reducers/user.reducer";
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -30,14 +33,10 @@ import {
   updatePicture,
   updateUser,
 } from "../../services/userService";
-import { any } from "zod";
 import { toast } from "react-toastify";
 import { getUsersRequested } from "../reducers/users.reducer";
-import {
-  getUserByUsernameFailed,
-  getUserByUsernameRequested,
-  getUserByUsernameSuccess,
-} from "../reducers/viewed-user.reducer";
+import { Post } from "src/types/post.types";
+import { getSavedPostsByUser } from "src/services/postService";
 
 let selectedFile: File | null = null;
 
@@ -72,6 +71,19 @@ function* handleGetUser(
 //     yield put(getUserByUsernameFailed(error.message));
 //   }
 // }
+
+// fonction pour récupérer les publications sauvegarder d'un utilisateur
+function* handleGetPostsSaved(
+  action: PayloadAction<string>
+): Generator<any, void, Post[]> {
+  try {
+    const posts = yield call(getSavedPostsByUser, action.payload);
+    yield put(getPostsSavedSuccess(posts));
+  } catch (error: any) {
+    yield put(getPostsSavedFailed(error.message));
+    toast.error("Échec de la récupération des publications sauvegardées.");
+  }
+}
 
 // fonction pour mettre à jour un utilisateur
 function* handleUpdateUser(
@@ -155,8 +167,8 @@ function* handleFollowUser(
       action.payload.userId,
       action.payload.userIdToFollow
     );
-
     yield put(followUserSuccess(followedUser));
+    const user = yield call(getUser, action.payload.userId);
     yield put(getUsersRequested());
   } catch (error: any) {
     yield put(followUserFailed(error.message));
@@ -198,33 +210,6 @@ export default function* userSaga() {
   yield takeLatest(removePictureRequested.type, handleRemovePictureUser);
   yield takeLatest(followUserRequested.type, handleFollowUser);
   yield takeLatest(unfollowUserRequested.type, handleUnfollowUser);
+  yield takeLatest(getPostsSavedRequested.type, handleGetPostsSaved);
   // yield takeLatest(getUserByUsernameRequested.type, handleGetUserByUsername);
 }
-
-// // `action` est passé à `getUser`, qui contient le `uid` dans `action.uid`
-// function* getUser(action: {uid: string; type: string}) {
-//     try {
-//         // Récupération du token depuis le localStorage
-//         const token = localStorage.getItem('accessToken');
-//         // Utilisation de `action.uid` pour obtenir l'utilisateur
-//         // Requête GET avec le token dans les headers pour l'authentification
-//         const response: AxiosResponse<User> = yield axios.get(`http://localhost:8000/api/user/${action.uid}`,
-//             {
-//                 headers: {
-//                     Authorization: `Bearer ${token}`,
-//                 }
-//             }
-//         );
-//         // Si la requête réussit, dispatch l'action de succès avec l'utilisateur récupéré
-//         yield put({type: "GET_USER_SUCCESS", payload: response.data});
-//     } catch (error: any) {
-//         // En cas d'erreur, dispatch une action d'échec avec le message d'erreur
-//         yield put ({ type: "GET_USER_FAILED", message: error.message});
-//     }
-// }
-
-// // Watcher saga : surveille les actions de type "GET_USER_REQUESTED" et appelle `getUser`
-// export default function* userSaga() {
-//     // `takeLatest` va écouter "GET_USER_REQUESTED" et appeler `getUser` avec l'action dispatchée
-//     yield takeLatest("GET_USER_REQUESTED", getUser);
-// }

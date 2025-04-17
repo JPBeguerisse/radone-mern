@@ -6,53 +6,42 @@ import { Post } from "src/types/post.types";
 import { useNavigate } from "react-router-dom";
 import { FollowAction } from "./FollowAction";
 import { ProfilUserContext, UserContext } from "../AppContext";
-import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
+import {
+  getPostsByUserRequested,
+  getUserByUsernameRequested,
+} from "src/redux/reducers/viewed-user.reducer";
 
 const ViewProfil: React.FC = () => {
   const userName = useContext(ProfilUserContext);
   const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
-  // const users = useSelector((state: User) => state.usersReducer.users);
-  const posts = useSelector((state: any) => state.postsReducer.posts);
-  const [userData, setUserData] = useState<User>(); // Met à jour l'état avec les données de l'utilisateur
+  // const posts = useSelector((state: any) => state.postsReducer.posts);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
+  const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (userName) {
-      //extraire le user dans le state
-      //const user = users.find((user: User) => user.userName === userName);
+      dispatch(getPostsByUserRequested(userName!));
+    }
+  }, [userName, dispatch]);
+
+  useEffect(() => {
+    if (userName) {
       dispatch(getUserByUsernameRequested(userName));
-      //console.log("user by username", user);
-      //setUserData(user); // Met à jour l'état avec les données de l'utilisateur
-      // if (!user) {
-      //   navigate("/"); // Redirige vers la page d'accueil si l'utilisateur n'existe pas
-      // }
     }
   }, [userName, navigate]);
 
   useEffect(() => {
-    if (posts && viewedUser && posts.length > 0) {
-      const countPost = posts.filter(
+    if (postsUser && viewedUser && postsUser.length > 0) {
+      const countPost = postsUser.filter(
         (post: Post) => post.posterId === viewedUser._id
       ).length;
       setPostsUserLenght(countPost);
     }
-  }, [posts, viewedUser]);
-
-  // useEffect(() => {
-  //   if (userName && users.length > 0) {
-  //     //extraire le user dans le state
-  //     const user = users.find((user: User) => user.userName === userName);
-  //     console.log("user", user);
-  //     setUserData(user); // Met à jour l'état avec les données de l'utilisateur
-  //     if (!user) {
-  //       navigate("/"); // Redirige vers la page d'accueil si l'utilisateur n'existe pas
-  //     }
-  //   }
-  // }, [userName, users, navigate]);
+  }, [postsUser, viewedUser]);
 
   if (!userName || !viewedUser) {
     // Si l'utilisateur n'est pas trouvé ou si les données de l'utilisateur ne sont pas disponibles, afficher un message de chargement
