@@ -56,7 +56,10 @@ import {
 } from "../../services/postService";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { getPostsSavedRequested } from "../reducers/user.reducer";
+import {
+  getPostsSavedRequested,
+  getPostsUserRequested,
+} from "../reducers/user.reducer";
 
 let selectedFile: File | null = null;
 
@@ -65,9 +68,13 @@ export function setSelectedPicturePost(file: File | null) {
 }
 
 // Fonction pour récupérer les posts
-function* handleFetchPosts(): Generator<any, void, Post[]> {
+function* handleFetchPosts(
+  action: PayloadAction<{ skip: number; limit: number }>
+): Generator<any, void, Post[]> {
   try {
-    const posts = yield call(getPosts);
+    const { skip, limit } = action.payload;
+    const posts = yield call(getPosts, skip, limit); // ✅ OK
+    console.log("Posts récupérés :", posts);
     yield put(getPostsSuccess(posts));
   } catch (error: any) {
     yield put(getPostsFailed(error.message));
@@ -119,7 +126,7 @@ function* handleCreatePost(
     }
     const createdPost = yield call(createPost, formData);
     yield put(createPostSuccess(createdPost));
-    yield put(getPostsRequested());
+    // yield put(getPostsRequested({ skip: 0, limit: 5 })); // Rafraîchir la liste des posts
     toast.success("Publication créée avec succès !");
   } catch (error: any) {
     toast.error(error.response?.data?.message || "Une erreur est survenue !");
@@ -129,13 +136,14 @@ function* handleCreatePost(
 
 // Fonction pour supprimer un post
 function* handleDeletePost(
-  action: PayloadAction<string>
+  action: PayloadAction<{ postId: string; userId: string }>
 ): Generator<any, void, Post> {
   try {
     //appel api
-    yield call(deletePost, action.payload);
+    yield call(deletePost, action.payload.postId);
     //appel saga
-    yield put(deletePostSuccess(action.payload));
+    yield put(deletePostSuccess(action.payload.postId));
+    yield put(getPostsUserRequested(action.payload.userId));
     toast.success("Post supprimé avec succès !");
   } catch (error: any) {
     toast.error(error.response?.data?.message || "Une erreur est survenue !");

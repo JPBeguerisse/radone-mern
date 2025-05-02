@@ -1,5 +1,5 @@
 import { Heart, Trash2 } from "lucide-react";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Comment, Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
 import { format, formatDistanceToNow } from "date-fns";
@@ -28,9 +28,11 @@ const CommentList: React.FC<CommentListProps> = ({
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
+  const [loginWarning, setLoginWarning] = useState<{ [key: string]: boolean }>(
+    {}
+  ); // pren
 
   const MAX_LENGTH = 100;
   const [isExpandedText, setIsExpandedText] = React.useState<{
@@ -46,6 +48,20 @@ const CommentList: React.FC<CommentListProps> = ({
 
   const handleLikeComment = useCallback(
     (postId: string, comment: Comment, userId: string) => {
+      // if (!currentUserUid) {
+      //   setShowLoginWarning(true);
+      //   setTimeout(() => {
+      //     setShowLoginWarning(false);
+      //   }, 3000); // Le message disparaît après 3 secondes
+      //   return;
+      // }
+      if (!currentUserUid) {
+        setLoginWarning((prev) => ({ ...prev, [comment._id]: true })); //
+        // setTimeout(() => {
+        //   setLoginWarning((prev) => ({ ...prev, [comment._id]: false }));
+        // }, 3000); // Le message disparaît après 3 secondes
+        return;
+      }
       dispatch(
         likeCommentRequested({
           postId: postId!,
@@ -73,7 +89,7 @@ const CommentList: React.FC<CommentListProps> = ({
   const handleGoProfile = (userName: string) => {
     navigate(`/profil/${userName}?tab=posts`);
     onClose(); //pour fermer le modal
-    dispatch(getPostsRequested());
+    dispatch(getPostsRequested({ skip: 0, limit: 5 })); //pour recharger les posts
   };
 
   return (
@@ -84,7 +100,7 @@ const CommentList: React.FC<CommentListProps> = ({
           return usersData.map(
             (user: User) =>
               user._id === comment.commenterId && (
-                <div key={user._id} className="flex gap-4 mb-4">
+                <div key={user._id} className="flex gap-4 mb-4 relative">
                   <div className="">
                     <img
                       src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
@@ -131,37 +147,42 @@ const CommentList: React.FC<CommentListProps> = ({
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-4 relative">
                       {currentUserUid &&
-                      comment.likers?.includes(currentUserUid) ? (
-                        <Heart
-                          className="text-red-500 transition-all duration-200 ease-in-out"
-                          width={15}
-                          height={15}
-                          fill="currentColor"
-                          onClick={() =>
-                            handleUnlikeComment(
-                              post._id!,
-                              comment,
-                              currentUserUid!
-                            )
-                          }
-                        />
-                      ) : (
-                        <Heart
-                          className="cursor-pointer"
-                          width={15}
-                          height={15}
-                          onClick={() =>
-                            handleLikeComment(
-                              post._id!,
-                              comment,
-                              currentUserUid!
-                            )
-                          }
-                        />
-                      )}
-
+                        (comment.likers?.includes(currentUserUid) ? (
+                          <Heart
+                            className="text-red-500 transition-all duration-200 ease-in-out"
+                            width={15}
+                            height={15}
+                            fill="currentColor"
+                            onClick={() =>
+                              handleUnlikeComment(
+                                post._id!,
+                                comment,
+                                currentUserUid!
+                              )
+                            }
+                          />
+                        ) : (
+                          <Heart
+                            className="cursor-pointer"
+                            width={15}
+                            height={15}
+                            onClick={() =>
+                              handleLikeComment(
+                                post._id!,
+                                comment,
+                                currentUserUid!
+                              )
+                            }
+                          />
+                        ))}
+                      {/* Afficher le bouton de suppression seulement si l'utilisateur est le propriétaire du commentaire */}
+                      {/* {loginWarning[comment._id] && (
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow w-auto sm:max-w-[90vw] lg:w-max">
+                          Vous n'êtes pas connecté.
+                        </div>
+                      )} */}
                       {currentUserUid &&
                         currentUserUid === comment.commenterId && (
                           <button

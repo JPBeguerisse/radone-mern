@@ -14,9 +14,6 @@ import {
 const ViewProfil: React.FC = () => {
   const userName = useContext(ProfilUserContext);
   const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
-  // const posts = useSelector((state: any) => state.postsReducer.posts);
-  const userContext = useContext(UserContext);
-  const currentUserUid = userContext?.uid;
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
   const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
   const navigate = useNavigate();
@@ -68,20 +65,9 @@ const ViewProfil: React.FC = () => {
         <div className="user-info flex flex-col space-y-4 text-center md:text-left">
           {/* Nom de l'utilisateur et bouton de modification */}
           <div className="user-name">
-            <h1 className="text-2xl font-semibold">{viewedUser?.userName} </h1>
-            {
-              /* Vérifie si l'utilisateur est connecté et s'il s'agit de son propre profil */
-              currentUserUid && currentUserUid === viewedUser._id && (
-                //currentUserUid === userId &&
-                // Si l'utilisateur est connecté et que c'est son propre profil, afficher le bouton de modification
-                <button
-                  onClick={() => navigate("/edit-profil")}
-                  className="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition duration-200"
-                >
-                  Modifier le profil
-                </button>
-              )
-            }
+            <h1 className="text-2xl font-semibold flex items-center gap-2">
+              {viewedUser?.userName} <span className="text-sm">●</span>
+            </h1>
             {viewedUser && <FollowAction followerId={viewedUser._id!} />}
           </div>
 

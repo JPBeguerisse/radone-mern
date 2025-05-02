@@ -33,8 +33,8 @@ function* handleFetchPostsUser(
   try {
     const posts = yield call(getPostsByUser, action.payload);
     yield put(getPostsByUserSuccess(posts));
-  } catch (error) {
-    yield put(getPostsByUserFailed(error));
+  } catch (error: any) {
+    yield put(getPostsByUserFailed(error.message));
   }
 }
 

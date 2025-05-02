@@ -18,8 +18,13 @@ export const createPost = async (formData: FormData) => {
 };
 
 // Récupère les publications
-export const getPosts = async (): Promise<Post[]> => {
-  const response = await api.get("/post");
+// export const getPosts = async (): Promise<Post[]> => {
+//   const response = await api.get("/post");
+//   return response.data;
+// };
+
+export const getPosts = async (skip: number, limit = 5): Promise<Post[]> => {
+  const response = await api.get(`/post?skip=${skip}&limit=${limit}`);
   return response.data;
 };
 

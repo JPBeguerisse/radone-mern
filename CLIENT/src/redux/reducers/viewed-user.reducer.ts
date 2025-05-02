@@ -20,7 +20,6 @@ const viewedUserSlice = createSlice({
     getUserByUsernameSuccess: (state, action: PayloadAction<User>) => {
       // Cette action est déclenchée lorsqu'un utilisateur est récupéré avec succès.
       state.user = action.payload; // On met à jour `user` avec les données récupérées.
-      state.error = null; // On réinitialise `error` car il n'y a pas d'erreur.
     },
     getUserByUsernameFailed: (state, action: PayloadAction<string>) => {
       // Cette action est déclenchée lorsqu'il y a une erreur lors de la récupération de l'utilisateur.
@@ -29,14 +28,13 @@ const viewedUserSlice = createSlice({
 
     getPostsByUserRequested: (state, action: PayloadAction<string>) => {
       state.loading = true;
-      state.error = null;
       console.log("Récupération des posts d'un user lancé:", action.payload);
     },
     getPostsByUserSuccess: (state, action: PayloadAction<Post[]>) => {
       state.loading = false;
       state.posts = action.payload;
     },
-    getPostsByUserFailed: (state, action) => {
+    getPostsByUserFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
     },

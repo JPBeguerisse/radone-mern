@@ -7,9 +7,6 @@ import {
   unfollowUserRequested,
 } from "src/redux/reducers/user.reducer";
 import { includesUser } from "src/utils/includesUser";
-import ViewedProfil from "src/pages/ViewedProfil";
-import { get } from "http";
-import { getUser } from "src/services/userService";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
 
 export interface FollowActionProps {
@@ -18,7 +15,6 @@ export interface FollowActionProps {
 
 export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
   const userName = useContext(ProfilUserContext);
-  console.log("userName", userName);
   const dispatch = useDispatch();
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
@@ -79,7 +75,6 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
             className="text-blue-500 cursor-pointer font-bold hover:text-blue-700"
             onClick={handleFollow}
           >
-            <span className="text-black text-sm mr-2">●</span>
             Suivre
           </p>
         )}

@@ -7,8 +7,6 @@ import {
 } from "src/redux/reducers/posts.reducer";
 import { PostImgCard } from "./PostImgCard";
 import { PostView } from "./PostView";
-import { User } from "src/types/user.types";
-import { getPostsByUser } from "src/services/postService";
 import { UserContext } from "../AppContext";
 import { getPostsUserRequested } from "src/redux/reducers/user.reducer";
 

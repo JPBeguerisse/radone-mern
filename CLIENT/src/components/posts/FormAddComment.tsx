@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { createCommentRequested } from "src/redux/reducers/posts.reducer";
 import { AddCommentProps } from "src/types/post.types";
+import { ProfilUserContext, UserContext } from "../AppContext";
+import { is } from "date-fns/locale";
 
 export const FormAddComment: React.FC<AddCommentProps> = ({
   postId,
@@ -9,8 +11,11 @@ export const FormAddComment: React.FC<AddCommentProps> = ({
 }) => {
   const [isAddComment, setIsAddComment] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
-
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
   const dispatch = useDispatch();
+
   const handleAddPost = () => {
     if (!message) return;
 
@@ -27,6 +32,14 @@ export const FormAddComment: React.FC<AddCommentProps> = ({
       console.error("Erreur l'ajout du post :", error.message);
     }
   };
+
+  useEffect(() => {
+    if (currentUserUid) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  });
   return (
     <div className="flex items-center w-full  p-2">
       {/* Champ de texte */}
@@ -44,12 +57,12 @@ export const FormAddComment: React.FC<AddCommentProps> = ({
       {/* Bouton Publier */}
       <button
         onClick={handleAddPost}
-        className={`ml-2 text-blue-500 font-semibold ${
-          !isAddComment || !message.trim()
+        className={`ml-2 text-blue-500 font-semibold cursor-pointer ${
+          !isAddComment || !message.trim() || !isLoggedIn
             ? "opacity-50 cursor-not-allowed"
             : "hover:text-blue-700"
         }`}
-        disabled={!isAddComment || !message.trim()}
+        disabled={!isAddComment || !message.trim() || !isLoggedIn}
       >
         Publier
       </button>

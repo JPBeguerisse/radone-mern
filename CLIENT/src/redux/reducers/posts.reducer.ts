@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Post, PostsState } from "../../types/post.types";
 
 const initialState: PostsState = {
-  posts: null,
+  posts: [],
   post: null,
   error: null,
 };
@@ -11,10 +11,24 @@ const postsSlice = createSlice({
   name: "Posts",
   initialState,
   reducers: {
-    getPostsRequested: (state) => {},
+    // getPostsRequested: (state) => {},
+
+    // getPostsSuccess: (state, action: PayloadAction<Post[]>) => {
+    //   state.posts = action.payload;
+    //   state.error = null;
+    // },
+    // getPostsFailed: (state, action: PayloadAction<string>) => {
+    //   state.error = action.payload;
+    // },
+    getPostsRequested: (
+      state,
+      action: PayloadAction<{ skip: number; limit: number }>
+    ) => {
+      console.log("Récupération des posts demandée :", action.payload);
+    },
 
     getPostsSuccess: (state, action: PayloadAction<Post[]>) => {
-      state.posts = action.payload;
+      state.posts = [...state.posts, ...action.payload];
       state.error = null;
     },
     getPostsFailed: (state, action: PayloadAction<string>) => {
@@ -56,7 +70,10 @@ const postsSlice = createSlice({
     },
 
     // Action pour demander la suppression d'un post
-    deletePostRequested: (state, action: PayloadAction<string>) => {
+    deletePostRequested: (
+      state,
+      action: PayloadAction<{ postId: string; userId: string }>
+    ) => {
       console.log("Suppression en cour...", action.payload);
     },
 
@@ -82,8 +99,13 @@ const postsSlice = createSlice({
     ) => {
       console.log("Creation du post lancé", action.payload);
     },
+
     createPostSuccess: (state, action: PayloadAction<any>) => {
-      state.posts?.push(action.payload);
+      // state.posts?.push(action.payload);
+      state.posts = [action.payload, ...state.posts].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     },
 
     createPostFailed: (state, action: PayloadAction<string>) => {

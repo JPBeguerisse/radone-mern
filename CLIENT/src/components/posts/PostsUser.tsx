@@ -22,19 +22,10 @@ interface PostsUserProps {
 }
 
 export const PostsUser: React.FC<PostsUserProps> = () => {
-  //const userData = useSelector((state: any) => state.userReducer.user);
   const userName = useContext(ProfilUserContext);
   const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
-  //const [userData, setUserData] = useState<User>();
-  const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
-
-  // useEffect(() => {
-  //   if (viewedUser) {
-  //     setUserData(viewedUser); // Met à jour l'état avec les données de l'utilisateur
-  //   }
-  // }, [userName, viewedUser]);
 
   useEffect(() => {
     if (userName) {
@@ -43,7 +34,6 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
   }, [userName]);
 
   const [editedMessage, setEditedMessage] = useState<string>("");
-  const [editMode, setEditMode] = useState(false);
   const dispatch = useDispatch();
 
   const handleOpenModal = (post: Post) => {
@@ -60,20 +50,7 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
   }, [selectedPost]);
 
   const closeModal = () => {
-    setEditMode(false);
     setIsOpen(false);
-  };
-
-  const handleSave = () => {
-    try {
-      const updatedData = { message: editedMessage };
-      dispatch(
-        updatePostRequested({ _id: selectedPost?._id, data: updatedData })
-      );
-    } catch (error: any) {
-      console.error("Erreur lors de la mise à jour du post :", error.message);
-    }
-    setEditMode(false);
   };
 
   return (
@@ -93,9 +70,6 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
           onClose={closeModal}
           message={editedMessage}
           setEditedMessage={setEditedMessage}
-          isEditing={editMode}
-          setIsEditing={setEditMode}
-          onSave={handleSave}
         />
       )}
     </div>

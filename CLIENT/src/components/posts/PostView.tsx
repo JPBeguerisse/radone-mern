@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { PostModalViewProps } from "../../types/post.types";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { User } from "src/types/user.types";
 import FormAddComment from "./FormAddComment";
 import useMediaQuery from "../../hooks/useMediaQuery"; // 🔹 Import du hook
@@ -16,6 +16,7 @@ import { UserContext } from "../AppContext";
 import { FollowAction } from "../profil/FollowAction";
 import { useNavigate } from "react-router-dom";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
+import { is } from "date-fns/locale";
 
 export const PostView: React.FC<PostModalViewProps> = ({
   post,
@@ -27,6 +28,7 @@ export const PostView: React.FC<PostModalViewProps> = ({
   setIsEditing,
   onSave,
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
 
@@ -34,6 +36,8 @@ export const PostView: React.FC<PostModalViewProps> = ({
   const usersData = useSelector((state: any) => state.usersReducer.users);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [itemToDelete, setItemToDelete] = useState<{
     id: string;
     type: "post" | "comment";
@@ -52,7 +56,21 @@ export const PostView: React.FC<PostModalViewProps> = ({
     setShowDeleteModal(true);
   };
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleDeleteConfirmed = () => {
     if (itemToDelete) {
@@ -64,7 +82,12 @@ export const PostView: React.FC<PostModalViewProps> = ({
           })
         );
       } else if (itemToDelete.type === "post") {
-        dispatch(deletePostRequested(itemToDelete.id));
+        dispatch(
+          deletePostRequested({
+            postId: itemToDelete.id,
+            userId: currentUserUid!,
+          })
+        );
         onClose();
       }
     }
@@ -85,52 +108,68 @@ export const PostView: React.FC<PostModalViewProps> = ({
 
   return isOpen ? (
     <div className="fixed inset-0 overflow-auto bg-black bg-opacity-80 z-50 flex items-center justify-center">
-      <div className="absolute top-4 w-full flex justify-between px-4">
-        <button
-          onClick={onClose}
-          className="text-gray-500 font-bold text-lg z-20"
-        >
-          ✖
-        </button>
-        {isMobile && !isEditing && currentUserUid === post.posterId && (
-          <button
-            className="text-gray-500 text-xl font-bold"
-            onClick={() => setShowOptions(!showOptions)}
-          >
-            ⋮
-          </button>
-        )}
-      </div>
-      {showOptions && (
-        <div className="absolute right-4 top-12 bg-white border rounded shadow-lg">
-          <button
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => {
-              setIsEditing?.(true);
-              setShowOptions(false);
-            }}
-          >
-            Modifier
-          </button>
-          <button
-            className="block px-4 py-2 text-red-500 hover:bg-gray-100"
-            onClick={() => {
-              confirmDelete(post._id!, "post");
-              setShowOptions(false);
-            }}
-          >
-            Supprimer
-          </button>
-        </div>
-      )}
-
       <div
         className={`bg-white rounded-lg shadow-lg overflow-hidden ${
           isMobile
             ? "w-full min-h-screen flex flex-col"
             : "w-full max-w-4xl h-[90vh] flex"
         }`}
+        ref={modalRef}
       >
+        <div className="absolute top-4 w-full flex justify-between px-4">
+          <button
+            onClick={onClose}
+            className="text-gray-500 font-bold text-lg z-20"
+          >
+            ✖
+          </button>
+          {isMobile && !isEditing && currentUserUid === post.posterId && (
+            <button
+              className="text-gray-500 text-xl font-bold"
+              onClick={() => setShowOptions(!showOptions)}
+            >
+              ⋮
+            </button>
+          )}
+        </div>
+        {showOptions && (
+          <div className="absolute right-4 top-12 bg-white border rounded shadow-lg">
+            <button
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                setIsEditing?.(true);
+                setShowOptions(false);
+                console.log("Modifier", isEditing);
+              }}
+            >
+              Modifier
+            </button>
+            <button
+              className="block px-4 py-2 text-red-500 hover:bg-gray-100"
+              onClick={() => {
+                confirmDelete(post._id!, "post");
+                setShowOptions(false);
+              }}
+            >
+              Supprimer
+            </button>
+          </div>
+        )}
+        {/* ✅ Utilisation du composant `ConfirmModal` */}
+        <ConfirmDeleteModal
+          isOpen={showDeleteModal} // ✅ Contrôle l'affichage du modal
+          title={`Supprimer ${
+            itemToDelete?.type === "post" ? "la publication" : "le commentaire"
+          } ?`} // ✅ Titre dynamique
+          message={`Voulez-vous vraiment supprimer ${
+            itemToDelete?.type === "post"
+              ? "cette publication"
+              : "ce commentaire"
+          } ?`} // ✅ Message dynamique
+          onConfirm={handleDeleteConfirmed} // ✅ Fonction exécutée quand l’utilisateur clique sur "Supprimer"
+          onCancel={() => setShowDeleteModal(false)} // ✅ Fonction exécutée quand l’utilisateur clique sur "Annuler"
+        />
+
         <div
           className={`bg-black flex items-center justify-center ${
             isMobile ? "w-full" : "w-1/2"
@@ -312,18 +351,6 @@ export const PostView: React.FC<PostModalViewProps> = ({
           )}
         </div>
       </div>
-      {/* ✅ Utilisation du composant `ConfirmModal` */}
-      <ConfirmDeleteModal
-        isOpen={showDeleteModal} // ✅ Contrôle l'affichage du modal
-        title={`Supprimer ${
-          itemToDelete?.type === "post" ? "la publication" : "le commentaire"
-        } ?`} // ✅ Titre dynamique
-        message={`Voulez-vous vraiment supprimer ${
-          itemToDelete?.type === "post" ? "cette publication" : "ce commentaire"
-        } ?`} // ✅ Message dynamique
-        onConfirm={handleDeleteConfirmed} // ✅ Fonction exécutée quand l’utilisateur clique sur "Supprimer"
-        onCancel={() => setShowDeleteModal(false)} // ✅ Fonction exécutée quand l’utilisateur clique sur "Annuler"
-      />
     </div>
   ) : null;
 };
