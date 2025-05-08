@@ -46,6 +46,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "./uploads/profil/random-user.jpeg",
     },
+
+    followers: {
+      type: [mongoose.Schema.Types.ObjectId], // Tableau d'IDs des utilisateurs qui ont suive ce user
+      ref: "User",
+      default: [],
+    },
+    following: {
+      type: [mongoose.Schema.Types.ObjectId], // Tableau d'IDs des utilisateurs qui ont enregistré le post
+      ref: "User",
+      default: [],
+    },
   },
   {
     timestamps: true,

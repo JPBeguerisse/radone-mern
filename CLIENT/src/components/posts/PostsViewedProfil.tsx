@@ -21,11 +21,12 @@ interface PostsUserProps {
   userId?: string;
 }
 
-export const PostsUser: React.FC<PostsUserProps> = () => {
+export const PostsViewedProfil: React.FC<PostsUserProps> = () => {
   const userName = useContext(ProfilUserContext);
   const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (userName) {
@@ -33,8 +34,7 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
     }
   }, [userName]);
 
-  const [editedMessage, setEditedMessage] = useState<string>("");
-  const dispatch = useDispatch();
+  // const [editedMessage, setEditedMessage] = useState<string>("");
 
   const handleOpenModal = (post: Post) => {
     setIsOpen(true);
@@ -43,11 +43,11 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
     //console.log("POST ", postSelect);
   };
 
-  useEffect(() => {
-    if (selectedPost) {
-      setEditedMessage(selectedPost.message || ""); // ✅ Met à jour `editedMessage` quand Redux change
-    }
-  }, [selectedPost]);
+  // useEffect(() => {
+  //   if (selectedPost) {
+  //     setEditedMessage(selectedPost.message || ""); // ✅ Met à jour `editedMessage` quand Redux change
+  //   }
+  // }, [selectedPost]);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -68,8 +68,8 @@ export const PostsUser: React.FC<PostsUserProps> = () => {
           post={selectedPost}
           isOpen={isOpen}
           onClose={closeModal}
-          message={editedMessage}
-          setEditedMessage={setEditedMessage}
+          // message={editedMessage}
+          // setEditedMessage={setEditedMessage}
         />
       )}
     </div>

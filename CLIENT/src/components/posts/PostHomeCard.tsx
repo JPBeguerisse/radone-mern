@@ -84,7 +84,12 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
               className="w-full h-full rounded-full object-cover object-center"
             />
           </div>
-          <p className="text-sm font-semibold">{poster.userName}</p>
+          <p
+            onClick={() => handleGoProfile(poster.userName)}
+            className="text-sm font-semibold cursor-pointer hover:text-gray-600"
+          >
+            {poster.userName}
+          </p>
           <p className="text-xs text-gray-400">
             {formatDistanceToNow(new Date(post.createdAt!), {
               addSuffix: true,

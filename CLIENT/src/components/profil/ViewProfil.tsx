@@ -66,7 +66,7 @@ const ViewProfil: React.FC = () => {
           {/* Nom de l'utilisateur et bouton de modification */}
           <div className="user-name">
             <h1 className="text-2xl font-semibold flex items-center gap-2">
-              {viewedUser?.userName} <span className="text-sm">●</span>
+              {viewedUser?.userName}
             </h1>
             {viewedUser && <FollowAction followerId={viewedUser._id!} />}
           </div>

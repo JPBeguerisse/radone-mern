@@ -169,6 +169,55 @@ router.post("/", postController.createPost);
  *                   type: string
  *                   example: "Une erreur est survenue lors de la récupération des posts."
  */
+router.get("/post-old", postController.getPosts);
+
+/**
+ * @swagger
+ * /api/post:
+ *   get:
+ *     summary: Récupérer les posts avec pagination
+ *     description: Récupère une liste de posts triés par date de création (les plus récents d'abord), avec des paramètres de pagination `limit` et `skip`.
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         description: Nombre maximum de posts à retourner
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *       - name: skip
+ *         in: query
+ *         description: Nombre de posts à ignorer (utile pour la pagination)
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 0
+ *     responses:
+ *       200:
+ *         description: Liste des posts récupérés avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   message:
+ *                     type: string
+ *                   picture:
+ *                     type: string
+ *                   posterId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       500:
+ *         description: Erreur lors du chargement des posts
+ */
 router.get("/", postController.getPosts);
 
 //RECUPERER UN POST
@@ -216,6 +265,161 @@ router.get("/", postController.getPosts);
  *                   example: "Une erreur est survenue lors de la récupération du post."
  */
 router.get("/:id", postController.getPost);
+
+//RECUPERER UN POST PAR USERNAME
+/**
+ * @swagger
+ * /api/post/user/{username}:
+ *   get:
+ *     summary: Récupérer les posts d'un utilisateur par son username
+ *     description: Récupère tous les posts publiés par un utilisateur identifié par son nom d'utilisateur.
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - name: username
+ *         in: path
+ *         required: true
+ *         description: Nom d'utilisateur (username) de l'auteur des posts
+ *         schema:
+ *           type: string
+ *           example: johndoe
+ *     responses:
+ *       200:
+ *         description: Liste des posts de l'utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   message:
+ *                     type: string
+ *                   picture:
+ *                     type: string
+ *                   posterId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+router.get("/user/:username", postController.getPostsByUsername);
+
+//RECUPERER UN POST PAR USER ID
+/**
+ * @swagger
+ * /api/post/user-profil/{id}:
+ *   get:
+ *     summary: Récupérer les posts d'un utilisateur avec ses commentaires triés
+ *     description: |
+ *       Récupère tous les posts créés par un utilisateur spécifique en utilisant son identifiant (`userId`).
+ *       Les posts sont triés par date de création décroissante, et les commentaires dans chaque post sont triés du plus récent au plus ancien.
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID unique de l'utilisateur
+ *         schema:
+ *           type: string
+ *           example: 661cba70c1f44613f8d273b4
+ *     responses:
+ *       200:
+ *         description: Liste des posts avec commentaires triés
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   message:
+ *                     type: string
+ *                   picture:
+ *                     type: string
+ *                   posterId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   comments:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         commenterId:
+ *                           type: string
+ *                         text:
+ *                           type: string
+ *                         timestamp:
+ *                           type: string
+ *                           format: date-time
+ *       400:
+ *         description: ID utilisateur invalide
+ *       404:
+ *         description: Utilisateur introuvable
+ *       500:
+ *         description: Erreur interne lors de la récupération des posts
+ */
+router.get("/user-profil/:id", postController.getPostsUser);
+
+//RECUPERER LES POSTS SAUVES
+/**
+ * @swagger
+ * /api/post/saved/{id}:
+ *   get:
+ *     summary: Récupérer les posts enregistrés par un utilisateur
+ *     description: Récupère tous les posts que l'utilisateur a enregistrés dans ses favoris (`savedBy`), triés par date de création décroissante.
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID unique de l'utilisateur
+ *         schema:
+ *           type: string
+ *           example: 661cba70c1f44613f8d273b4
+ *     responses:
+ *       200:
+ *         description: Liste des posts enregistrés récupérée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   message:
+ *                     type: string
+ *                   picture:
+ *                     type: string
+ *                   posterId:
+ *                     type: string
+ *                   savedBy:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       400:
+ *         description: ID invalide
+ *       500:
+ *         description: Erreur interne lors de la récupération des posts enregistrés
+ */
+router.get("/saved/:id", postController.getSavedPosts);
 
 //MODIFIER UN POST
 /**

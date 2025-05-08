@@ -272,6 +272,49 @@ router.get("/", userController.getUsers);
  */
 router.get("/:id", verifyToken, userController.getUser);
 
+//RECUPERER LES INFOS D'UN USER
+/**
+ * @swagger
+ * /api/user/username/{userName}:
+ *   get:
+ *     summary: Récupérer un utilisateur par son username
+ *     description: Récupère les informations d'un utilisateur spécifique en utilisant son username, sans renvoyer son mot de passe.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - name: userName
+ *         in: path
+ *         required: true
+ *         description: Nom d'utilisateur unique (userName) à rechercher
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Informations de l'utilisateur récupérées avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: ID unique de l'utilisateur
+ *                 name:
+ *                   type: string
+ *                   description: Prénom de l'utilisateur
+ *                 userName:
+ *                   type: string
+ *                   description: Nom d'utilisateur unique
+ *                 email:
+ *                   type: string
+ *                   description: Adresse email de l'utilisateur
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+router.get("/by-username/:username", userController.getUserByUsername);
+
 /**
  * @swagger
  * /api/user/{id}:
@@ -519,4 +562,125 @@ router.post("/upload-profil", uploadController.uploadProfil);
  */
 router.delete("/remove-profil-picture/:id", uploadController.removePicture);
 
+/**
+ * @swagger
+ * /api/user/follow/{id}:
+ *   patch:
+ *     summary: Suivre un utilisateur
+ *     description: Ajoute l'utilisateur `userIdToFollow` à la liste des abonnements (`following`) de l'utilisateur `id`, et met à jour les followers de l'autre utilisateur.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: L'ID de l'utilisateur qui souhaite suivre quelqu'un
+ *         example: "614d6f1c3a6b3f456abc1234"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userIdToFollow:
+ *                 type: string
+ *                 description: L'ID de l'utilisateur à suivre
+ *                 example: "614d6f1c3a6b3f456abc4321"
+ *     responses:
+ *       200:
+ *         description: Utilisateur mis à jour après avoir suivi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: ID invalide
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: "614d6f1c3a6b3f456abc1234"
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: User not found
+ *       500:
+ *         description: Erreur serveur lors du suivi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Une erreur est survenue lors du follow.
+ */
+router.patch("/follow/:id", userController.follow);
+
+/**
+ * @swagger
+ * /api/user/unfollow/{id}:
+ *   patch:
+ *     summary: Se désabonner d’un utilisateur
+ *     description: Supprime `userIdToUnFollow` de la liste des abonnements de l’utilisateur `id`, et retire également `id` de la liste des followers de l’autre utilisateur.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: L'ID de l'utilisateur qui veut se désabonner
+ *         example: "614d6f1c3a6b3f456abc1234"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userIdToUnFollow:
+ *                 type: string
+ *                 description: L'ID de l'utilisateur à ne plus suivre
+ *                 example: "614d6f1c3a6b3f456abc4321"
+ *     responses:
+ *       200:
+ *         description: Utilisateur mis à jour après désabonnement
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: ID invalide
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: "614d6f1c3a6b3f456abc1234"
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: User not found
+ *       500:
+ *         description: Erreur serveur lors du désabonnement
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Une erreur est survenue lors du follow.
+ */
+router.patch("/unfollow/:id", userController.unfollow);
 module.exports = router;

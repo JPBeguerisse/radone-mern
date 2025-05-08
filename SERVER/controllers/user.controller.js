@@ -36,6 +36,23 @@ module.exports.getUser = async (req, res) => {
   }
 };
 
+// Fonction pour créer un utilisateur via username
+module.exports.getUserByUsername = async (req, res) => {
+  const userName = req.params.username;
+  if (!userName) return res.status(400).send("Username unknown" + userName);
+  try {
+    const user = await UserModel.findOne({ userName }).select("-password");
+    if (user) res.status(200).json(user);
+    else res.status(400).send("User not found");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error:
+        "Une erreur est survenue lors de la récupération de l'utilisateur.",
+    });
+  }
+};
+
 // Mise à jour d’un utilisateur
 module.exports.updateUser = async (req, res) => {
   const userId = req.params.id;
@@ -118,6 +135,97 @@ module.exports.updateUser = async (req, res) => {
     console.error("Erreur lors de la mise à jour :", error);
     res.status(500).json({
       error: "Une erreur est survenue lors de la mise à jour de l'utilisateur.",
+    });
+  }
+};
+
+module.exports.follow = async (req, res) => {
+  const userId = req.params.id;
+  const { userIdToFollow } = req.body;
+  // Vérification si l'ID est valide
+  if (!ObjectID.isValid(userId) || !ObjectID.isValid(userIdToFollow)) {
+    return res.status(400).send("ID unknown: " + userId, userIdToFollow);
+  }
+
+  const user = await UserModel.findById(userId).select("_id");
+  const userToFollow = await UserModel.findById(userIdToFollow).select("_id");
+
+  if (!user || !userToFollow) {
+    return res.status(404).send("User not found");
+  }
+  try {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: {
+          following: userIdToFollow,
+        },
+      },
+      { new: true }
+    ).select("-password");
+
+    await UserModel.findByIdAndUpdate(
+      userIdToFollow,
+      {
+        $addToSet: {
+          followers: userId,
+        },
+      },
+      { new: true }
+    );
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({
+      error: "Une erreur est survenue lors du follow.",
+    });
+  }
+};
+
+module.exports.unfollow = async (req, res) => {
+  const userId = req.params.id;
+  const { userIdToUnfollow } = req.body;
+  // Vérification si l'ID est valide
+  if (!ObjectID.isValid(userId) || !ObjectID.isValid(userIdToUnfollow)) {
+    return res.status(400).send("ID unknown: " + userId, userIdToUnfollow);
+  }
+
+  const user = await UserModel.findById(userId).select("_id");
+  const userToUnfollow = await UserModel.findById(userIdToUnfollow).select(
+    "_id"
+  );
+
+  console.log("user", user);
+  console.log("userToUnfollow", userToUnfollow);
+
+  if (!user || !userToUnfollow) {
+    return res.status(404).send("User not found");
+  }
+  try {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        $pull: {
+          following: userIdToUnfollow,
+        },
+      },
+      { new: true }
+    ).select("-password");
+
+    await UserModel.findByIdAndUpdate(
+      userIdToUnfollow,
+      {
+        $pull: {
+          followers: userId,
+        },
+      },
+      { new: true }
+    );
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({
+      error: "Une erreur est survenue lors du follow.",
     });
   }
 };

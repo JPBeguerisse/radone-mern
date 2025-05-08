@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 // import PostsUser from "../posts/PostsUserOld";
 import PostSaved from "../posts/PostSaved";
-import { PostsUser } from "../../components/posts/PostsUser";
+import { PostsViewedProfil } from "../posts/PostsViewedProfil";
 import { Bookmark, GalleryVerticalEnd } from "lucide-react";
 import { ProfilUserContext, UserContext } from "../AppContext";
 import { useSearchParams } from "react-router-dom";
@@ -97,7 +97,11 @@ const NavProfil: React.FC<NavProfilProps> = ({ user }) => {
 
       {postsSavedByUser && user._id === currentUserUid && <PostSaved />} */}
       {postsUser &&
-        (user && user._id === currentUserUid ? <MyPosts /> : <PostsUser />)}
+        (user && user._id === currentUserUid ? (
+          <MyPosts />
+        ) : (
+          <PostsViewedProfil />
+        ))}
 
       {postsSavedByUser && user._id === currentUserUid && <PostSaved />}
     </div>

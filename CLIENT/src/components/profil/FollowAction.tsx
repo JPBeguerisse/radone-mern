@@ -22,6 +22,8 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
     (state: any) => state.userReducer.user
   );
 
+  const isInProfilePage = !!userName;
+
   const handleFollow = useCallback(() => {
     // Vérifie si l'utilisateur est connecté
     if (!currentUserUid || !followerId) {
@@ -59,10 +61,14 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
         currentUserUid! !== followerId && ( // Vérifie si l'utilisateur est déjà suivi
           // Si l'utilisateur est déjà suivi, affiche le bouton "Ne plus suivre"
           <p
-            className="text-blue-500 cursor-pointer font-bold hover:text-blue-700"
             onClick={handleUnfollow}
+            className={`cursor-pointer font-semibold ${
+              isInProfilePage
+                ? "bg-gray-200 text-black px-4 py-1 rounded-md text-sm hover:bg-gray-300"
+                : "text-blue-500 hover:text-blue-700"
+            }`}
           >
-            <span className="text-black text-sm mr-2">●</span>
+            {isInProfilePage && <span className="mr-2">●</span>}
             Ne plus suivre
           </p>
         )}
@@ -72,8 +78,12 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
         currentUserUid! !== followerId && ( // Vérifie si l'utilisateur n'est pas déjà suivi
           // Si l'utilisateur n'est pas suivi, affiche le bouton "Suivre"
           <p
-            className="text-blue-500 cursor-pointer font-bold hover:text-blue-700"
             onClick={handleFollow}
+            className={`cursor-pointer font-semibold ${
+              isInProfilePage
+                ? "bg-blue-500 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-600"
+                : "text-blue-500 hover:text-blue-700"
+            }`}
           >
             Suivre
           </p>
