@@ -21,21 +21,12 @@ const NavProfil: React.FC<NavProfilProps> = ({ user }) => {
 
   const [postsUser, setPostsUser] = useState<boolean>(true);
   const [postsSavedByUser, setPostsSavedByUser] = useState<boolean>(false);
-  //const posts = useSelector((state: any) => state.postsReducer.pots);
-
-  // useEffect(() => {
-  //   if (userName && users.length > 0) {
-  //     //extraire le user dans le state
-  //     const user = users.find((user: User) => user.userName === userName);
-  //     setUserData(user); // Met à jour l'état avec les données de l'utilisateur
-  //   }
-  // }, [userName, users]);
 
   // Pour récupérer les paramètres de recherche de l'URL
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = searchParams.get("tab");
 
-  console.log("userData", user);
+  // console.log("userData", user);
   useEffect(() => {
     if (tab === "posts") {
       setPostsUser(true);
@@ -88,14 +79,6 @@ const NavProfil: React.FC<NavProfilProps> = ({ user }) => {
         )}
       </div>
 
-      {/* {postsUser && <PostsUser />} */}
-      {/* {postsUser && user && user?._id === currentUserUid ? (
-        <MyPosts />
-      ) : (
-        <PostsUser />
-      )}
-
-      {postsSavedByUser && user._id === currentUserUid && <PostSaved />} */}
       {postsUser &&
         (user && user._id === currentUserUid ? (
           <MyPosts />

@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ProfilUserContext, UserContext } from "src/components/AppContext";
 import { FollowAction } from "src/components/profil/FollowAction";
+import FollowModal from "src/components/profil/FollowModal";
 import NavProfil from "src/components/profil/NavProfil";
 import { getUserRequested } from "src/redux/reducers/user.reducer";
 import {
@@ -19,6 +20,8 @@ export const MyProfil: React.FC = () => {
   const currentUserUid = userContext?.uid;
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
   const postsUser = useSelector((state: any) => state.userReducer.posts);
+  const [openModalFollow, setOpenModalFollow] = useState(false);
+  const [title, setTitle] = useState<string>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -36,6 +39,10 @@ export const MyProfil: React.FC = () => {
       setPostsUserLenght(countPost);
     }
   }, [postsUser, user]);
+
+  const handleCloseModal = useCallback(() => {
+    setOpenModalFollow(false);
+  }, []);
 
   if (!user) {
     // Si l'utilisateur n'est pas trouvé ou si les données de l'utilisateur ne sont pas disponibles, afficher un message de chargement
@@ -85,13 +92,25 @@ export const MyProfil: React.FC = () => {
               <span className="font-bold text-lg">{postsUserLenght}</span>{" "}
               publications
             </div>
-            <div className="user-follower text-gray-600">
+            <button
+              className="user-follower text-gray-600 cursor-pointer"
+              onClick={() => {
+                setOpenModalFollow(true);
+                setTitle("followers");
+              }}
+            >
               <span className="font-bold text-lg">
                 {user?.followers?.length}
               </span>{" "}
               Followers
-            </div>
-            <div className="user-following text-gray-600">
+            </button>
+            <div
+              className="user-following text-gray-600 cursor-pointer"
+              onClick={() => {
+                setOpenModalFollow(true);
+                setTitle("following");
+              }}
+            >
               <span className="font-bold text-lg">
                 {user?.following?.length}
               </span>{" "}
@@ -115,6 +134,14 @@ export const MyProfil: React.FC = () => {
         <NavProfil user={user} />
         {/* </ProfilUserContext.Provider> */}
       </div>
+      {/* Modal pour afficher la liste des followers et des personnes suivies */}
+      {openModalFollow && (
+        <FollowModal
+          title={title}
+          onTitleChange={setTitle}
+          onClose={handleCloseModal}
+        />
+      )}
     </>
   );
 };
