@@ -29,7 +29,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
 
       {/* Sidebar */}
       <nav
-        className={`fixed top-0 left-0 h-full bg-white text-black w-64 p-4 transform ${
+        className={`fixed top-0 left-0 h-full bg-white text-black w-64 p-4 transform border-r-2 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out md:translate-x-0 z-50`}
       >
@@ -57,7 +57,7 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                   Créer +
                 </NavLink>
                 <NavLink
-                  to={currentUser && `/profil/${currentUser.userName}`}
+                  to={"/my-profil"}
                   className="hover:text-gray-300"
                   onClick={toggleSidebar}
                 >

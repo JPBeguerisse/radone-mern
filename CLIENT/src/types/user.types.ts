@@ -1,3 +1,5 @@
+import { Post } from "./post.types";
+
 export interface User {
   [x: string]: any;
   _id?: string; // L'identifiant unique de l'utilisateur
@@ -22,6 +24,9 @@ export type UserLogin = {
 export interface UserState {
   user: User | null;
   error: string | null;
+  posts?: Post[] | null; // Liste des posts de l'utilisateur
+  savedPosts?: Post[] | null; // Liste des posts sauvegardés par l'utilisateur
+  loading?: boolean; // Indicateur de chargement
 }
 
 export interface UsersState {

@@ -3,6 +3,7 @@ const ObjectID = require("mongoose").Types.ObjectId;
 const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
+const UserModel = require("../models/user.model");
 
 //Fonction pour créer un post
 module.exports.createPost = async (req, res) => {
@@ -89,7 +90,7 @@ module.exports.createPost = async (req, res) => {
 };
 
 //Fonction pour récupérer les posts
-module.exports.getPosts = async (req, res) => {
+module.exports.getAllPosts = async (req, res) => {
   try {
     const posts = await PostModel.find().sort({ createdAt: -1 }).lean(); // Trier par date de création;
     // Trier les commentaires dans chaque post en ordre croissant (du plus ancien au plus récent)
@@ -106,6 +107,25 @@ module.exports.getPosts = async (req, res) => {
     res.status(500).json({
       message: "Une erreur est survenue lors de la récupération des posts.",
     });
+  }
+};
+
+// controllers/post.controller.js
+
+// Fonction pour récupérer les posts avec pagination
+module.exports.getPosts = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 5;
+  const skip = parseInt(req.query.skip) || 0;
+
+  try {
+    const posts = await PostModel.find()
+      .sort({ createdAt: -1 }) // plus récents d'abord
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ message: "Erreur lors du chargement des posts" });
   }
 };
 
@@ -135,6 +155,96 @@ module.exports.getPost = async (req, res) => {
     res.status(500).json({
       message: "Une erreur est survenue lors de la récupération du post.",
     });
+  }
+};
+
+// Fonction pour récupérer les posts d'un utilisateur spécifique avec id
+module.exports.getPostsUser = async (req, res) => {
+  const userId = req.params.id;
+
+  if (!ObjectID.isValid(userId)) {
+    return res.status(400).send("ID inconnu : " + userId);
+  }
+
+  try {
+    // Trouver l'utilisateur correspondant
+    // Récupérer ses posts via son ID
+    const posts = await PostModel.find({ posterId: userId })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
+    // Trier les commentaires dans chaque post en ordre croissant (du plus ancien au plus récent)
+    const sortedPosts = posts.map((post) => ({
+      ...post,
+      comments: post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      ), // ✅ Tri des commentaires par timestamp croissant
+    }));
+
+    res.status(200).json(sortedPosts);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des posts." });
+  }
+};
+
+// Fonction pour récupérer les posts sauvegardés par un utilisateur
+module.exports.getSavedPosts = async (req, res) => {
+  const userId = req.params.id;
+
+  if (!ObjectID.isValid(userId)) {
+    return res.status(400).send("ID inconnu : " + userId);
+  }
+
+  try {
+    const posts = await PostModel.find({ savedBy: userId }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Une erreur est survenue lors de la récupération des posts.",
+    });
+  }
+};
+
+// Fonction pour récupérer les posts d'un utilisateur spécifique avec username
+module.exports.getPostsByUsername = async (req, res) => {
+  const username = req.params.username;
+
+  try {
+    // Trouver l'utilisateur correspondant
+    const user = await UserModel.findOne({ userName: username });
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur introuvable" });
+    }
+
+    // Récupérer ses posts via son ID
+    const posts = await PostModel.find({ posterId: user._id })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
+    // Trier les commentaires dans chaque post en ordre croissant (du plus ancien au plus récent)
+    const sortedPosts = posts.map((post) => ({
+      ...post,
+      comments: post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      ), // ✅ Tri des commentaires par timestamp croissant
+    }));
+
+    res.status(200).json(sortedPosts);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des posts." });
   }
 };
 

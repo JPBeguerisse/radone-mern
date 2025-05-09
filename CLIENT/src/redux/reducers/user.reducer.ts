@@ -2,10 +2,13 @@
 import { followUser, removePicture } from "src/services/userService";
 import { User, UserState } from "../../types/user.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Post } from "src/types/post.types";
 
 const initialState: UserState = {
   user: null,
   error: null,
+  savedPosts: null,
+  posts: null,
 };
 
 const userSlice = createSlice({
@@ -116,6 +119,35 @@ const userSlice = createSlice({
     unfollowUserFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
+
+    // 🟡 Chargement des publications
+    getPostsUserRequested: (state, action: PayloadAction<string>) => {
+      console.log("Get posts user lancé", action.payload);
+      state.error = null; // ✅ Vider les erreurs avant la requête
+    },
+    // 🟢 Succès de la récupération des publications
+    getPostsUserSuccess: (state, action: PayloadAction<Post[]>) => {
+      state.posts = action.payload;
+    },
+
+    // 🔴 Échec de la récupération des publications
+    getPostsUserFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+
+    // 🟡 Chargement des publications saved
+    getPostsSavedRequested: (state, action: PayloadAction<string>) => {
+      console.log("Get posts saved lancé", action.payload);
+      state.error = null; // ✅ Vider les erreurs avant la requête
+    },
+    // 🟢 Succès de la récupération des publications saved
+    getPostsSavedSuccess: (state, action: PayloadAction<Post[]>) => {
+      state.savedPosts = action.payload;
+    },
+    // 🔴 Échec de la récupération des publications saved
+    getPostsSavedFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
   },
 });
 
@@ -138,6 +170,12 @@ export const {
   unfollowUserRequested,
   unfollowUserSuccess,
   unfollowUserFailed,
+  getPostsSavedRequested,
+  getPostsSavedSuccess,
+  getPostsSavedFailed,
+  getPostsUserRequested,
+  getPostsUserSuccess,
+  getPostsUserFailed,
 } = userSlice.actions;
 
 export const userReducer = userSlice.reducer;

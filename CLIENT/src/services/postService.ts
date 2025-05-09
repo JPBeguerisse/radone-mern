@@ -18,14 +18,37 @@ export const createPost = async (formData: FormData) => {
 };
 
 // Récupère les publications
-export const getPosts = async (): Promise<Post[]> => {
-  const response = await api.get("/post");
+// export const getPosts = async (): Promise<Post[]> => {
+//   const response = await api.get("/post");
+//   return response.data;
+// };
+
+export const getPosts = async (skip: number, limit = 5): Promise<Post[]> => {
+  const response = await api.get(`/post?skip=${skip}&limit=${limit}`);
   return response.data;
 };
 
 // Récupère les publications
 export const getPost = async (id: string): Promise<Post> => {
   const response = await api.get(`/post/${id}`);
+  return response.data;
+};
+
+// Récupère les publications d'un utilisateur
+export const getPostsByUser = async (username: string): Promise<Post[]> => {
+  const response = await api.get(`/post/user/${username}`);
+  return response.data;
+};
+
+// Récupère les publications d'un utilisateur par son id
+export const getPostsByUserId = async (userId: string): Promise<Post[]> => {
+  const response = await api.get(`/post/user-profil/${userId}`);
+  return response.data;
+};
+
+// Récupère les publications sauvegardées
+export const getSavedPostsByUser = async (userId: string): Promise<Post[]> => {
+  const response = await api.get(`/post/saved/${userId}`);
   return response.data;
 };
 

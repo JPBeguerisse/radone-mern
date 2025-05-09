@@ -22,9 +22,10 @@ export interface Comment {
 }
 
 export interface PostsState {
-  posts: Post[] | null;
-  post: Post | null;
+  posts: Post[];
+  post?: Post | null;
   error: string | null;
+  loading?: boolean;
 }
 
 export interface PostModalViewProps {

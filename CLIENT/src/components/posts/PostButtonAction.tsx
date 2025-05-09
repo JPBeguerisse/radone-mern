@@ -1,5 +1,5 @@
 import { Album, Bookmark, Heart, MessageCircle } from "lucide-react";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Post } from "src/types/post.types";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -13,12 +13,14 @@ import {
   unSavePostRequested,
 } from "src/redux/reducers/posts.reducer";
 import { usePostStatus } from "src/hooks/usePostStatus";
+import { toast } from "react-toastify";
 
 interface PostButtonActionProps {
   showComments: boolean;
-  onToggleComments: (value: boolean) => void;
+  onToggleComments?: (value: boolean) => void;
   post: Post;
   isMobile?: boolean;
+  onOpenPostView?: () => void; // Fonction pour ouvrir le modal de la publication
 }
 
 const PostButtonAction: React.FC<PostButtonActionProps> = ({
@@ -26,45 +28,79 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
   onToggleComments,
   post,
   isMobile,
+  onOpenPostView,
 }) => {
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
   const dispatch = useDispatch();
 
-  // Fonction utilitaire qui vérifie si l'utilisateur a enregistré le post
-  // const isPostSaved = (post: Post, userId: string): boolean => {
-  //   if (!post.savedBy) return false;
-  //   if (typeof post.savedBy[0] === "string") {
-  //     return post.savedBy.includes(userId);
-  //   }
-  //   return post.savedBy.some((user: any) => user._id === userId);
-  // };
-
-  // const isPostLiked = (post: Post, userId: string): boolean => {
-  //   if (!post.likers) return false;
-  //   if (typeof post.likers[0] === "string") {
-  //     return post.likers.includes(userId);
-  //   }
-  //   return post.likers.some((user: any) => user._id === userId);
-  // };
-
   const { isLiked } = usePostStatus(post, currentUserUid!);
   const { isSaved } = usePostStatus(post, currentUserUid!);
+  const [showLoginWarning, setShowLoginWarning] = useState(false);
+  const [showSaveWarning, setShowSaveWarning] = useState(false);
+
+  const handleLike = () => {
+    if (!currentUserUid) {
+      setShowLoginWarning(true);
+      // setTimeout(() => {
+      //   setShowLoginWarning(false);
+      // }, 3000); // Le message disparaît après 3 secondes
+      return;
+    }
+    dispatch(
+      likePostRequested({
+        postId: post._id!,
+        userId: currentUserUid!,
+      })
+    );
+  };
+
+  const handleUnlike = () => {
+    if (!currentUserUid) {
+      return null; // Ne pas afficher le bouton si l'utilisateur n'est pas connecté
+    }
+    dispatch(
+      unLikePostRequested({
+        postId: post._id!,
+        userId: currentUserUid!,
+      })
+    );
+  };
+
+  const handleSave = () => {
+    if (!currentUserUid) {
+      setShowSaveWarning(true);
+      setTimeout(() => {
+        setShowSaveWarning(false);
+      }, 3000); // Le message disparaît après 3 secondes
+      return;
+    }
+    dispatch(
+      savePostRequested({
+        postId: post._id!,
+        userId: currentUserUid!,
+      })
+    );
+  };
+
+  const handleUnsave = () => {
+    if (!currentUserUid) {
+      return null; // Ne pas afficher le bouton si l'utilisateur n'est pas connecté
+    }
+    dispatch(
+      unSavePostRequested({
+        postId: post._id!,
+        userId: currentUserUid!,
+      })
+    );
+  };
+
   return (
     <div>
       <div className="flex justify-between">
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-4 relative ">
           {isLiked ? (
-            <button
-              onClick={() =>
-                dispatch(
-                  unLikePostRequested({
-                    postId: post._id!,
-                    userId: currentUserUid!,
-                  })
-                )
-              }
-            >
+            <button onClick={handleUnlike}>
               <Heart
                 className="text-red-500 transition-all duration-200 ease-in-out"
                 width={30}
@@ -73,57 +109,53 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
               />
             </button>
           ) : (
-            <button
-              onClick={() =>
-                dispatch(
-                  likePostRequested({
-                    postId: post._id!,
-                    userId: currentUserUid!,
-                  })
-                )
-              }
-            >
+            <button onClick={handleLike}>
               <Heart width={30} height={30} />
             </button>
           )}
-          <button onClick={() => onToggleComments(!showComments)}>
+          {showLoginWarning && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow w-auto sm:max-w-[90vw] lg:w-max">
+              Vous devez être connecté pour aimer cette publication.
+            </div>
+          )}
+          <button
+            onClick={() => {
+              onToggleComments && onToggleComments(!showComments);
+              onOpenPostView && onOpenPostView(); // Ouvre le modal de la publication = handleOpenModal
+            }}
+          >
             <MessageCircle width={30} height={30} />
           </button>
         </div>
-        {isSaved ? (
-          <div className="flex gap-2 mt-4">
-            <Bookmark
-              className="cursor-pointer text-black-500 transition-all duration-200 ease-in-out"
-              width={30}
-              height={30}
-              fill="currentColor"
-              onClick={() =>
-                dispatch(
-                  unSavePostRequested({
-                    postId: post._id!,
-                    userId: currentUserUid!,
-                  })
-                )
-              }
-            />
-          </div>
-        ) : (
-          <div className="flex gap-2 mt-4">
-            <Bookmark
-              className="cursor-pointer"
-              width={30}
-              height={30}
-              onClick={() =>
-                dispatch(
-                  savePostRequested({
-                    postId: post._id!,
-                    userId: currentUserUid!,
-                  })
-                )
-              }
-            />
-          </div>
-        )}
+        <div className="relative">
+          {isSaved ? (
+            <div className="flex gap-2 mt-4 ">
+              <Bookmark
+                className="cursor-pointer text-black-500 transition-all duration-200 ease-in-out"
+                width={30}
+                height={30}
+                fill="currentColor"
+                onClick={
+                  handleUnsave // Appelle la fonction pour retirer le post des favoris
+                }
+              />
+            </div>
+          ) : (
+            <div className="flex gap-2 mt-4 relative">
+              <Bookmark
+                className="cursor-pointer"
+                width={30}
+                height={30}
+                onClick={handleSave} // Appelle la fonction pour ajouter le post aux favoris
+              />
+            </div>
+          )}
+          {showSaveWarning && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow w-auto sm:max-w-[90vw] lg:w-max z-0">
+              Vous devez être connecté pour enregistrer cette publication.
+            </div>
+          )}
+        </div>
       </div>
       <div className="mt-2">
         {post.likers?.length && post.likers?.length > 0 ? (
@@ -131,7 +163,10 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
         ) : null}
         {isMobile && post.comments?.length! > 0 && (
           <p
-            onClick={() => onToggleComments(!showComments)}
+            onClick={() => {
+              onToggleComments && onToggleComments(!showComments);
+              onOpenPostView && onOpenPostView(); // Ouvre le modal de la publication = handleOpenModal
+            }}
             className="text-gray-400 text-sm"
           >
             Afficher les {post.comments?.length} commentaires
