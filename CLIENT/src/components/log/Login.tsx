@@ -14,7 +14,7 @@ export const userLoginSchema = z.object({
   password: z.string().min(1, "Le password est requis"),
 });
 
-const Login = () => {
+export const Login = () => {
   const navigate = useNavigate();
   const userContext = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
@@ -128,5 +128,3 @@ const Login = () => {
     </form>
   );
 };
-
-export default Login;

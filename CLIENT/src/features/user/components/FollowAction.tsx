@@ -1,6 +1,7 @@
+// Description: Composant de gestion de l'action de suivre ou ne plus suivre un utilisateur
 import React, { useCallback, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ProfilUserContext, UserContext } from "../AppContext";
+import { ProfilUserContext, UserContext } from "../../../components/AppContext";
 import { User } from "src/types/user.types";
 import {
   followUserRequested,
@@ -11,9 +12,13 @@ import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reduc
 
 export interface FollowActionProps {
   followerId?: string;
+  profilePage?: boolean;
 }
 
-export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
+export const FollowAction: React.FC<FollowActionProps> = ({
+  followerId,
+  profilePage,
+}) => {
   const userName = useContext(ProfilUserContext);
   const dispatch = useDispatch();
   const userContext = useContext(UserContext);
@@ -22,7 +27,7 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
     (state: any) => state.userReducer.user
   );
 
-  const isInProfilePage = !!userName;
+  const isInProfilePage = profilePage || false;
 
   const handleFollow = useCallback(() => {
     // Vérifie si l'utilisateur est connecté
@@ -35,7 +40,9 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
         userIdToFollow: followerId!,
       })
     );
-    dispatch(getUserByUsernameRequested(userName!));
+    if (userName) {
+      dispatch(getUserByUsernameRequested(userName));
+    }
   }, [dispatch, currentUserUid, followerId]);
 
   const handleUnfollow = useCallback(() => {
@@ -49,7 +56,10 @@ export const FollowAction: React.FC<FollowActionProps> = ({ followerId }) => {
         userIdToUnfollow: followerId!,
       })
     );
-    dispatch(getUserByUsernameRequested(userName!));
+
+    if (userName) {
+      dispatch(getUserByUsernameRequested(userName));
+    }
   }, [dispatch, currentUserUid, followerId]);
 
   // Vérifie si l'utilisateur est déjà suivi

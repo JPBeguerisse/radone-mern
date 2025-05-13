@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Login from "./Login";
-import Register from "./Register";
+import { Login } from "./Login";
+import { Register } from "./Register";
 
-const Form = () => {
+export const Form = () => {
   const [signUpModal, setSignUpModal] = useState<boolean>(false);
   const [signInModal, setSignInModal] = useState<boolean>(true);
 
@@ -52,5 +52,3 @@ const Form = () => {
     </div>
   );
 };
-
-export default Form;

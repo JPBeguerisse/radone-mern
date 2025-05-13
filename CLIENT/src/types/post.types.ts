@@ -28,7 +28,7 @@ export interface PostsState {
   loading?: boolean;
 }
 
-export interface PostModalViewProps {
+export interface PostDetailsProps {
   post: Post;
   isOpen: boolean;
   onClose: () => void;

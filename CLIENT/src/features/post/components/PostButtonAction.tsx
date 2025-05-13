@@ -4,7 +4,7 @@ import { Post } from "src/types/post.types";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { current } from "@reduxjs/toolkit";
-import { UserContext } from "../AppContext";
+import { UserContext } from "../../../components/AppContext";
 import { useDispatch } from "react-redux";
 import {
   unLikePostRequested,
@@ -13,7 +13,6 @@ import {
   unSavePostRequested,
 } from "src/redux/reducers/posts.reducer";
 import { usePostStatus } from "src/hooks/usePostStatus";
-import { toast } from "react-toastify";
 
 interface PostButtonActionProps {
   showComments: boolean;

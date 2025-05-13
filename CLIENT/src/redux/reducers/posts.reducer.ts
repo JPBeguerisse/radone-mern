@@ -155,7 +155,7 @@ const postsSlice = createSlice({
             return {
               ...post,
               comments: post.comments?.filter(
-                (comment) => comment._id != action.payload.commentId
+                (comment) => comment._id !== action.payload.commentId
               ),
             };
           }

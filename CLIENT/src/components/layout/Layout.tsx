@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NavBar from "./SideBar";
+import SideBar from "./SideBar";
 import { Outlet } from "react-router-dom";
 
 const Layout = () => {
@@ -8,7 +8,7 @@ const Layout = () => {
   return (
     <div className="flex h-full">
       {/* Sidebar */}
-      <NavBar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <SideBar isOpen={isOpen} setIsOpen={setIsOpen} />
 
       {/* Contenu principal */}
       <div

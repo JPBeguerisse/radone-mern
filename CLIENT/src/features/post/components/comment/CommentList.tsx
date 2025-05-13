@@ -4,14 +4,14 @@ import { Comment, Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { UserContext } from "../AppContext";
-import { useDispatch } from "react-redux";
+import { UserContext } from "../../../../components/AppContext";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  getPostsRequested,
   likeCommentRequested,
   unLikeCommentRequested,
 } from "src/redux/reducers/posts.reducer";
 import { useNavigate } from "react-router-dom";
+import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
 
 interface CommentListProps {
   post: Post;
@@ -28,11 +28,12 @@ const CommentList: React.FC<CommentListProps> = ({
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.userReducer.user);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
   const [loginWarning, setLoginWarning] = useState<{ [key: string]: boolean }>(
     {}
-  ); // pren
+  );
 
   const MAX_LENGTH = 100;
   const [isExpandedText, setIsExpandedText] = React.useState<{
@@ -48,13 +49,6 @@ const CommentList: React.FC<CommentListProps> = ({
 
   const handleLikeComment = useCallback(
     (postId: string, comment: Comment, userId: string) => {
-      // if (!currentUserUid) {
-      //   setShowLoginWarning(true);
-      //   setTimeout(() => {
-      //     setShowLoginWarning(false);
-      //   }, 3000); // Le message disparaît après 3 secondes
-      //   return;
-      // }
       if (!currentUserUid) {
         setLoginWarning((prev) => ({ ...prev, [comment._id]: true })); //
         // setTimeout(() => {
@@ -87,9 +81,12 @@ const CommentList: React.FC<CommentListProps> = ({
   );
 
   const handleGoProfile = (userName: string) => {
-    navigate(`/profil/${userName}?tab=posts`);
-    onClose(); //pour fermer le modal
-    dispatch(getPostsRequested({ skip: 0, limit: 5 })); //pour recharger les posts
+    if (userName === user.userName) {
+      navigate("/my-profil");
+    } else {
+      navigate(`/profil/${userName}?tab=posts`);
+      dispatch(getUserByUsernameRequested(userName));
+    }
   };
 
   return (
@@ -103,7 +100,10 @@ const CommentList: React.FC<CommentListProps> = ({
                 <div key={user._id} className="flex gap-4 mb-4 relative">
                   <div className="">
                     <img
-                      src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
+                      src={`${
+                        process.env.REACT_APP_API_URL
+                      }/${user.picture?.replace(/^\//, "")}`}
+                      alt="user"
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </div>
@@ -178,11 +178,6 @@ const CommentList: React.FC<CommentListProps> = ({
                           />
                         ))}
                       {/* Afficher le bouton de suppression seulement si l'utilisateur est le propriétaire du commentaire */}
-                      {/* {loginWarning[comment._id] && (
-                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow w-auto sm:max-w-[90vw] lg:w-max">
-                          Vous n'êtes pas connecté.
-                        </div>
-                      )} */}
                       {currentUserUid &&
                         currentUserUid === comment.commenterId && (
                           <button

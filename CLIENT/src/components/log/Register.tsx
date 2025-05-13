@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import Login from "./Login";
+import { useState } from "react";
 import { z } from "zod";
+import { Login } from "./Login";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createUser } from "src/services/userService";
-import { toast } from "react-toastify";
 import { Eye, EyeClosed } from "lucide-react";
 
 export const userRegisterSchema = z
@@ -29,7 +28,7 @@ export const userRegisterSchema = z
     path: ["passwordRepeat"],
   });
 
-const Register = () => {
+export const Register = () => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
@@ -211,5 +210,3 @@ const Register = () => {
     </>
   );
 };
-
-export default Register;

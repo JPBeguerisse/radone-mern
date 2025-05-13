@@ -2,20 +2,14 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ProfilUserContext, UserContext } from "src/components/AppContext";
-import { FollowAction } from "src/components/profil/FollowAction";
-import FollowModal from "src/components/profil/FollowModal";
-import NavProfil from "src/components/profil/NavProfil";
-import { getUserRequested } from "src/redux/reducers/user.reducer";
-import {
-  getPostsByUserRequested,
-  getUserByUsernameRequested,
-} from "src/redux/reducers/viewed-user.reducer";
+import FollowListModal from "src/features/user/components/FollowListModal";
+import ProfileTabs from "src/features/user/components/ProfileTabs";
+
 import { Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
 
-export const MyProfil: React.FC = () => {
+export const MyProfile: React.FC = () => {
   const user = useSelector((state: User) => state.userReducer.user);
-  // const posts = useSelector((state: any) => state.postsReducer.posts);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
@@ -23,13 +17,6 @@ export const MyProfil: React.FC = () => {
   const [openModalFollow, setOpenModalFollow] = useState(false);
   const [title, setTitle] = useState<string>();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (user) {
-      dispatch(getPostsByUserRequested(user!));
-    }
-  }, [user, dispatch]);
 
   useEffect(() => {
     if (postsUser && user && postsUser.length > 0) {
@@ -131,15 +118,16 @@ export const MyProfil: React.FC = () => {
         {/* Affichage des posts de l'utilisateur 
          Passer l'ID de l'utilisateur au composant NavProfil avec le contexte */}
         {/* <ProfilUserContext.Provider value={userId}> */}
-        <NavProfil user={user} />
+        <ProfileTabs user={user} />
         {/* </ProfilUserContext.Provider> */}
       </div>
       {/* Modal pour afficher la liste des followers et des personnes suivies */}
       {openModalFollow && (
-        <FollowModal
+        <FollowListModal
           title={title}
           onTitleChange={setTitle}
           onClose={handleCloseModal}
+          page="myProfile"
         />
       )}
     </>

@@ -1,24 +1,23 @@
+// Description: Composant de la modale d'affichage d'un post
 import { useDispatch, useSelector } from "react-redux";
-import { PostModalViewProps } from "../../types/post.types";
+import { PostDetailsProps } from "../../../types/post.types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { User } from "src/types/user.types";
-import FormAddComment from "./FormAddComment";
-import useMediaQuery from "../../hooks/useMediaQuery"; // 🔹 Import du hook
+import FormAddComment from "./comment/FormAddComment";
+import useMediaQuery from "../../../hooks/useMediaQuery"; // 🔹 Import du hook
 import {
   deleteCommentRequested,
   deletePostRequested,
-  getPostsRequested,
 } from "src/redux/reducers/posts.reducer";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import CommentList from "./CommentList";
+import ConfirmDeleteModal from "./modal/ConfirmDeleteModal";
+import CommentList from "./comment/CommentList";
 import PostButtonAction from "./PostButtonAction";
-import { UserContext } from "../AppContext";
-import { FollowAction } from "../profil/FollowAction";
+import { UserContext } from "../../../components/AppContext";
+import { FollowAction } from "../../user/components/FollowAction";
 import { useNavigate } from "react-router-dom";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
-import { is } from "date-fns/locale";
 
-export const PostView: React.FC<PostModalViewProps> = ({
+export const PostDetails: React.FC<PostDetailsProps> = ({
   post,
   isOpen,
   onClose,
@@ -93,12 +92,6 @@ export const PostView: React.FC<PostModalViewProps> = ({
     }
     setShowDeleteModal(false);
   };
-
-  // const handleGoProfile = (userId: string) => {
-  //   navigate(`/profil/${userId}?tab=posts`);
-  //   onClose();
-  //   dispatch(getPostsRequested());
-  // };
 
   const handleGoProfile = (userName: string) => {
     navigate(`/profil/${userName}?tab=posts`);
@@ -203,8 +196,10 @@ export const PostView: React.FC<PostModalViewProps> = ({
                     */}
                     <div className="flex w-full items-center gap-2">
                       <img
-                        src={`${process.env.REACT_APP_API_URL}/${user?.picture}`}
-                        alt="Profile"
+                        src={`${
+                          process.env.REACT_APP_API_URL
+                        }/${user.picture?.replace(/^\//, "")}`}
+                        alt="user"
                         className="w-10 h-10 rounded-full object-cover"
                       />
                       <div className="w-full">

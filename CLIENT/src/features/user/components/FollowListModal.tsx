@@ -1,23 +1,30 @@
-import React, { useEffect, useState } from "react";
+// Modal qui affiche la liste des abonnés et des abonnements d'un utilisateur
+import React, { useContext, useEffect, useState } from "react";
 import FollowersList from "./FollowersList";
 import FollowingList from "./FollowingList";
+import { UserContext } from "../../../components/AppContext";
+import { useSelector } from "react-redux";
 
 export interface FollowModalProps {
-  isOpen?: boolean;
-  onClose?: () => void;
+  onClose: () => void;
   title?: string;
   onTitleChange: (title: string) => void;
+  page: "myProfile" | "viewedProfile";
 }
 
-const FollowModal: React.FC<FollowModalProps> = ({
-  isOpen,
+const FollowListModal: React.FC<FollowModalProps> = ({
   onClose,
   title,
   onTitleChange,
+  page,
 }) => {
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
+  const viewedUser = useSelector((state: any) => state.viewedUserReducer.user);
   useEffect(() => {
     if (title === "followers") {
       setShowFollowers(true);
@@ -27,6 +34,16 @@ const FollowModal: React.FC<FollowModalProps> = ({
       setShowFollowing(true);
     }
   }, [title]);
+
+  useEffect(() => {
+    if (page === "myProfile" && currentUserUid) {
+      // Si on est sur la page de profil de l'utilisateur connecté, on utilise son ID
+      setUserId(currentUserUid!);
+    } else if (page === "viewedProfile") {
+      // Si on est sur la page de profil consulté, on utilise l'ID de l'utilisateur consulté
+      setUserId(viewedUser?._id);
+    }
+  }, [page, currentUserUid, viewedUser]);
 
   return (
     <div className="fixed inset-0 overflow-auto bg-black bg-opacity-80 z-50 flex items-center justify-center">
@@ -55,11 +72,17 @@ const FollowModal: React.FC<FollowModalProps> = ({
             Following
           </button>
         </div>
-        {title && title === "followers" && <FollowersList />}
-        {title && title === "following" && <FollowingList />}
+        <div className="max-h-[40vh] overflow-y-auto">
+          {title && title === "followers" && userId && (
+            <FollowersList userId={userId} onClose={onClose} />
+          )}
+          {title && title === "following" && userId && (
+            <FollowingList userId={userId!} onClose={onClose} />
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default FollowModal;
+export default FollowListModal;

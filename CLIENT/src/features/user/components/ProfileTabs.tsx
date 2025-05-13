@@ -1,24 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-// import PostsUser from "../posts/PostsUserOld";
-import PostSaved from "../posts/PostSaved";
-import { PostsViewedProfil } from "../posts/PostsViewedProfil";
+import UserPostsSaved from "../../post/components/UserPostsSaved";
+import { ViewedUserPosts } from "../../post/components/ViewedUserPosts";
 import { Bookmark, GalleryVerticalEnd } from "lucide-react";
-import { ProfilUserContext, UserContext } from "../AppContext";
+import { UserContext } from "../../../components/AppContext";
 import { useSearchParams } from "react-router-dom";
-import { User, UsersState, UserState } from "src/types/user.types";
-import { MyPosts } from "../posts/MyPosts";
+import { User } from "src/types/user.types";
+import { UserPosts } from "../../post/components/UserPosts";
 
-interface NavProfilProps {
+interface ProfileTabsProps {
   user: User;
 }
 
-const NavProfil: React.FC<NavProfilProps> = ({ user }) => {
-  const userName = useContext(ProfilUserContext);
+const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
   const currentUserUid = useContext(UserContext)?.uid;
-  const users = useSelector((state: User) => state.usersReducer.users);
-  //const [userData, setUserData] = useState<User>();
-
   const [postsUser, setPostsUser] = useState<boolean>(true);
   const [postsSavedByUser, setPostsSavedByUser] = useState<boolean>(false);
 
@@ -81,14 +75,14 @@ const NavProfil: React.FC<NavProfilProps> = ({ user }) => {
 
       {postsUser &&
         (user && user._id === currentUserUid ? (
-          <MyPosts />
+          <UserPosts />
         ) : (
-          <PostsViewedProfil />
+          <ViewedUserPosts />
         ))}
 
-      {postsSavedByUser && user._id === currentUserUid && <PostSaved />}
+      {postsSavedByUser && user._id === currentUserUid && <UserPostsSaved />}
     </div>
   );
 };
 
-export default NavProfil;
+export default ProfileTabs;

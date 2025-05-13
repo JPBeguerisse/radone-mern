@@ -1,5 +1,4 @@
 //user.saga/ts
-import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { UpdateUserPayload, User } from "../../types/user.types";
 import {
@@ -30,7 +29,6 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import {
   followUser,
   getUser,
-  getUserByUsername,
   removePicture,
   unFollowUser,
   updatePicture,
@@ -40,7 +38,6 @@ import { toast } from "react-toastify";
 import { getUsersRequested } from "../reducers/users.reducer";
 import { Post } from "src/types/post.types";
 import {
-  getPostsByUser,
   getPostsByUserId,
   getSavedPostsByUser,
 } from "src/services/postService";
@@ -65,20 +62,6 @@ function* handleGetUser(
     yield put(getUserFailed(error.message));
   }
 }
-
-// // fonction pour récupérer un utilisateur par son username
-// function* handleGetUserByUsername(
-//   action: PayloadAction<string>
-// ): Generator<any, void, User> {
-//   try {
-//     const token = localStorage.getItem("accessToken");
-//     const user = yield call(getUserByUsername, action.payload);
-//     console.log("USER RES", user);
-//     yield put(getUserByUsernameSuccess(user));
-//   } catch (error: any) {
-//     yield put(getUserByUsernameFailed(error.message));
-//   }
-// }
 
 // fonction pour récupérer les publications d'un utilisateur
 function* handleGetPostsUser(

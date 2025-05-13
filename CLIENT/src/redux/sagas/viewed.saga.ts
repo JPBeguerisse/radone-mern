@@ -18,7 +18,7 @@ function* handleGetUserByUsername(
   action: PayloadAction<string>
 ): Generator<any, void, User> {
   try {
-    const token = localStorage.getItem("accessToken");
+    // const token = localStorage.getItem("accessToken");
     const user = yield call(getUserByUsername, action.payload);
     //console.log("USER RES", user);
     yield put(getUserByUsernameSuccess(user));

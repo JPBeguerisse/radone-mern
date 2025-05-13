@@ -1,13 +1,14 @@
+// Description: Composant d'affichage des publications sauvegardées de l'utilisateur connecté
 import React, { useContext, useEffect, useState } from "react";
-import { Post } from "../../types/post.types";
+import { Post } from "../../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
-import { PostImgCard } from "./PostImgCard";
-import { getPostRequested } from "../../redux/reducers/posts.reducer";
-import { PostView } from "./PostView";
-import { UserContext } from "../AppContext";
+import { PostImageCard } from "./card/PostImageCard";
+import { getPostRequested } from "../../../redux/reducers/posts.reducer";
+import { PostDetails } from "./PostDetails";
+import { UserContext } from "../../../components/AppContext";
 import { getPostsSavedRequested } from "src/redux/reducers/user.reducer";
 
-const PostSaved = () => {
+const UserPostsSaved = () => {
   const [isLoading, setIsLoading] = useState(true); // Gère l'état de chargement
   const [isOpen, setIsOpen] = useState<boolean>();
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
@@ -47,7 +48,7 @@ const PostSaved = () => {
         <div className="flex flex-wrap gap-4 justify-center">
           {savedPosts && savedPosts.length > 0 ? (
             savedPosts.map((post: Post) => (
-              <PostImgCard
+              <PostImageCard
                 key={post._id}
                 post={post}
                 onOpen={handleOpenModal}
@@ -60,7 +61,7 @@ const PostSaved = () => {
       )}
 
       {isOpen && selectedPost && (
-        <PostView
+        <PostDetails
           post={selectedPost}
           isOpen={isOpen}
           onClose={closeModal}
@@ -71,4 +72,4 @@ const PostSaved = () => {
   );
 };
 
-export default PostSaved;
+export default UserPostsSaved;

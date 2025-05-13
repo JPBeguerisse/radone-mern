@@ -1,5 +1,6 @@
+// Description: Composant d'affichage des publications d'un utilisateur spécifique  que l'on consulte
 import React, { useContext, useEffect, useState } from "react";
-import { Post } from "../../types/post.types";
+import { Post } from "../../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deletePostRequested,
@@ -7,21 +8,23 @@ import {
   getPostsRequested,
   updatePostRequested,
   updatePostSuccess,
-} from "../../redux/reducers/posts.reducer";
-import { PostView } from "./PostView";
-import { PostImgCard } from "./PostImgCard";
+} from "../../../redux/reducers/posts.reducer";
+import { PostDetails } from "./PostDetails";
+import { PostImageCard } from "./card/PostImageCard";
 import { User } from "src/types/user.types";
-import { ProfilUserContext } from "../AppContext";
+import { ProfilUserContext } from "../../../components/AppContext";
 import { api } from "src/api/api";
 import { getPostsByUser } from "src/services/postService";
 import { useUserPosts } from "src/hooks/useUserPosts";
 import { getPostsByUserRequested } from "src/redux/reducers/viewed-user.reducer";
 
+//Ce composant affiche les posts d'un utilisateur spécifique qu'on est en train de consulter
+
 interface PostsUserProps {
   userId?: string;
 }
 
-export const PostsViewedProfil: React.FC<PostsUserProps> = () => {
+export const ViewedUserPosts: React.FC<PostsUserProps> = () => {
   const userName = useContext(ProfilUserContext);
   const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
   const [isOpen, setIsOpen] = useState<boolean>();
@@ -34,20 +37,11 @@ export const PostsViewedProfil: React.FC<PostsUserProps> = () => {
     }
   }, [userName]);
 
-  // const [editedMessage, setEditedMessage] = useState<string>("");
-
   const handleOpenModal = (post: Post) => {
     setIsOpen(true);
     //lancer une action pour récupérer le post
     dispatch(getPostRequested(post._id!));
-    //console.log("POST ", postSelect);
   };
-
-  // useEffect(() => {
-  //   if (selectedPost) {
-  //     setEditedMessage(selectedPost.message || ""); // ✅ Met à jour `editedMessage` quand Redux change
-  //   }
-  // }, [selectedPost]);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -57,20 +51,14 @@ export const PostsViewedProfil: React.FC<PostsUserProps> = () => {
     <div className="flex flex-wrap gap-0.5 justify-center">
       {postsUser && postsUser.length > 0 ? (
         postsUser.map((post: Post) => (
-          <PostImgCard key={post._id} post={post} onOpen={handleOpenModal} />
+          <PostImageCard key={post._id} post={post} onOpen={handleOpenModal} />
         ))
       ) : (
         <p>Aucun post</p>
       )}
 
       {isOpen && selectedPost && (
-        <PostView
-          post={selectedPost}
-          isOpen={isOpen}
-          onClose={closeModal}
-          // message={editedMessage}
-          // setEditedMessage={setEditedMessage}
-        />
+        <PostDetails post={selectedPost} isOpen={isOpen} onClose={closeModal} />
       )}
     </div>
   );

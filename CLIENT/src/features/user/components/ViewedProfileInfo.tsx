@@ -1,23 +1,26 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ProfilProps, User, UserState } from "../../types/user.types";
-import NavProfil from "./NavProfil";
+import { ProfilProps, User, UserState } from "../../../types/user.types";
+import ProfileTabs from "./ProfileTabs";
 import { Post } from "src/types/post.types";
 import { useNavigate } from "react-router-dom";
 import { FollowAction } from "./FollowAction";
-import { ProfilUserContext, UserContext } from "../AppContext";
+import { ProfilUserContext, UserContext } from "../../../components/AppContext";
 import {
   getPostsByUserRequested,
   getUserByUsernameRequested,
 } from "src/redux/reducers/viewed-user.reducer";
+import FollowListModal from "./FollowListModal";
 
-const ViewProfil: React.FC = () => {
+const ViewedProfileInfo: React.FC = () => {
   const userName = useContext(ProfilUserContext);
   const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
   const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [openModalFollow, setOpenModalFollow] = useState(false);
+  const [title, setTitle] = useState<string>();
 
   useEffect(() => {
     if (userName) {
@@ -39,6 +42,10 @@ const ViewProfil: React.FC = () => {
       setPostsUserLenght(countPost);
     }
   }, [postsUser, viewedUser]);
+
+  const handleCloseModal = useCallback(() => {
+    setOpenModalFollow(false);
+  }, []);
 
   if (!userName || !viewedUser) {
     // Si l'utilisateur n'est pas trouvé ou si les données de l'utilisateur ne sont pas disponibles, afficher un message de chargement
@@ -68,7 +75,9 @@ const ViewProfil: React.FC = () => {
             <h1 className="text-2xl font-semibold flex items-center gap-2">
               {viewedUser?.userName}
             </h1>
-            {viewedUser && <FollowAction followerId={viewedUser._id!} />}
+            {viewedUser && (
+              <FollowAction followerId={viewedUser._id!} profilePage={true} />
+            )}
           </div>
 
           {/* Informations de suivi */}
@@ -77,13 +86,26 @@ const ViewProfil: React.FC = () => {
               <span className="font-bold text-lg">{postsUserLenght}</span>{" "}
               publications
             </div>
-            <div className="user-follower text-gray-600">
+            <button
+              className="user-follower text-gray-600 cursor-pointer"
+              onClick={() => {
+                setOpenModalFollow(true);
+                setTitle("followers");
+              }}
+            >
+              {" "}
               <span className="font-bold text-lg">
                 {viewedUser?.followers?.length}
               </span>{" "}
               Followers
-            </div>
-            <div className="user-following text-gray-600">
+            </button>
+            <div
+              className="user-following text-gray-600 cursor-pointer"
+              onClick={() => {
+                setOpenModalFollow(true);
+                setTitle("following");
+              }}
+            >
               <span className="font-bold text-lg">
                 {viewedUser?.following?.length}
               </span>{" "}
@@ -104,11 +126,19 @@ const ViewProfil: React.FC = () => {
         {/* Affichage des posts de l'utilisateur 
          Passer l'ID de l'utilisateur au composant NavProfil avec le contexte */}
         {/* <ProfilUserContext.Provider value={userId}> */}
-        <NavProfil user={viewedUser} />
+        <ProfileTabs user={viewedUser} />
         {/* </ProfilUserContext.Provider> */}
       </div>
+      {openModalFollow && (
+        <FollowListModal
+          title={title}
+          onTitleChange={setTitle}
+          onClose={handleCloseModal}
+          page="viewedProfile"
+        />
+      )}
     </>
   );
 };
 
-export default ViewProfil;
+export default ViewedProfileInfo;

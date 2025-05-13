@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { stat } from "fs";
 import { User } from "src/types/user.types";
 import { includesUser } from "src/utils/includesUser";
-import { FollowAction } from "../profil/FollowAction";
+import { FollowAction } from "../../features/user/components/FollowAction";
 import { Link } from "react-router-dom";
 
 export const SuggestedUsers = () => {

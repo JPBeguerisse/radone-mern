@@ -1,11 +1,11 @@
 import { formatDistanceToNow } from "date-fns";
-import { fr, is } from "date-fns/locale";
+import { fr } from "date-fns/locale";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
-import PostButtonAction from "./PostButtonAction";
-import { PostView } from "./PostView";
+import PostButtonAction from "../PostButtonAction";
+import { PostDetails } from "../PostDetails";
 import { useNavigate } from "react-router-dom";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
 import {
@@ -41,11 +41,10 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
   };
 
   const handleGoProfile = (userName: string) => {
-    if (userName === user.userName) {
+    if (user && userName === user.userName) {
       navigate("/my-profil");
     } else {
       navigate(`/profil/${userName}?tab=posts`);
-
       dispatch(getUserByUsernameRequested(userName));
     }
   };
@@ -135,7 +134,7 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
         )}
       </div>
 
-      <PostView
+      <PostDetails
         post={post}
         isOpen={isOpen}
         onClose={closeModal}

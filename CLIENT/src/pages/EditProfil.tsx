@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, UseSelector, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { User } from "src/types/user.types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PostHomeCard } from "../components/posts/PostHomeCard";
+import { PostHomeCard } from "../features/post/components/card/PostHomeCard";
 import { getPostsRequested } from "src/redux/reducers/posts.reducer";
-import { Post } from "src/types/post.types";
 import { SuggestedUsers } from "src/components/home/SuggestedUsers";
 
 export const Home: React.FC = () => {

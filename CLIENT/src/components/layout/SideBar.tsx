@@ -1,19 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../AppContext";
-import Logout from "../log/Logout";
-import { useSelector } from "react-redux";
-import { User } from "src/types/user.types";
+import { Logout } from "../log/Logout";
 
 interface SideBarProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
+const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
-  const currentUser = useSelector((state: User) => state.userReducer.user);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -103,4 +100,4 @@ const NavBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
   );
 };
 
-export default NavBar;
+export default SideBar;
