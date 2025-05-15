@@ -13,11 +13,13 @@ import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reduc
 export interface FollowActionProps {
   followerId?: string;
   profilePage?: boolean;
+  homePage?: boolean;
 }
 
 export const FollowAction: React.FC<FollowActionProps> = ({
   followerId,
   profilePage,
+  homePage,
 }) => {
   const userName = useContext(ProfilUserContext);
   const dispatch = useDispatch();
@@ -64,6 +66,11 @@ export const FollowAction: React.FC<FollowActionProps> = ({
 
   // Vérifie si l'utilisateur est déjà suivi
   const isFollowing = includesUser(currentUserData?.following, followerId!);
+  const isFollowedByViewedUser = includesUser(
+    currentUserData?.followers,
+    followerId!
+  );
+
   return (
     <div>
       {currentUserData &&
@@ -75,15 +82,14 @@ export const FollowAction: React.FC<FollowActionProps> = ({
             className={`cursor-pointer font-semibold ${
               isInProfilePage
                 ? "bg-gray-200 text-black px-4 py-1 rounded-md text-sm hover:bg-gray-300"
-                : "text-blue-500 hover:text-blue-700"
+                : "text-gray-800 hover:text-gray-500"
             }`}
           >
             {isInProfilePage && <span className="mr-2">●</span>}
-            Ne plus suivre
+            Suivi(e)
           </p>
         )}
-      {currentUserData &&
-        //!currentUserData.following?.includes(followerId!)
+      {/* {currentUserData &&
         !isFollowing &&
         currentUserUid! !== followerId && ( // Vérifie si l'utilisateur n'est pas déjà suivi
           // Si l'utilisateur n'est pas suivi, affiche le bouton "Suivre"
@@ -97,7 +103,36 @@ export const FollowAction: React.FC<FollowActionProps> = ({
           >
             Suivre
           </p>
-        )}
+        )} */}
+      {currentUserData &&
+      !isFollowing &&
+      isFollowedByViewedUser &&
+      !homePage ? (
+        <p
+          onClick={handleFollow}
+          className={`cursor-pointer font-semibold ${
+            isInProfilePage
+              ? "bg-blue-500 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-600"
+              : "text-gray-800 hover:text-gray-500"
+          }`}
+        >
+          Suivre en retour
+        </p>
+      ) : (
+        !isFollowing &&
+        currentUserUid !== followerId && (
+          <p
+            onClick={handleFollow}
+            className={`cursor-pointer font-semibold ${
+              isInProfilePage
+                ? "bg-blue-500 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-600"
+                : "text-blue-500 hover:text-blue-700"
+            }`}
+          >
+            Suivre
+          </p>
+        )
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { Heart, Trash2 } from "lucide-react";
 import React, { useCallback, useContext, useState } from "react";
 import { Comment, Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { UserContext } from "../../../../components/AppContext";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +24,6 @@ const CommentList: React.FC<CommentListProps> = ({
   post,
   usersData,
   onDelete,
-  onClose,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

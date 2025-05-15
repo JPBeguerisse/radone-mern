@@ -235,7 +235,7 @@ router.get("/", userController.getUsers);
  *     summary: Récupérer un utilisateur par son ID
  *     description: Récupère les informations d'un utilisateur spécifique en utilisant son ID, sans renvoyer son mot de passe.
  *     tags:
- *       - Utilisateurs
+ *       - Utilisateur
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -326,6 +326,8 @@ router.get("/by-username/:username", userController.getUserByUsername);
  *       - L'ancien mot de passe doit être fourni pour le changer.
  *     tags:
  *       - Utilisateur
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -388,7 +390,7 @@ router.get("/by-username/:username", userController.getUserByUsername);
  *       500:
  *         description: Erreur serveur
  */
-router.patch("/:id", userController.updateUser);
+router.patch("/:id", verifyToken, userController.updateUser);
 
 /**
  * @swagger
@@ -449,6 +451,8 @@ router.delete("/:id", userController.deleteUser);
  *     description: Permet de mettre à jour l'image de profil d'un utilisateur. Si une image de profil existe déjà, elle sera supprimée et remplacée par la nouvelle.
  *     tags:
  *       - Utilisateurs
+ *     security:
+ *      - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -502,7 +506,7 @@ router.delete("/:id", userController.deleteUser);
  *                   type: object
  *                   description: Détails des erreurs
  */
-router.post("/upload-profil", uploadController.uploadProfil);
+router.post("/upload-profil", verifyToken, uploadController.uploadProfil);
 
 /**
  * @swagger
@@ -511,7 +515,9 @@ router.post("/upload-profil", uploadController.uploadProfil);
  *     summary: Supprimer l'image de profil d'un utilisateur
  *     description: Supprime physiquement le fichier image de l'utilisateur ainsi que la référence dans la base de données.
  *     tags:
- *       - Utilisateurs
+ *       - Utilisateur
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -560,7 +566,11 @@ router.post("/upload-profil", uploadController.uploadProfil);
  *                   type: string
  *                   example: "Erreur lors de la suppression de la photo"
  */
-router.delete("/remove-profil-picture/:id", uploadController.removePicture);
+router.delete(
+  "/remove-profil-picture/:id",
+  verifyToken,
+  uploadController.removePicture
+);
 
 /**
  * @swagger
@@ -569,7 +579,9 @@ router.delete("/remove-profil-picture/:id", uploadController.removePicture);
  *     summary: Suivre un utilisateur
  *     description: Ajoute l'utilisateur `userIdToFollow` à la liste des abonnements (`following`) de l'utilisateur `id`, et met à jour les followers de l'autre utilisateur.
  *     tags:
- *       - Utilisateurs
+ *       - Utilisateur
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -621,7 +633,7 @@ router.delete("/remove-profil-picture/:id", uploadController.removePicture);
  *                   type: string
  *                   example: Une erreur est survenue lors du follow.
  */
-router.patch("/follow/:id", userController.follow);
+router.patch("/follow/:id", verifyToken, userController.follow);
 
 /**
  * @swagger
@@ -630,7 +642,9 @@ router.patch("/follow/:id", userController.follow);
  *     summary: Se désabonner d’un utilisateur
  *     description: Supprime `userIdToUnFollow` de la liste des abonnements de l’utilisateur `id`, et retire également `id` de la liste des followers de l’autre utilisateur.
  *     tags:
- *       - Utilisateurs
+ *       - Utilisateur
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -682,5 +696,93 @@ router.patch("/follow/:id", userController.follow);
  *                   type: string
  *                   example: Une erreur est survenue lors du follow.
  */
-router.patch("/unfollow/:id", userController.unfollow);
+router.patch("/unfollow/:id", verifyToken, userController.unfollow);
 module.exports = router;
+
+/**
+ * @swagger
+ * /api/user/{userId}/followers:
+ *   get:
+ *     summary: Récupérer les followers d'un utilisateur
+ *     description: Récupère la liste des utilisateurs qui suivent un utilisateur spécifique en excluant leurs mots de passe.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur dont on veut récupérer les followers
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des followers de l'utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID du follower
+ *                   name:
+ *                     type: string
+ *                     description: Prénom du follower
+ *                   userName:
+ *                     type: string
+ *                     description: Nom d'utilisateur du follower
+ *                   email:
+ *                     type: string
+ *                     description: Email du follower
+ *       400:
+ *         description: ID de l'utilisateur invalide
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+router.get("/:userId/followers", userController.getFollowers);
+
+/**
+ * @swagger
+ * /api/user/{userId}/following:
+ *   get:
+ *     summary: Récupérer les utilisateurs suivis par un utilisateur
+ *     description: Récupère la liste des utilisateurs que suit un utilisateur spécifique en excluant leurs mots de passe.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur dont on veut récupérer les abonnements
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des utilisateurs suivis par l'utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID de l'utilisateur suivi
+ *                   name:
+ *                     type: string
+ *                     description: Prénom de l'utilisateur suivi
+ *                   userName:
+ *                     type: string
+ *                     description: Nom d'utilisateur de l'utilisateur suivi
+ *                   email:
+ *                     type: string
+ *                     description: Email de l'utilisateur suivi
+ *       400:
+ *         description: ID de l'utilisateur invalide
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+router.get("/:userId/following", userController.getFollowing);

@@ -261,3 +261,134 @@ module.exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+// ✅ Récupérer les followers d'un utilisateur
+// module.exports.getFollowers = async (req, res) => {
+//   // Vérification si l'ID est valide
+//   if (!ObjectID.isValid(req.params.userId)) {
+//     return res.status(400).send("ID unknown: " + req.params.userId);
+//   }
+//   try {
+//     const user = await UserModel.findById(req.params.userId)
+//       .populate("followers", "-password") // Exclure le mot de passe
+//       .select("followers"); // Sélectionner uniquement le champ "followers"
+
+//     res.status(200).json(user.followers);
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ message: "Erreur lors du chargement des followers" });
+//   }
+// };
+
+// ✅ Récupérer les utilisateurs suivis par un utilisateur
+// module.exports.getFollowing = async (req, res) => {
+//   // Vérification si l'ID est valide
+//   if (!ObjectID.isValid(req.params.userId)) {
+//     return res.status(400).send("ID unknown: " + req.params.userId);
+//   }
+//   try {
+//     const user = await UserModel.findById(req.params.userId)
+//       .populate("following", "-password") // Exclure le mot de passe
+//       .select("following"); // Sélectionner uniquement le champ "following"
+
+//     res.status(200).json(user.following);
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ message: "Erreur lors du chargement des followers" });
+//   }
+// };
+
+// ✅ Récupérer les utilisateurs suivis par un utilisateur avec pagination et recherch
+module.exports.getFollowing = async (req, res) => {
+  try {
+    const { page = 1, limit = 5, search = "" } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const user = await UserModel.findById(req.params.userId).select(
+      "following"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    const totalFollowing = await UserModel.countDocuments({
+      _id: { $in: user.following },
+      $or: [
+        { userName: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+      ],
+    });
+
+    // console.log("totalFollowing", totalFollowing);
+
+    const following = await UserModel.find({
+      _id: { $in: user.following },
+      $or: [
+        { userName: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .select("userName name picture");
+
+    res.status(200).json({
+      following,
+      total: totalFollowing,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors du chargement des utilisateurs suivis" });
+  }
+};
+
+// ✅ Récupérer les followers d'un utilisateur avec pagination et recherche
+module.exports.getFollowers = async (req, res) => {
+  try {
+    const { page = 1, limit = 5, search = "" } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const user = await UserModel.findById(req.params.userId).select(
+      "followers"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    const totalFollowers = await UserModel.countDocuments({
+      _id: { $in: user.followers },
+      $or: [
+        { userName: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+      ],
+    });
+    const followers = await UserModel.find({
+      _id: { $in: user.followers },
+      $or: [
+        { userName: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .select("userName name picture");
+
+    res.status(200).json({
+      followers,
+      total: totalFollowers,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors du chargement des utilisateurs suivis" });
+  }
+};

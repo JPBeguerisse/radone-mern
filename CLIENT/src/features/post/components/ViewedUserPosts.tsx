@@ -2,20 +2,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Post } from "../../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deletePostRequested,
-  getPostRequested,
-  getPostsRequested,
-  updatePostRequested,
-  updatePostSuccess,
-} from "../../../redux/reducers/posts.reducer";
+import { getPostRequested } from "../../../redux/reducers/posts.reducer";
 import { PostDetails } from "./PostDetails";
 import { PostImageCard } from "./card/PostImageCard";
-import { User } from "src/types/user.types";
 import { ProfilUserContext } from "../../../components/AppContext";
-import { api } from "src/api/api";
-import { getPostsByUser } from "src/services/postService";
-import { useUserPosts } from "src/hooks/useUserPosts";
 import { getPostsByUserRequested } from "src/redux/reducers/viewed-user.reducer";
 
 //Ce composant affiche les posts d'un utilisateur spécifique qu'on est en train de consulter

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ProfilUserContext, UserContext } from "src/components/AppContext";
+import { UserContext } from "src/components/AppContext";
 import FollowListModal from "src/features/user/components/FollowListModal";
 import ProfileTabs from "src/features/user/components/ProfileTabs";
 

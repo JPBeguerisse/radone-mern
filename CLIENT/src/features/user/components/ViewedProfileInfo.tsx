@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ProfilProps, User, UserState } from "../../../types/user.types";
+import { User } from "../../../types/user.types";
 import ProfileTabs from "./ProfileTabs";
 import { Post } from "src/types/post.types";
 import { useNavigate } from "react-router-dom";
 import { FollowAction } from "./FollowAction";
-import { ProfilUserContext, UserContext } from "../../../components/AppContext";
+import { ProfilUserContext } from "../../../components/AppContext";
 import {
   getPostsByUserRequested,
   getUserByUsernameRequested,

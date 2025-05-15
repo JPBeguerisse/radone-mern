@@ -3,7 +3,8 @@ const UserModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const maxAge = 3 * 24 * 60 * 60 * 1000;
+// const maxAge = 3 * 24 * 60 * 60 * 1000; // 3 jours
+const maxAge = 1 * 60 * 60 * 1000; // 1h
 
 module.exports.signUp = async (req, res) => {
   const { name, userName, email, password } = req.body;

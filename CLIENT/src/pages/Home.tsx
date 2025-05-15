@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PostHomeCard } from "../features/post/components/card/PostHomeCard";
 import { getPostsRequested } from "src/redux/reducers/posts.reducer";
 import { SuggestedUsers } from "src/components/home/SuggestedUsers";
+import { UserContext } from "src/components/AppContext";
 
 export const Home: React.FC = () => {
   const dispatch = useDispatch();
+  const currentUserUid = useContext(UserContext)?.uid;
   const posts = useSelector((state: any) => state.postsReducer.posts);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -62,7 +64,7 @@ export const Home: React.FC = () => {
         </div>
 
         {/* Section de suggestion (visible seulement sur desktop) */}
-        <SuggestedUsers />
+        {currentUserUid && <SuggestedUsers />}
       </div>
       {!hasMore && (
         <p className="text-center text-gray-400 mt-4">

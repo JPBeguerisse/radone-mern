@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const postController = require("../controllers/post.controller");
+const { verifyToken, requireAuth } = require("../middlewares/checkToken");
 
 /**
  * @swagger
@@ -322,6 +323,8 @@ router.get("/user/:username", postController.getPostsByUsername);
  *       Les posts sont triés par date de création décroissante, et les commentaires dans chaque post sont triés du plus récent au plus ancien.
  *     tags:
  *       - Posts
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -370,7 +373,7 @@ router.get("/user/:username", postController.getPostsByUsername);
  *       500:
  *         description: Erreur interne lors de la récupération des posts
  */
-router.get("/user-profil/:id", postController.getPostsUser);
+router.get("/user-profil/:id", verifyToken, postController.getPostsUser);
 
 //RECUPERER LES POSTS SAUVES
 /**
@@ -381,6 +384,8 @@ router.get("/user-profil/:id", postController.getPostsUser);
  *     description: Récupère tous les posts que l'utilisateur a enregistrés dans ses favoris (`savedBy`), triés par date de création décroissante.
  *     tags:
  *       - Posts
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -419,7 +424,7 @@ router.get("/user-profil/:id", postController.getPostsUser);
  *       500:
  *         description: Erreur interne lors de la récupération des posts enregistrés
  */
-router.get("/saved/:id", postController.getSavedPosts);
+router.get("/saved/:id", verifyToken, postController.getSavedPosts);
 
 //MODIFIER UN POST
 /**
@@ -430,6 +435,8 @@ router.get("/saved/:id", postController.getSavedPosts);
  *     description: Cette route permet de mettre à jour un post en particulier à partir de son ID. Les champs modifiables incluent le message et l'URL de l'image.
  *     tags:
  *       - Posts
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -487,7 +494,7 @@ router.get("/saved/:id", postController.getSavedPosts);
  *                   type: string
  *                   example: "Une erreur est survenue lors de la mise à jour du post."
  */
-router.put("/:id", postController.updatePost);
+router.put("/:id", verifyToken, postController.updatePost);
 
 //SUPPRIMER UN POST
 /**
@@ -498,6 +505,8 @@ router.put("/:id", postController.updatePost);
  *     description: Supprime un post à partir de son ID ainsi que l'image associée, si elle existe.
  *     tags:
  *       - Posts
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -537,7 +546,7 @@ router.put("/:id", postController.updatePost);
  *                   type: string
  *                   example: "Erreur lors de la suppression du post"
  */
-router.delete("/:id", postController.deletePost);
+router.delete("/:id", verifyToken, postController.deletePost);
 
 //LIKER UN POST
 /**
@@ -548,6 +557,8 @@ router.delete("/:id", postController.deletePost);
  *     description: Permet à un utilisateur de liker un post en ajoutant son ID à la liste des likers.
  *     tags:
  *       - Posts
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -601,7 +612,7 @@ router.delete("/:id", postController.deletePost);
  *                   type: string
  *                   example: "Une erreur est survenue lors du like."
  */
-router.patch("/like/:id", postController.like);
+router.patch("/like/:id", verifyToken, postController.like);
 
 //UNLIKER UN POST
 /**
@@ -612,6 +623,8 @@ router.patch("/like/:id", postController.like);
  *     description: Permet à un utilisateur de retirer son like d'un post en supprimant son ID de la liste des likers.
  *     tags:
  *       - Posts
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -669,7 +682,7 @@ router.patch("/like/:id", postController.like);
  *                   type: string
  *                   example: "Une erreur est survenue lors du unlike."
  */
-router.patch("/unlike/:id", postController.unlike);
+router.patch("/unlike/:id", verifyToken, postController.unlike);
 
 //ADDCOMMENT
 /**
@@ -680,6 +693,8 @@ router.patch("/unlike/:id", postController.unlike);
  *     description: Permet à un utilisateur d'ajouter un commentaire à un post.
  *     tags:
  *       - Commentaires
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -747,7 +762,7 @@ router.patch("/unlike/:id", postController.unlike);
  *                   type: string
  *                   example: "Une erreur est survenue lors de l'ajout du commentaire."
  */
-router.patch("/add-comment/:id", postController.addCommentPost);
+router.patch("/add-comment/:id", verifyToken, postController.addCommentPost);
 
 //UPDATE COMMENT
 /**
@@ -758,6 +773,8 @@ router.patch("/add-comment/:id", postController.addCommentPost);
  *     description: Permet de modifier un commentaire spécifique dans un post existant.
  *     tags:
  *       - Commentaires
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -828,7 +845,7 @@ router.patch("/add-comment/:id", postController.addCommentPost);
  *                   type: string
  *                   example: "Une erreur est survenue lors de la modification du commentaire."
  */
-router.patch("/edit-comment/:id", postController.updateComment);
+router.patch("/edit-comment/:id", verifyToken, postController.updateComment);
 
 //DELETE COMMENT
 /**
@@ -839,6 +856,8 @@ router.patch("/edit-comment/:id", postController.updateComment);
  *     description: Permet de supprimer un commentaire spécifique dans un post existant.
  *     tags:
  *       - Commentaires
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -893,7 +912,7 @@ router.patch("/edit-comment/:id", postController.updateComment);
  *                   type: string
  *                   example: "Une erreur est survenue lors de la suppression du commentaire."
  */
-router.patch("/comment/delete/:id", postController.deleteComment);
+router.patch("/comment/delete/:id", verifyToken, postController.deleteComment);
 
 //LIKER UN COMMENT
 /**
@@ -904,6 +923,8 @@ router.patch("/comment/delete/:id", postController.deleteComment);
  *     description: Permet d'ajouter un like à un commentaire spécifique dans un post existant.
  *     tags:
  *       - Commentaires
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -959,7 +980,7 @@ router.patch("/comment/delete/:id", postController.deleteComment);
  *                   type: string
  *                   example: "Une erreur est survenue lors du like du commentaire."
  */
-router.patch("/comment/like/:id", postController.addLikeComment);
+router.patch("/comment/like/:id", verifyToken, postController.addLikeComment);
 
 /**
  * @swagger
@@ -969,6 +990,8 @@ router.patch("/comment/like/:id", postController.addLikeComment);
  *     description: Permet à un utilisateur de retirer son like d’un commentaire spécifique dans un post.
  *     tags:
  *       - Commentaires
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -1020,7 +1043,7 @@ router.patch("/comment/like/:id", postController.addLikeComment);
  *                   type: string
  *                   example: "Une erreur est survenue lors du unlike du commentaire."
  */
-router.patch("/comment/unlike/:id", postController.unLikeComment);
+router.patch("/comment/unlike/:id", verifyToken, postController.unLikeComment);
 
 /**
  * @swagger
@@ -1030,6 +1053,8 @@ router.patch("/comment/unlike/:id", postController.unLikeComment);
  *     description: Permet à un utilisateur d'enregistrer un post dans ses favoris.
  *     tags:
  *       - Posts
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -1061,7 +1086,7 @@ router.patch("/comment/unlike/:id", postController.unLikeComment);
  *       500:
  *         description: Erreur serveur
  */
-router.patch("/save/:id", postController.savePost);
+router.patch("/save/:id", verifyToken, postController.savePost);
 
 /**
  * @swagger
@@ -1071,6 +1096,8 @@ router.patch("/save/:id", postController.savePost);
  *     description: Permet à un utilisateur de retirer un post de ses favoris.
  *     tags:
  *       - Posts
+ *     security:
+ *     - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -1102,5 +1129,5 @@ router.patch("/save/:id", postController.savePost);
  *       500:
  *         description: Erreur serveur
  */
-router.patch("/unsave/:id", postController.unsavePost);
+router.patch("/unsave/:id", verifyToken, postController.unsavePost);
 module.exports = router;

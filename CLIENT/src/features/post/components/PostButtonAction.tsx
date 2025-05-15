@@ -1,9 +1,8 @@
-import { Album, Bookmark, Heart, MessageCircle } from "lucide-react";
+import { Bookmark, Heart, MessageCircle } from "lucide-react";
 import React, { useContext, useState } from "react";
 import { Post } from "src/types/post.types";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { current } from "@reduxjs/toolkit";
 import { UserContext } from "../../../components/AppContext";
 import { useDispatch } from "react-redux";
 import {

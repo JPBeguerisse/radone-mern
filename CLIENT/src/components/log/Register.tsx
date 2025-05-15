@@ -50,7 +50,7 @@ export const Register = () => {
 
   const onSubmit = async (data: userRegisterForm) => {
     try {
-      const newUser = await createUser(data); // service API
+      await createUser(data); // service API
       setIsSubmit(true);
     } catch (error: any) {
       const serverErrors = error.response?.data?.errors;

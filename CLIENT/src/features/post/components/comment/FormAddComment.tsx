@@ -2,11 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { createCommentRequested } from "src/redux/reducers/posts.reducer";
 import { AddCommentProps } from "src/types/post.types";
-import {
-  ProfilUserContext,
-  UserContext,
-} from "../../../../components/AppContext";
-import { is } from "date-fns/locale";
+import { UserContext } from "../../../../components/AppContext";
 
 export const FormAddComment: React.FC<AddCommentProps> = ({
   postId,

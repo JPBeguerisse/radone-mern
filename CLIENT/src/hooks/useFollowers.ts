@@ -1,16 +1,10 @@
-import {
-  QueryFunctionContext,
-  QueryObserverResult,
-  useInfiniteQuery,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryFunctionContext, useInfiniteQuery } from "@tanstack/react-query";
 import {
   FollowersResponse,
   FollowingResponse,
   getFollowers,
   getFollowing,
 } from "src/services/userService";
-import { User } from "src/types/user.types";
 
 // export const useFollowers = (userId: string) => {
 //   return useQuery<User[]>({

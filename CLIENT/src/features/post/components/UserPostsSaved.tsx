@@ -1,5 +1,5 @@
 // Description: Composant d'affichage des publications sauvegardées de l'utilisateur connecté
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Post } from "../../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
 import { PostImageCard } from "./card/PostImageCard";
@@ -33,7 +33,7 @@ const UserPostsSaved = () => {
   // ouvrir le modal du post selectionné
   const handleOpenModal = (post: Post) => {
     setIsOpen(true);
-    const postSelect = dispatch(getPostRequested(post._id!));
+    dispatch(getPostRequested(post._id!));
   };
 
   const closeModal = () => {
