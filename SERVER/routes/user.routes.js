@@ -100,6 +100,9 @@ const { verifyToken, requireAuth } = require("../middlewares/checkToken");
  */
 router.post("/login", authController.login);
 
+//CONFIRMATION EMAIL
+router.get("/confirm-email/:token", authController.confirmEmail);
+
 //DECONNEXION
 /**
  * @swagger

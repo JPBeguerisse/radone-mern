@@ -2,7 +2,8 @@
 const UserModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const nodemailer = require("nodemailer"); // ✅ Import manquant
+require("dotenv").config();
 // const maxAge = 3 * 24 * 60 * 60 * 1000; // 3 jours
 const maxAge = 1 * 60 * 60 * 1000; // 1h
 
@@ -58,20 +59,65 @@ module.exports.signUp = async (req, res) => {
       return res.status(400).json({ errors });
     }
 
-    const user = await UserModel.create({
-      name,
-      userName,
-      email,
-      password,
+    // const user = await UserModel.create({
+    //   name,
+    //   userName,
+    //   email,
+    //   password,
+    // });
+
+    // res.status(201).json({ user: user.id });
+    // console.log(user);
+    const token = jwt.sign(
+      { name, userName, email, password },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: maxAge,
+      }
+    );
+
+    const confirmationUrl = `${process.env.REACT_APP_CLIENT_UR}/confirmation/${token}`;
+
+    // Configurer le transport Nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
     });
 
-    res.status(201).json({ user: user.id });
-    console.log(user);
+    await transporter.sendMail({
+      from: `"Mon App" <${process.env.MAIL_USER}>`,
+      to: email,
+      subject: "Confirmez votre inscription",
+      html: `<p>Bonjour ${name},</p>
+    <p>Merci de vous être inscrit. Cliquez sur ce lien pour activer votre compte :</p>
+    <a href="${confirmationUrl}">Confirmer mon adresse e-mail</a>`,
+    });
+
+    return res
+      .status(200)
+      .json({
+        message: "Un lien de confirmation vous a été envoyé par e-mail.",
+      });
   } catch (error) {
     res
       .status(500)
       .json({ message: "Erreur lors de l'inscription", error: error.message });
     console.error("Erreur lors de l'inscription:", error);
+  }
+};
+
+module.exports.confirmEmail = async (req, res) => {
+  try {
+    const { token } = req.params; // Récupérer le token de l'URL
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Vérifier le token
+    const { name, userName, email, password } = decoded; // Extraire les informations du token
+    const user = await UserModel.create({ name, userName, email, password });
+    return res.status(201).json({ message: "Compte activé avec succès." });
+  } catch (error) {
+    return res.status(400).json({ message: "Lien invalide ou expiré." });
   }
 };
 
