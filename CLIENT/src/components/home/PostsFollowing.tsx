@@ -51,7 +51,7 @@ export const PostsFollowing = ({
     };
   }, [hasMore, loading, loadMorePosts]);
 
-  console.log("Posts Following:", filteredPosts);
+  console.log("Chagement", loading);
 
   return (
     <div>

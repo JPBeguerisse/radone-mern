@@ -123,6 +123,12 @@ module.exports.getPostsFollowing = async (req, res) => {
     // Trouver l'utilisateur correspondant
     const user = await UserModel.findById(userId);
 
+    // si l'utilisateur ne figure pas lui même dans sa liste de following, on l'ajoute
+    // pour s'assurer qu'il voit ses propres posts
+    if (!user.following.includes(userId)) {
+      user.following.push(userId);
+    }
+
     const posts = await PostModel.find({
       posterId: { $in: user.following },
     })
@@ -130,9 +136,6 @@ module.exports.getPostsFollowing = async (req, res) => {
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .lean();
-
-    // console.log("user:", user);
-    // console.log("Posts following:", posts);
 
     const total = await PostModel.countDocuments({
       posterId: { $in: user.following },
@@ -168,7 +171,7 @@ module.exports.getPostsForYou = async (req, res) => {
     const user = await UserModel.findById(userId);
 
     const posts = await PostModel.find({
-      posterId: { $nin: user.following },
+      posterId: { $nin: [...user.following, userId] }, // Exclure les posts des utilisateurs non-suivis et de l'utilisateur lui-même
     })
       .sort({ createdAt: -1 })
       .skip(parseInt(skip))

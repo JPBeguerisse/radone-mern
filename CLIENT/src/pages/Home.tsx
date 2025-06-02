@@ -59,28 +59,31 @@ export const Home: React.FC = () => {
   const loadMoreFollowingPosts = () => {
     if (!loadingFollowingPosts && hasMoreFollowing && currentUserUid) {
       // Vérifie si on n'est pas déjà en train de charger
+      setTimeout(() => {
+        dispatch(
+          getPostsByFollowingRequested({
+            userId: currentUserUid!,
+            skip: followingPosts.length,
+            limit: 5,
+          })
+        );
+      }, 1000); // Simule un délai de chargement
       setLoadingFollowingPosts(true);
-      dispatch(
-        getPostsByFollowingRequested({
-          userId: currentUserUid!,
-          skip: followingPosts.length,
-          limit: 5,
-        })
-      );
     }
   };
 
   const loadMoreForYouPosts = () => {
     if (!loadingForYou && hasMoreForYou && currentUserUid) {
+      setTimeout(() => {
+        dispatch(
+          getPostsForYouRequested({
+            userId: currentUserUid!,
+            skip: forYouPosts.length,
+            limit: 5,
+          })
+        );
+      }, 1000); // Simule un délai de chargement
       setLoadingForYou(true);
-      dispatch(
-        getPostsForYouRequested({
-          userId: currentUserUid!,
-          skip: forYouPosts.length,
-          limit: 5,
-        })
-      );
-      // ... puis mets loading à false dans un useEffect ou après un timeout.
     }
   };
 
