@@ -1,6 +1,11 @@
 import { Post } from "src/types/post.types";
 import { api } from "../api/api";
 
+export interface PostsFollowingResponse {
+  posts: Post[];
+  total: number;
+}
+
 //creation de post
 export const createPost = async (formData: FormData) => {
   console.log(
@@ -28,13 +33,37 @@ export const getPosts = async (skip: number, limit = 5): Promise<Post[]> => {
   return response.data;
 };
 
-// Récupère les publications
+// Récupère une publication par son id
 export const getPost = async (id: string): Promise<Post> => {
   const response = await api.get(`/post/${id}`);
   return response.data;
 };
 
-// Récupère les publications d'un utilisateur
+// Récupère les posts des following d'un utilisateur
+export const getPostsByFollowing = async (
+  userId: string,
+  skip: number,
+  limit = 5
+): Promise<PostsFollowingResponse> => {
+  const response = await api.get(
+    `/post/following/${userId}?skip=${skip}&limit=${limit}`
+  );
+  return response.data;
+};
+
+// Récupère les publications for you
+export const getPostsForYou = async (
+  userId: string,
+  skip: number,
+  limit = 5
+): Promise<Post[]> => {
+  const response = await api.get(
+    `/post/for-you/${userId}?skip=${skip}&limit=${limit}`
+  );
+  return response.data;
+};
+
+// Récupère les publications d'un utilisateur par son nom d'utilisateur
 export const getPostsByUser = async (username: string): Promise<Post[]> => {
   const response = await api.get(`/post/user/${username}`);
   return response.data;

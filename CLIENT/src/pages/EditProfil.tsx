@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, UseSelector, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { User } from "src/types/user.types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import {
 import { toast } from "react-toastify";
 import { setSelectedPicture } from "src/redux/sagas/user.saga";
 import { Eye, EyeClosed } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const updateUserSchema = z.object({
   name: z.string().min(2, "Le nom est requis"),
@@ -40,6 +41,7 @@ export const EditProfil = () => {
   const defaultPicture = "uploads/profil/random-user.jpeg";
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   type UpdateUserForm = z.infer<typeof updateUserSchema>;
@@ -95,12 +97,18 @@ export const EditProfil = () => {
     }
   }, [errorsServer]);
 
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/login"); // ✅ Redirection vers la page de login
+    }
+  }, [currentUser, navigate]);
+
   //toujours mettre ça en dessous des hooks
-  if (!currentUser) {
-    return (
-      <p className="text-center text-gray-500">Chargement des données...</p>
-    );
-  }
+  // if (!currentUser) {
+  //   return (
+  //     <p className="text-center text-gray-500">Chargement des données...</p>
+  //   );
+  // }
 
   const onSubmit = (data: UpdateUserForm) => {
     dispatch(updateUserRequested({ id: currentUser._id!, data }));

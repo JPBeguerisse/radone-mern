@@ -1,34 +1,31 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Post, PostsState } from "../../types/post.types";
+import { getPost } from "src/services/postService";
 
 const initialState: PostsState = {
-  posts: [],
+  allPosts: [],
+  followingPosts: [],
+  forYouPosts: [],
   post: null,
   error: null,
+  hasMoreForYou: true, // ✅ Ajout de hasMoreForYou
+  hasMoreFollowingPosts: true, // ✅ Ajout de hasMoreFollowing
 };
 
 const postsSlice = createSlice({
   name: "Posts",
   initialState,
   reducers: {
-    // getPostsRequested: (state) => {},
-
-    // getPostsSuccess: (state, action: PayloadAction<Post[]>) => {
-    //   state.posts = action.payload;
-    //   state.error = null;
-    // },
-    // getPostsFailed: (state, action: PayloadAction<string>) => {
-    //   state.error = action.payload;
-    // },
+    /**Récupérer les posts depuis le reducer */
     getPostsRequested: (
       state,
       action: PayloadAction<{ skip: number; limit: number }>
     ) => {
-      console.log("Récupération des posts demandée :", action.payload);
+      console.log("Récupération des posts lancé :");
     },
 
     getPostsSuccess: (state, action: PayloadAction<Post[]>) => {
-      state.posts = [...state.posts, ...action.payload];
+      state.allPosts = [...state.allPosts, ...action.payload];
       state.error = null;
     },
     getPostsFailed: (state, action: PayloadAction<string>) => {
@@ -49,6 +46,62 @@ const postsSlice = createSlice({
       state.error = action.payload;
     },
 
+    /*Récupérer les posts des followers du users */
+    getPostsByFollowingRequested: (
+      state,
+      action: PayloadAction<{ userId: string; skip: number; limit: number }>
+    ) => {
+      console.log("Récupération des posts des followers demandée", action);
+      // if (action.payload.skip === 0) {
+      //   state.followingPosts = []; // ✅ vide les anciens posts au rechargement initial
+      // }
+    },
+
+    // getPostsByFollowingSuccess: (state, action: PayloadAction<Post[]>) => {
+    //   state.followingPosts = [...state.followingPosts, ...action.payload];
+    //   state.error = null;
+    // },
+    getPostsByFollowingSuccess: (state, action) => {
+      const { hasMore, followingPosts } = action.payload; // ✅ Assurez-vous que l'action payload contient hasMore et posts
+      const existingIds = new Set(state.followingPosts.map((p) => p._id));
+      const newPosts = followingPosts.filter(
+        (post: Post) => !existingIds.has(post._id)
+      );
+      state.followingPosts = [...state.followingPosts, ...newPosts];
+      state.error = null;
+      state.hasMoreFollowingPosts = hasMore; // ✅ Mettre à jour hasMoreFollowingPosts
+      console.log(
+        "Récupération des posts des followers réussie",
+        action.payload
+      );
+    },
+    getPostsByFollowingFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+
+    // Récupérer les posts pour vous
+    getPostsForYouRequested: (
+      state,
+      action: PayloadAction<{ userId: string; skip: number; limit: number }>
+    ) => {
+      console.log("Récupération des posts pour vous! ", action.payload);
+    },
+
+    getPostsForYouSuccess: (state, action) => {
+      const { forYouPosts, hasMore } = action.payload; // ✅ Assurez-vous que l'action payload contient forYouPosts et hasMore
+      const existingIds = new Set(state.forYouPosts.map((p) => p._id)); // ✅ Utilisation d'un Set pour vérifier les IDs existants
+      const newPosts = forYouPosts.filter((p: Post) => !existingIds.has(p._id)); // ✅ Filtrer les nouveaux posts
+      state.forYouPosts = [...state.forYouPosts, ...newPosts]; // ✅ Ajouter les nouveaux posts
+      state.hasMoreForYou = hasMore; // ✅ Mettre à jour hasMoreForYou
+    },
+    getPostsForYouFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      console.log(
+        "Échec de la récupération des posts pour vous",
+        action.payload
+      );
+    },
+
     /** ✅ Ajouter l'action `updatePostSuccess` */
     updatePostRequested: (
       state,
@@ -58,8 +111,8 @@ const postsSlice = createSlice({
     },
 
     updatePostSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts.map((post) =>
+      if (state.allPosts) {
+        state.allPosts = state.allPosts.map((post) =>
           post._id === action.payload._id ? action.payload : post
         );
       }
@@ -80,9 +133,9 @@ const postsSlice = createSlice({
     // Action en cas de succès de la suppression
     deletePostSuccess: (state, action: PayloadAction<string>) => {
       //state;
-      state.posts =
-        state.posts &&
-        state.posts.filter((post) => post._id !== action.payload);
+      state.allPosts =
+        state.allPosts &&
+        state.allPosts.filter((post) => post._id !== action.payload);
     },
 
     // Action en cas d'échec
@@ -102,7 +155,7 @@ const postsSlice = createSlice({
 
     createPostSuccess: (state, action: PayloadAction<any>) => {
       // state.posts?.push(action.payload);
-      state.posts = [action.payload, ...state.posts].sort(
+      state.allPosts = [action.payload, ...state.allPosts].sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
@@ -125,8 +178,8 @@ const postsSlice = createSlice({
     },
 
     createCommentSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts?.map((post) =>
+      if (state.allPosts) {
+        state.allPosts = state.allPosts?.map((post) =>
           post._id === action.payload._id ? action.payload : post
         );
       }
@@ -148,14 +201,14 @@ const postsSlice = createSlice({
       state,
       action: PayloadAction<{ postId: string; commentId: string }>
     ) => {
-      state.posts =
-        state.posts &&
-        state?.posts.map((post) => {
+      state.allPosts =
+        state.allPosts &&
+        state?.allPosts.map((post) => {
           if (post._id === action.payload.postId) {
             return {
               ...post,
               comments: post.comments?.filter(
-                (comment) => comment._id != action.payload.commentId
+                (comment) => comment._id !== action.payload.commentId
               ),
             };
           }
@@ -185,11 +238,17 @@ const postsSlice = createSlice({
     //On retourne le post tel quel si les id ne correspondent pas
     //On retourne le tableau des posts mis à jour
     likePostSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts.map((post) =>
-          post._id === action.payload._id ? action.payload : post
-        );
-      }
+      state.allPosts = state.allPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+
+      state.followingPosts = state.followingPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+
+      state.forYouPosts = state.forYouPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
     },
 
     likePostFailed: (state, action: PayloadAction<string>) => {
@@ -206,11 +265,21 @@ const postsSlice = createSlice({
     },
 
     unLikePostSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts.map((post) =>
-          post._id === action.payload._id ? action.payload : post
-        );
-      }
+      // if (state.allPosts) {
+      //   state.allPosts = state.allPosts.map((post) =>
+      //     post._id === action.payload._id ? action.payload : post
+      //   );
+      // }
+      state.allPosts = state.allPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+      state.followingPosts = state.followingPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+
+      state.forYouPosts = state.forYouPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
     },
 
     unLikePostFailed: (state, action: PayloadAction<string>) => {
@@ -231,11 +300,13 @@ const postsSlice = createSlice({
     },
 
     likeCommentSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts.map((post) =>
-          post._id === action.payload._id ? action.payload : post
-        );
-      }
+      state.allPosts = state.allPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+
+      // state.followingPosts = state.followingPosts.map((post) =>
+      //   post._id === action.payload._id ? action.payload : post
+      // );
     },
 
     likeCommentFailed: (state, action: PayloadAction<string>) => {
@@ -256,11 +327,13 @@ const postsSlice = createSlice({
     },
 
     unLikeCommentSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts.map((post) =>
-          post._id === action.payload._id ? action.payload : post
-        );
-      }
+      state.allPosts = state.allPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+
+      // state.followingPosts = state.followingPosts.map((post) =>
+      //   post._id === action.payload._id ? action.payload : post
+      // );
     },
 
     unLikeCommentFailed: (state, action: PayloadAction<string>) => {
@@ -277,11 +350,18 @@ const postsSlice = createSlice({
     },
 
     savePostSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts.map((post) =>
+      if (state.allPosts) {
+        state.allPosts = state.allPosts.map((post) =>
           post._id === action.payload._id ? action.payload : post
         );
       }
+
+      state.followingPosts = state.followingPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+      state.forYouPosts = state.forYouPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
     },
 
     savePostFailed: (state, action: PayloadAction<string>) => {
@@ -298,11 +378,18 @@ const postsSlice = createSlice({
     },
 
     unSavePostSuccess: (state, action: PayloadAction<Post>) => {
-      if (state.posts) {
-        state.posts = state.posts.map((post) =>
+      if (state.allPosts) {
+        state.allPosts = state.allPosts.map((post) =>
           post._id === action.payload._id ? action.payload : post
         );
       }
+
+      state.followingPosts = state.followingPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
+      state.forYouPosts = state.forYouPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
     },
 
     unSavePostFailed: (state, action: PayloadAction<string>) => {
@@ -351,6 +438,12 @@ export const {
   unSavePostRequested,
   unSavePostSuccess,
   unSavePostFailed,
+  getPostsByFollowingRequested,
+  getPostsByFollowingSuccess,
+  getPostsByFollowingFailed,
+  getPostsForYouRequested,
+  getPostsForYouSuccess,
+  getPostsForYouFailed,
 } = postsSlice.actions;
 export const postsReducer = postsSlice.reducer;
 

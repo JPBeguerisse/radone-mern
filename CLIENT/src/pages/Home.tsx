@@ -1,75 +1,135 @@
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PostHomeCard } from "../components/posts/PostHomeCard";
-import { getPostsRequested } from "src/redux/reducers/posts.reducer";
+import { UserContext } from "src/components/AppContext";
+import { PostsFollowing } from "src/components/home/PostsFollowing";
+import { PostsForYou } from "src/components/home/PostsForYou";
+import {
+  getPostsByFollowingRequested,
+  getPostsForYouRequested,
+} from "src/redux/reducers/posts.reducer";
 import { Post } from "src/types/post.types";
-import { SuggestedUsers } from "src/components/home/SuggestedUsers";
 
 export const Home: React.FC = () => {
+  const [tab, setTab] = useState("yourFollowing");
+  const currentUserUid = useContext(UserContext)?.uid;
   const dispatch = useDispatch();
-  const posts = useSelector((state: any) => state.postsReducer.posts);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const limit = 5;
-
-  const loadMorePosts = () => {
-    setLoading(true);
-    dispatch(getPostsRequested({ skip: posts.length, limit }));
-    setTimeout(() => {
-      setLoading(false);
-      if (posts.length % limit !== 0) {
-        setHasMore(false); // Si le nombre de posts récupérés n'est pas un multiple de la limite, il n'y a plus de posts à charger
-      }
-    }, 1000); // petit délai pour simuler l'attente
-  };
+  const [forYouPosts, setForYouPosts] = useState<Post[]>([]);
+  const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
+  const [loadingForYou, setLoadingForYou] = useState(false);
+  const [loadingFollowingPosts, setLoadingFollowingPosts] = useState(false);
+  const hasMoreForYou = useSelector(
+    (state: any) => state.postsReducer.hasMoreForYou
+  );
+  const hasMoreFollowing = useSelector(
+    (state: any) => state.postsReducer.hasMoreFollowingPosts
+  );
 
   useEffect(() => {
-    // Charger les 1ers posts
-    if (posts.length === 0) {
-      dispatch(getPostsRequested({ skip: 0, limit }));
+    if (currentUserUid) {
+      // Posts Following
+      setLoadingFollowingPosts(true);
+      dispatch(
+        getPostsByFollowingRequested({
+          userId: currentUserUid,
+          skip: 0,
+          limit: 5,
+        })
+      );
+      // Posts For You
+      setLoadingForYou(true);
+      dispatch(
+        getPostsForYouRequested({
+          userId: currentUserUid,
+          skip: 0,
+          limit: 5,
+        })
+      );
     }
+  }, [currentUserUid]);
 
-    // Gérer le scroll infini
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 200 &&
-        !loading &&
-        hasMore
-      ) {
-        loadMorePosts();
-      }
-    };
+  const postsState = useSelector((state: any) => state.postsReducer);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [posts, loading, hasMore]);
+  useEffect(() => {
+    setFollowingPosts(postsState.followingPosts);
+    setForYouPosts(postsState.forYouPosts);
+    setLoadingForYou(false);
+    setLoadingFollowingPosts(false);
+  }, [postsState.followingPosts, postsState.forYouPosts]);
+
+  const loadMoreFollowingPosts = () => {
+    if (!loadingFollowingPosts && hasMoreFollowing && currentUserUid) {
+      // Vérifie si on n'est pas déjà en train de charger
+      setTimeout(() => {
+        dispatch(
+          getPostsByFollowingRequested({
+            userId: currentUserUid!,
+            skip: followingPosts.length,
+            limit: 5,
+          })
+        );
+      }, 1000); // Simule un délai de chargement
+      setLoadingFollowingPosts(true);
+    }
+  };
+
+  const loadMoreForYouPosts = () => {
+    if (!loadingForYou && hasMoreForYou && currentUserUid) {
+      setTimeout(() => {
+        dispatch(
+          getPostsForYouRequested({
+            userId: currentUserUid!,
+            skip: forYouPosts.length,
+            limit: 5,
+          })
+        );
+      }, 1000); // Simule un délai de chargement
+      setLoadingForYou(true);
+    }
+  };
 
   return (
-    <div>
-      <div className="flex flex-col lg:flex-row gap-4 lg:px-40">
-        {/* Section principale avec les posts */}
-        <div className="w-full lg:w-2/3">
-          <div className=" border-b-2 border-gray-200 pb-4">
-            <h1 className="text-3xl font-bold text-left mt-4 ">
-              Fil d'actualité
-            </h1>
+    <div className="flex">
+      <div className="flex-1 px-4 h-screen overflow-y-auto">
+        <div className="sticky top-0 bg-white z-10 shadow-px-4 lg:pr-24 lg:pl-24 sm:border-t-2">
+          <div className="flex gap-4 border-b-2 border-gray-200 pb-4 pt-2">
+            <button
+              className={`lg:text-2xl font-bold ${
+                tab === "forYou" ? "text-black" : "text-gray-500"
+              }`}
+              onClick={() => setTab("forYou")}
+            >
+              Pour vous
+            </button>
+            <button
+              className={`lg:text-2xl font-bold ${
+                tab === "yourFollowing" ? "text-black" : "text-gray-500"
+              }`}
+              onClick={() => setTab("yourFollowing")}
+            >
+              Suivi(e)
+            </button>
           </div>
-
-          {posts &&
-            posts.map((post: any) => (
-              <PostHomeCard key={post._id} post={post} />
-            ))}
         </div>
 
-        {/* Section de suggestion (visible seulement sur desktop) */}
-        <SuggestedUsers />
+        {/* Posts */}
+        {tab === "yourFollowing" ? (
+          <PostsFollowing
+            key="following"
+            posts={followingPosts}
+            loading={loadingFollowingPosts}
+            hasMore={hasMoreFollowing}
+            loadMorePosts={loadMoreFollowingPosts}
+          />
+        ) : (
+          <PostsForYou
+            key="foryou"
+            posts={forYouPosts}
+            loading={loadingForYou}
+            hasMore={hasMoreForYou}
+            loadMorePosts={loadMoreForYouPosts}
+          />
+        )}
       </div>
-      {!hasMore && (
-        <p className="text-center text-gray-400 mt-4">
-          Vous avez atteint la fin.
-        </p>
-      )}
     </div>
   );
 };

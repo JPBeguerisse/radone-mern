@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { create } from "domain";
 import { Post } from "src/types/post.types";
 import { User, UserState } from "src/types/user.types";
 

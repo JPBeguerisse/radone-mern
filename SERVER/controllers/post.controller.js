@@ -110,6 +110,92 @@ module.exports.getAllPosts = async (req, res) => {
   }
 };
 
+// Récupérer les posts des utilisateurs suivis par le user connecté
+module.exports.getPostsFollowing = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { skip = 0, limit = 5 } = req.query;
+
+    if (!ObjectID.isValid(userId)) {
+      return res.status(400).send("ID inconnu : " + userId);
+    }
+
+    // Trouver l'utilisateur correspondant
+    const user = await UserModel.findById(userId);
+
+    // si l'utilisateur ne figure pas lui même dans sa liste de following, on l'ajoute
+    // pour s'assurer qu'il voit ses propres posts
+    if (!user.following.includes(userId)) {
+      user.following.push(userId);
+    }
+
+    const posts = await PostModel.find({
+      posterId: { $in: user.following },
+    })
+      .sort({ createdAt: -1 })
+      .skip(parseInt(skip))
+      .limit(parseInt(limit))
+      .lean();
+
+    const total = await PostModel.countDocuments({
+      posterId: { $in: user.following },
+    });
+
+    const sortedPosts = posts.map((post) => ({
+      ...post,
+      comments: post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      ), // ✅ Tri des commentaires par timestamp croissant
+    }));
+    // res.status(200).json({ posts: sortedPosts, total });
+    res.status(200).json(sortedPosts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Une erreur est survenue lors de la récupération des posts.",
+    });
+  }
+};
+
+// Fonction pour récupérer les posts des utilisateurs non-suivis par le user connecté
+module.exports.getPostsForYou = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { skip = 0, limit = 5 } = req.query;
+
+    if (!ObjectID.isValid(userId)) {
+      return res.status(400).send("ID inconnu : " + userId);
+    }
+
+    // Trouver l'utilisateur correspondant
+    const user = await UserModel.findById(userId);
+
+    const posts = await PostModel.find({
+      posterId: { $nin: [...user.following, userId] }, // Exclure les posts des utilisateurs non-suivis et de l'utilisateur lui-même
+    })
+      .sort({ createdAt: -1 })
+      .skip(parseInt(skip))
+      .limit(parseInt(limit))
+      .lean();
+
+    // Trier les commentaires dans chaque post en ordre croissant (du plus ancien au plus récent)
+    const sortedPosts = posts.map((post) => ({
+      ...post,
+      comments: post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      ), // ✅ Tri des commentaires par timestamp croissant
+    }));
+
+    // res.status(200).json({ posts: sortedPosts, total });
+    res.status(200).json(sortedPosts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Une erreur est survenue lors de la récupération des posts.",
+    });
+  }
+};
+
 // controllers/post.controller.js
 
 // Fonction pour récupérer les posts avec pagination
@@ -121,9 +207,17 @@ module.exports.getPosts = async (req, res) => {
     const posts = await PostModel.find()
       .sort({ createdAt: -1 }) // plus récents d'abord
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean(); // ✅ Ici tu obtiens des objets JavaScript simples, sans les métadonnées Mongoose
 
-    res.status(200).json(posts);
+    const sortedPosts = posts.map((post) => ({
+      ...post,
+      comments: post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      ), // ✅ Tri des commentaires par timestamp croissant
+    }));
+
+    res.status(200).json(sortedPosts);
   } catch (err) {
     res.status(500).json({ message: "Erreur lors du chargement des posts" });
   }
@@ -144,10 +238,12 @@ module.exports.getPost = async (req, res) => {
       return res.status(404).send("Post not found");
     }
 
-    // ✅ Trier les commentaires en ordre décroissant (du plus récent au plus ancien)
-    post.comments = post.comments.sort(
-      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-    );
+    // ✅ Tri des commentaires du plus récent au plus ancien (si présents)
+    if (post.comments && Array.isArray(post.comments)) {
+      post.comments.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+    }
 
     res.status(200).json(post);
   } catch (error) {

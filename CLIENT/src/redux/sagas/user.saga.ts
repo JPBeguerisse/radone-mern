@@ -1,5 +1,4 @@
 //user.saga/ts
-import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { UpdateUserPayload, User } from "../../types/user.types";
 import {
@@ -30,7 +29,6 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import {
   followUser,
   getUser,
-  getUserByUsername,
   removePicture,
   unFollowUser,
   updatePicture,
@@ -40,11 +38,11 @@ import { toast } from "react-toastify";
 import { getUsersRequested } from "../reducers/users.reducer";
 import { Post } from "src/types/post.types";
 import {
-  getPostsByUser,
   getPostsByUserId,
   getSavedPostsByUser,
 } from "src/services/postService";
 import { getUserByUsernameRequested } from "../reducers/viewed-user.reducer";
+import { getPostsByFollowingRequested } from "../reducers/posts.reducer";
 
 let selectedFile: File | null = null;
 
@@ -65,20 +63,6 @@ function* handleGetUser(
     yield put(getUserFailed(error.message));
   }
 }
-
-// // fonction pour récupérer un utilisateur par son username
-// function* handleGetUserByUsername(
-//   action: PayloadAction<string>
-// ): Generator<any, void, User> {
-//   try {
-//     const token = localStorage.getItem("accessToken");
-//     const user = yield call(getUserByUsername, action.payload);
-//     console.log("USER RES", user);
-//     yield put(getUserByUsernameSuccess(user));
-//   } catch (error: any) {
-//     yield put(getUserByUsernameFailed(error.message));
-//   }
-// }
 
 // fonction pour récupérer les publications d'un utilisateur
 function* handleGetPostsUser(
@@ -182,7 +166,6 @@ function* handleFollowUser(
   action: PayloadAction<{ userId: string; userIdToFollow: string }>
 ): Generator<any, void, User> {
   try {
-    const token = localStorage.getItem("accessToken");
     const followedUser = yield call(
       followUser,
       action.payload.userId,
@@ -193,6 +176,14 @@ function* handleFollowUser(
     console.log("USER FOLLOWED", user);
     yield put(getUsersRequested());
     yield put(getUserByUsernameRequested(user.userName));
+    // ✅ 🔄 Recharge les posts des abonnements (clé ici)
+    yield put(
+      getPostsByFollowingRequested({
+        userId: action.payload.userId,
+        skip: 0,
+        limit: 5,
+      })
+    );
   } catch (error: any) {
     yield put(followUserFailed(error.message));
   }
@@ -221,6 +212,14 @@ function* handleUnfollowUser(
     yield put(getUsersRequested());
     const user = yield call(getUser, action.payload.userIdToUnfollow);
     yield put(getUserByUsernameRequested(user.userName));
+    // ✅ 🔄 Recharge les posts des abonnements (clé ici)
+    yield put(
+      getPostsByFollowingRequested({
+        userId: action.payload.userId,
+        skip: 0,
+        limit: 5,
+      })
+    );
   } catch (error: any) {
     yield put(unfollowUserFailed(error.message));
   }

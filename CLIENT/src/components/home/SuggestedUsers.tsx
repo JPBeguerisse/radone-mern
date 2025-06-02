@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../AppContext";
 import { useSelector } from "react-redux";
-import { stat } from "fs";
 import { User } from "src/types/user.types";
 import { includesUser } from "src/utils/includesUser";
-import { FollowAction } from "../profil/FollowAction";
+import { FollowAction } from "../../features/user/components/FollowAction";
 import { Link } from "react-router-dom";
 
 export const SuggestedUsers = () => {
@@ -12,36 +11,29 @@ export const SuggestedUsers = () => {
   const currentUserUid = userContext?.uid;
   const currentUser = useSelector((state: any) => state.userReducer.user);
   const users = useSelector((state: any) => state.usersReducer.users);
-  const [suggestedUsersList, setSuggestedUsersList] = React.useState<User[]>(
-    []
-  );
+
+  const [suggestedUsersList, setSuggestedUsersList] = useState<User[]>([]);
+  const initialSuggestions = useRef<User[]>([]); // Mémoire locale des suggestions
 
   useEffect(() => {
-    if (users && currentUser) {
+    if (
+      initialSuggestions.current.length === 0 &&
+      users &&
+      currentUser &&
+      currentUser.following
+    ) {
       const notFollowed = users.filter(
         (user: User) =>
           user._id !== currentUserUid &&
-          !includesUser(currentUser?.following, user._id)
+          !includesUser(currentUser.following, user._id)
       );
 
-      const radomUsers = [...notFollowed].sort(() => Math.random() - 0.5); // Mélange le tableau
-      setSuggestedUsersList(radomUsers.slice(0, 5)); // Prend les 5 premiers utilisateurs
+      const randomUsers = [...notFollowed].sort(() => Math.random() - 0.5);
+      const selected = randomUsers.slice(0, 5);
+      initialSuggestions.current = selected;
+      setSuggestedUsersList(selected);
     }
-  }, [users, currentUser]);
-
-  //   if (!users) {
-  //     return (
-  //       <p className="text-sm text-gray-400">Chargement des suggestions...</p>
-  //     );
-  //   }
-
-  //   const suggestedUsersList = users.filter((user: User) => {
-  //     // Exclure l'utilisateur actuel et les utilisateurs déjà suivis
-  //     return (
-  //       user._id !== currentUserUid &&
-  //       !includesUser(currentUser?.following, user._id)
-  //     );
-  //   });
+  }, [users, currentUser, currentUserUid]);
 
   return (
     <div className="w-full lg:w-1/3 p-4 hidden lg:block">
@@ -66,7 +58,7 @@ export const SuggestedUsers = () => {
                 <p className="text-xs text-gray-400">{user.name}</p>
               </div>
             </Link>
-            <FollowAction followerId={user._id} />
+            <FollowAction followerId={user._id} homePage={true} />
           </div>
         ))}
       </div>

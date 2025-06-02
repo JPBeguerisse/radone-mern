@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import Login from "./Login";
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createUser } from "src/services/userService";
-import { toast } from "react-toastify";
 import { Eye, EyeClosed } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { AuthLayout } from "./AuthLayout";
 
 export const userRegisterSchema = z
   .object({
@@ -29,8 +29,10 @@ export const userRegisterSchema = z
     path: ["passwordRepeat"],
   });
 
-const Register = () => {
+export const Register = () => {
+  const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
   type userRegisterForm = z.infer<typeof userRegisterSchema>;
@@ -51,11 +53,11 @@ const Register = () => {
 
   const onSubmit = async (data: userRegisterForm) => {
     try {
-      const newUser = await createUser(data); // service API
-      setIsSubmit(true);
+      const res = await createUser(data); // service API
+      console.log(res);
+      navigate("/login", { state: { confirmationMessage: res.message } }); // redirection vers la page de connexion en passant le message de confirmation
     } catch (error: any) {
       const serverErrors = error.response?.data?.errors;
-
       // ✅ Gestion des erreurs champ par champ
       if (serverErrors && typeof serverErrors === "object") {
         Object.entries(serverErrors).forEach(([field, message]) => {
@@ -69,147 +71,136 @@ const Register = () => {
   };
 
   return (
-    <>
-      {isSubmit ? (
-        <>
-          <Login />
-          <h4 className="text-green-500 text-center mt-4">
-            Inscription réussie, veuillez vous connecter.
-          </h4>
-        </>
-      ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
-            Inscription
-          </h2>
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Nom complet
-            </label>
-            <input
-              {...register("name")}
-              type="text"
-              id="name"
-              name="name"
-              className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
-            />
-            {errors.name && (
-              <div className="text-red-500 text-sm">{errors.name.message}</div>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="userName"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Nom de profil
-            </label>
-            <input
-              {...register("userName")}
-              type="text"
-              id="userName"
-              name="userName"
-              className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
-            />
-            {errors.userName && (
-              <div className="text-red-500 text-sm">
-                {errors.userName.message}
-              </div>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Email
-            </label>
-            <input
-              {...register("email")}
-              type="email"
-              id="email"
-              name="email"
-              className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
-            />
-            {errors.email && (
-              <div className="text-red-500 text-sm">{errors.email.message}</div>
-            )}
-          </div>
-          <div className="relative">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Mot de passe
-            </label>
-            <input
-              {...register("password")}
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
-            />
-            <button
-              type="button"
-              className="absolute right-2 top-10 text-gray-500"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <EyeClosed width={15} height={15} />
-              ) : (
-                <Eye width={15} height={15} />
-              )}
-            </button>
-            {errors.password && (
-              <div className="text-red-500 text-sm">
-                {errors.password.message}
-              </div>
-            )}
-          </div>
-          <div className="relative">
-            <label
-              htmlFor="passwordRepeat"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Confirmation mot de passe
-            </label>
-            <input
-              {...register("passwordRepeat")}
-              type={showPasswordRepeat ? "text" : "password"}
-              id="passwordRepeat"
-              name="passwordRepeat"
-              className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
-            />
-            <button
-              type="button"
-              className="absolute right-2 top-10 text-gray-500"
-              onClick={() => setShowPasswordRepeat(!showPasswordRepeat)}
-            >
-              {showPasswordRepeat ? (
-                <EyeClosed width={15} height={15} />
-              ) : (
-                <Eye width={15} height={15} />
-              )}
-            </button>
-            {errors.passwordRepeat && (
-              <div className="text-red-500 text-sm">
-                {errors.passwordRepeat.message}
-              </div>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+    <AuthLayout>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+          Inscription
+        </h2>
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-600"
           >
-            S'inscrire
+            Nom complet
+          </label>
+          <input
+            {...register("name")}
+            type="text"
+            id="name"
+            name="name"
+            className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+          />
+          {errors.name && (
+            <div className="text-red-500 text-sm">{errors.name.message}</div>
+          )}
+        </div>
+        <div>
+          <label
+            htmlFor="userName"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Nom de profil
+          </label>
+          <input
+            {...register("userName")}
+            type="text"
+            id="userName"
+            name="userName"
+            className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+          />
+          {errors.userName && (
+            <div className="text-red-500 text-sm">
+              {errors.userName.message}
+            </div>
+          )}
+        </div>
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Email
+          </label>
+          <input
+            {...register("email")}
+            type="email"
+            id="email"
+            name="email"
+            className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+          />
+          {errors.email && (
+            <div className="text-red-500 text-sm">{errors.email.message}</div>
+          )}
+        </div>
+        <div className="relative">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Mot de passe
+          </label>
+          <input
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            id="password"
+            name="password"
+            className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+          />
+          <button
+            type="button"
+            className="absolute right-2 top-10 text-gray-500"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <EyeClosed width={15} height={15} />
+            ) : (
+              <Eye width={15} height={15} />
+            )}
           </button>
-        </form>
-      )}
-    </>
+          {errors.password && (
+            <div className="text-red-500 text-sm">
+              {errors.password.message}
+            </div>
+          )}
+        </div>
+        <div className="relative">
+          <label
+            htmlFor="passwordRepeat"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Confirmation mot de passe
+          </label>
+          <input
+            {...register("passwordRepeat")}
+            type={showPasswordRepeat ? "text" : "password"}
+            id="passwordRepeat"
+            name="passwordRepeat"
+            className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+          />
+          <button
+            type="button"
+            className="absolute right-2 top-10 text-gray-500"
+            onClick={() => setShowPasswordRepeat(!showPasswordRepeat)}
+          >
+            {showPasswordRepeat ? (
+              <EyeClosed width={15} height={15} />
+            ) : (
+              <Eye width={15} height={15} />
+            )}
+          </button>
+          {errors.passwordRepeat && (
+            <div className="text-red-500 text-sm">
+              {errors.passwordRepeat.message}
+            </div>
+          )}
+        </div>
+        <button
+          type="submit"
+          className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+        >
+          S'inscrire
+        </button>
+      </form>
+    </AuthLayout>
   );
 };
-
-export default Register;

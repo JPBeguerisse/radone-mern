@@ -1,5 +1,4 @@
 //user.reducer.ts
-import { followUser, removePicture } from "src/services/userService";
 import { User, UserState } from "../../types/user.types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Post } from "src/types/post.types";

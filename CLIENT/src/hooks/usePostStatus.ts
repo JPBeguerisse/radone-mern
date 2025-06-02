@@ -1,4 +1,4 @@
-import { Post, Comment } from "src/types/post.types";
+import { Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
 import { includesUser } from "src/utils/includesUser";
 
