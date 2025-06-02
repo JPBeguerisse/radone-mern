@@ -6,7 +6,7 @@ import { Post } from "src/types/post.types";
 
 export const useUserPosts = () => {
   const userName = useContext(ProfilUserContext);
-  const posts = useSelector((state: any) => state.postsReducer.posts);
+  const posts = useSelector((state: any) => state.postsReducer.allPosts);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
 
   useEffect(() => {

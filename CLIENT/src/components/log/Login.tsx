@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { loginUser } from "src/services/userService";
 import { z } from "zod";
 import { UserContext } from "../AppContext";
 import { api } from "src/api/api";
 import { Eye, EyeClosed } from "lucide-react";
+import { AuthLayout } from "./AuthLayout";
 
 export const userLoginSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -15,9 +16,23 @@ export const userLoginSchema = z.object({
 
 export const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [confirmationMessage, setConfirmationMessage] = useState<
+    string | null
+  >();
   const userContext = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
+
   type userLoginForm = z.infer<typeof userLoginSchema>;
+
+  // Récupération du message de confirmation passé dans l'URL
+  // Capture le message et le vide immédiatement après
+  useEffect(() => {
+    if (location.state?.confirmationMessage) {
+      setConfirmationMessage(location.state.confirmationMessage);
+      navigate(location.pathname, { replace: true }); // supprime le state de l'historique
+    }
+  }, [location, navigate]);
 
   const {
     register,
@@ -67,63 +82,72 @@ export const Login = () => {
   };
   // Rendu du formulaire de connexion
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
-        Connexion
-      </h2>
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-600"
-        >
-          Email
-        </label>
-        <input
-          {...register("email")}
-          type="email"
-          id="email"
-          name="email"
-          className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
-        />
-        {errors.email && (
-          <div className="text-red-500 text-sm">{errors.email.message}</div>
-        )}
-      </div>
-      <div className="relative">
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-600"
-        >
-          Mot de passe
-        </label>
-        <input
-          {...register("password")}
-          type={showPassword ? "text" : "password"}
-          id="password"
-          name="password"
-          className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-10 text-gray-800"
-        >
-          {showPassword ? (
-            <EyeClosed width={15} height={15} />
-          ) : (
-            <Eye width={15} height={15} />
+    <AuthLayout>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+          Connexion
+        </h2>
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Email
+          </label>
+          <input
+            {...register("email")}
+            type="email"
+            id="email"
+            name="email"
+            className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+          />
+          {errors.email && (
+            <div className="text-red-500 text-sm">{errors.email.message}</div>
           )}
+        </div>
+        <div className="relative">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Mot de passe
+          </label>
+          <input
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            id="password"
+            name="password"
+            className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-10 text-gray-800"
+          >
+            {showPassword ? (
+              <EyeClosed width={15} height={15} />
+            ) : (
+              <Eye width={15} height={15} />
+            )}
+          </button>
+          {errors.password && (
+            <div className="text-red-500 text-sm">
+              {errors.password.message}
+            </div>
+          )}
+        </div>
+        <button
+          type="submit"
+          className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+        >
+          Se connecter
         </button>
-        {errors.password && (
-          <div className="text-red-500 text-sm">{errors.password.message}</div>
+        {confirmationMessage && (
+          <p className="text-green-500 text-sm text-center">
+            {confirmationMessage}
+          </p>
         )}
-      </div>
-      <button
-        type="submit"
-        className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
-      >
-        Se connecter
-      </button>
-    </form>
+      </form>
+    </AuthLayout>
   );
 };

@@ -38,6 +38,11 @@ import {
   unSavePostFailed,
   unSavePostRequested,
   savePostRequested,
+  getPostsByFollowingSuccess,
+  getPostsByFollowingFailed,
+  getPostsByFollowingRequested,
+  getPostsForYouRequested,
+  getPostsForYouSuccess,
 } from "../reducers/posts.reducer";
 import {
   addCommentPost,
@@ -49,6 +54,8 @@ import {
   dislikePost,
   getPost,
   getPosts,
+  getPostsByFollowing,
+  getPostsForYou,
   savePost,
   unLikeComment,
   unSavePost,
@@ -90,6 +97,49 @@ function* handleFetchPost(
     yield put(getPostSuccess(post));
   } catch (error: any) {
     yield put(getPostsFailed(error.message));
+  }
+}
+
+// Fonction pour récupérer les posts des followings
+function* handleFetchPostsFollowing(
+  action: PayloadAction<{ userId: string; skip: number; limit: number }>
+): Generator<any, void, Post[]> {
+  try {
+    const { userId, skip, limit } = action.payload;
+    const followingPosts = yield call(getPostsByFollowing, userId, skip, limit);
+    yield put(
+      getPostsByFollowingSuccess({
+        followingPosts,
+        hasMore: followingPosts.length === limit, // Vérifie s'il y a plus de posts à charger
+      })
+    );
+    // console.log("Posts des followings récupérés :", followingPosts); //
+  } catch (error: any) {
+    yield put(getPostsByFollowingFailed(error.message));
+    console.error(
+      "Erreur lors de la récupération des posts des followings :",
+      error
+    );
+  }
+}
+
+// Saga pour récupérer les posts for you
+function* handleFetchPostsForYou(
+  action: PayloadAction<{ userId: string; skip: number; limit: number }>
+): Generator<any, void, Post[]> {
+  try {
+    const { userId, skip, limit } = action.payload;
+    const forYouPosts = yield call(getPostsForYou, userId, skip, limit);
+    yield put(
+      getPostsForYouSuccess({
+        forYouPosts,
+        hasMore: forYouPosts.length === limit,
+      })
+    );
+    //console.log("Posts for you récupérés :", forYouPosts);
+  } catch (error: any) {
+    yield put(getPostsFailed(error.message));
+    console.error("Erreur lors de la récupération des posts for you :", error);
   }
 }
 
@@ -219,7 +269,8 @@ function* handleLikePost(
       action.payload.userId
     );
     console.log("Post liké :", likedPost);
-    yield put(likePostSuccess(likedPost));
+    yield put(likePostSuccess(likedPost)); // Mettre à jour le post dans le store
+    // Rafraîchir le post après l'ajout du like
     yield put(getPostRequested(action.payload.postId));
   } catch (error: any) {
     console.error("Erreur lors de l'ajout du like :", error);
@@ -238,8 +289,8 @@ function* handleUnLikePost(
       action.payload.userId
     );
     console.log("Post disliké :", unlikedPost);
-    yield put(unLikePostSuccess(unlikedPost));
-    yield put(getPostRequested(action.payload.postId));
+    yield put(unLikePostSuccess(unlikedPost)); // Mettre à jour le post dans le store
+    yield put(getPostRequested(action.payload.postId)); // Rafraîchir le post après l'ajout du like
   } catch (error: any) {
     console.error("Erreur lors de la suppression du like :", error);
     yield put(likePostFailed(error.message));
@@ -258,7 +309,7 @@ function* handleLikeComment(
       action.payload.userId
     );
 
-    console.log("Commentaire liké:c", likedComment);
+    console.log("Commentaire liké:", likedComment);
     yield put(likeCommentSuccess(likedComment));
     yield put(getPostRequested(action.payload.postId));
   } catch (error: any) {
@@ -279,7 +330,7 @@ function* handleUnLikeComment(
       action.payload.userId
     );
 
-    console.log("Commentaire liké:c", unLikedComment);
+    console.log("Commentaire unliké:", unLikedComment);
     yield put(unLikeCommentSuccess(unLikedComment));
     yield put(getPostRequested(action.payload.postId));
   } catch (error: any) {
@@ -342,6 +393,11 @@ export default function* postsSaga() {
   yield takeLatest(unLikeCommentRequested.type, handleUnLikeComment);
   yield takeLatest(savePostRequested.type, handleSavePost);
   yield takeLatest(unSavePostRequested.type, handleUnSavePost);
+  yield takeLatest(
+    getPostsByFollowingRequested.type,
+    handleFetchPostsFollowing
+  );
+  yield takeLatest(getPostsForYouRequested.type, handleFetchPostsForYou);
 }
 
 // function* getPosts() {

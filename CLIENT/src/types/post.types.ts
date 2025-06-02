@@ -22,10 +22,14 @@ export interface Comment {
 }
 
 export interface PostsState {
-  posts: Post[];
+  allPosts: Post[];
+  followingPosts: Post[];
+  forYouPosts: Post[];
   post?: Post | null;
   error: string | null;
   loading?: boolean;
+  hasMoreForYou?: boolean;
+  hasMoreFollowingPosts?: boolean;
 }
 
 export interface PostDetailsProps {

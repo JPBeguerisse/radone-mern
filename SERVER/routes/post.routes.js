@@ -5,7 +5,12 @@ const { verifyToken, requireAuth } = require("../middlewares/checkToken");
 /**
  * @swagger
  * components:
- *   schemas:
+ *  securitySchemes:
+ *   bearerAuth:
+ *    type: http
+ *    scheme: bearer
+ *    bearerFormat: JWT
+ *  schemas:
  *     Post:
  *       type: object
  *       properties:
@@ -137,7 +142,6 @@ const { verifyToken, requireAuth } = require("../middlewares/checkToken");
  *                   example: "Description de l'erreur"
  */
 router.post("/", postController.createPost);
-
 //RECUPERATION DES POSTS
 /**
  * @swagger
@@ -220,6 +224,113 @@ router.get("/post-old", postController.getPosts);
  *         description: Erreur lors du chargement des posts
  */
 router.get("/", postController.getPosts);
+
+/**
+ * @swagger
+ * /api/post/following/{id}:
+ *   get:
+ *     summary: Récupérer les posts des utilisateurs suivis
+ *     description: |
+ *       Récupère tous les posts des utilisateurs suivis par l'utilisateur donné (triés du plus récent au plus ancien).
+ *     tags:
+ *       - Posts
+ *     security:
+ *      - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID de l'utilisateur connecté
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des posts des utilisateurs suivis
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   message:
+ *                     type: string
+ *                   picture:
+ *                     type: string
+ *                   posterId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                   comments:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         text:
+ *                           type: string
+ *                         timestamp:
+ *                           type: string
+ *       400:
+ *         description: ID invalide
+ *       500:
+ *         description: Erreur serveur
+ */
+router.get("/following/:id", verifyToken, postController.getPostsFollowing);
+
+/**
+ * @swagger
+ * /api/post/for-you/{id}:
+ *   get:
+ *     summary: Récupérer les posts des utilisateurs non suivis ("Pour toi")
+ *     description: |
+ *       Récupère les posts des utilisateurs que l'utilisateur connecté ne suit pas.
+ *       Cela permet de générer un fil d’actualité de type "Pour toi".
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID de l'utilisateur connecté
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des posts "pour toi"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   message:
+ *                     type: string
+ *                   picture:
+ *                     type: string
+ *                   posterId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                   comments:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         text:
+ *                           type: string
+ *                         timestamp:
+ *                           type: string
+ *       400:
+ *         description: ID invalide
+ *       500:
+ *         description: Erreur serveur
+ */
+router.get("/for-you/:id", postController.getPostsForYou);
 
 //RECUPERER UN POST
 /**

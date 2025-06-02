@@ -28,7 +28,6 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
   const [editedMessage, setEditedMessage] = useState<string>("");
   const poster = users.find((user: User) => user._id === post.posterId);
   const selectedPost = useSelector((state: any) => state.postsReducer.post);
-
   const handleOpenModal = () => {
     setIsOpen(true);
     //lancer une action pour récupérer le post
@@ -134,16 +133,19 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
         )}
       </div>
 
-      <PostDetails
-        post={post}
-        isOpen={isOpen}
-        onClose={closeModal}
-        isEditing={editMode}
-        setIsEditing={setEditMode}
-        message={editedMessage}
-        setEditedMessage={setEditedMessage}
-        onSave={handleSave}
-      />
+      {/* Modal pour afficher les détails du post */}
+      {isOpen && selectedPost && (
+        <PostDetails
+          post={selectedPost}
+          isOpen={isOpen}
+          onClose={closeModal}
+          isEditing={editMode}
+          setIsEditing={setEditMode}
+          message={editedMessage}
+          setEditedMessage={setEditedMessage}
+          onSave={handleSave}
+        />
+      )}
     </>
   );
 };

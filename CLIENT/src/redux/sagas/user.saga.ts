@@ -42,6 +42,7 @@ import {
   getSavedPostsByUser,
 } from "src/services/postService";
 import { getUserByUsernameRequested } from "../reducers/viewed-user.reducer";
+import { getPostsByFollowingRequested } from "../reducers/posts.reducer";
 
 let selectedFile: File | null = null;
 
@@ -165,7 +166,6 @@ function* handleFollowUser(
   action: PayloadAction<{ userId: string; userIdToFollow: string }>
 ): Generator<any, void, User> {
   try {
-    const token = localStorage.getItem("accessToken");
     const followedUser = yield call(
       followUser,
       action.payload.userId,
@@ -176,6 +176,14 @@ function* handleFollowUser(
     console.log("USER FOLLOWED", user);
     yield put(getUsersRequested());
     yield put(getUserByUsernameRequested(user.userName));
+    // ✅ 🔄 Recharge les posts des abonnements (clé ici)
+    yield put(
+      getPostsByFollowingRequested({
+        userId: action.payload.userId,
+        skip: 0,
+        limit: 5,
+      })
+    );
   } catch (error: any) {
     yield put(followUserFailed(error.message));
   }
@@ -204,6 +212,14 @@ function* handleUnfollowUser(
     yield put(getUsersRequested());
     const user = yield call(getUser, action.payload.userIdToUnfollow);
     yield put(getUserByUsernameRequested(user.userName));
+    // ✅ 🔄 Recharge les posts des abonnements (clé ici)
+    yield put(
+      getPostsByFollowingRequested({
+        userId: action.payload.userId,
+        skip: 0,
+        limit: 5,
+      })
+    );
   } catch (error: any) {
     yield put(unfollowUserFailed(error.message));
   }
