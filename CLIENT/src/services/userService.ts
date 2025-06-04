@@ -33,6 +33,12 @@ export const getUserByUsername = async (username: string): Promise<User> => {
   return response.data;
 };
 
+// Rechercher des utilisateurs par nom d'utilisateur
+export const searchUsers = async (searchTerm: string): Promise<User[]> => {
+  const response = await api.get(`/user/search?query=${searchTerm}`);
+  return response.data;
+};
+
 //Récupérer un utilisateur par son ID (user connecté)
 export const getUser = async (id: string): Promise<User> => {
   const response = await api.get(`/user/${id}`);
@@ -85,18 +91,6 @@ export const unFollowUser = async (
 };
 
 //Récupérer les followers d'un utilisateur
-// export const getFollowers = async (userId: string): Promise<User[]> => {
-//   const response = await api.get(`/user/${userId}/followers/`);
-//   return response.data;
-// };
-
-//Récupérer les utilisateurs suivis par un utilisateur
-// export const getFollowing = async (userId: string): Promise<User[]> => {
-//   const response = await api.get(`/user/${userId}/following`);
-//   return response.data;
-// };
-
-//Récupérer les followers d'un utilisateur
 export const getFollowers = async (
   userId: string,
   page: number = 1,
@@ -139,3 +133,15 @@ export const getFollowing = async (
   console.log("Following: ", response.data);
   return response.data;
 };
+
+//Récupérer les followers d'un utilisateur
+// export const getFollowers = async (userId: string): Promise<User[]> => {
+//   const response = await api.get(`/user/${userId}/followers/`);
+//   return response.data;
+// };
+
+//Récupérer les utilisateurs suivis par un utilisateur
+// export const getFollowing = async (userId: string): Promise<User[]> => {
+//   const response = await api.get(`/user/${userId}/following`);
+//   return response.data;
+// };

@@ -1,7 +1,11 @@
-import { useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { UserContext } from "../AppContext";
 import { Logout } from "../log/Logout";
+import { Loader, Search } from "lucide-react";
+import { searchUsers } from "src/services/userService";
+import { User } from "src/types/user.types";
+import SearchSidebar from "../home/SearchSidebar";
 
 interface SideBarProps {
   isOpen: boolean;
@@ -13,6 +17,41 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
   const currentUserUid = userContext?.uid;
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [searchResults, setSearchResults] = useState<User[]>([]);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState("");
+  // const navigate = useNavigate();
+
+  // const handleSearch = async () => {
+  //   if (!searchTerm.trim()) return;
+
+  //   try {
+  //     setLoading(true);
+  //     const users = await searchUsers(searchTerm.trim());
+  //     setSearchResults(users);
+  //     setError("");
+  //   } catch (err: any) {
+  //     setError("Erreur lors de la recherche.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const delay = setTimeout(() => {
+  //     // Vérifie si l'utilisateur a arrêté de taper
+  //     if (searchTerm.trim()) {
+  //       handleSearch();
+  //     } else {
+  //       setSearchResults([]);
+  //     }
+  //   }, 500); // Attends 500ms après que l’utilisateur ait arrêté de taper
+
+  //   return () => clearTimeout(delay);
+  // }, [searchTerm]);
 
   return (
     <div className="relative">
@@ -53,6 +92,16 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                 >
                   Créer +
                 </NavLink>
+                <div
+                  className="hover:text-gray-300 flex items-center gap-2"
+                  onClick={() => {
+                    toggleSidebar(); // ferme la sidebar principale
+                    setIsSearchOpen(true); // ouvre la recherche
+                  }}
+                >
+                  <Search width={15} height={15} />
+                  Rechercher
+                </div>
                 <NavLink
                   to={"/my-profil"}
                   className="hover:text-gray-300"
@@ -88,14 +137,12 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
           </div>
         </div>
       </nav>
-
-      {/* Overlay pour fermer la sidebar en cliquant en dehors (mobile uniquement) */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={toggleSidebar}
-        ></div>
-      )}
+      <SearchSidebar
+        isSidebarOpen={isOpen}
+        onSidebarOpen={setIsOpen}
+        isSearchOpen={isSearchOpen}
+        onSearchOpen={setIsSearchOpen}
+      />
     </div>
   );
 };
