@@ -74,10 +74,7 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
         <div className="flex items-center gap-2">
           <div className="flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-10 h-10">
             <img
-              src={`${process.env.REACT_APP_API_URL}/${poster.picture?.replace(
-                /^\//,
-                ""
-              )}`}
+              src={poster.picture}
               alt="user"
               className="w-full h-full rounded-full object-cover object-center"
             />
@@ -99,14 +96,7 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
         <div>
           <img
             className="w-full h-auto aspect-square object-cover rounded-lg sm:w-[468px] sm:h-[468px] cursor-pointer"
-            src={
-              post.picture
-                ? `${process.env.REACT_APP_API_URL}/${post.picture.replace(
-                    /^\//,
-                    ""
-                  )}`
-                : "/placeholder.jpg"
-            }
+            src={post.picture}
             alt="post-picture"
             onClick={handleOpenModal}
           />

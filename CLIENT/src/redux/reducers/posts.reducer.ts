@@ -62,12 +62,18 @@ const postsSlice = createSlice({
     //   state.error = null;
     // },
     getPostsByFollowingSuccess: (state, action) => {
-      const { hasMore, followingPosts } = action.payload; // ✅ Assurez-vous que l'action payload contient hasMore et posts
-      const existingIds = new Set(state.followingPosts.map((p) => p._id));
-      const newPosts = followingPosts.filter(
-        (post: Post) => !existingIds.has(post._id)
-      );
-      state.followingPosts = [...state.followingPosts, ...newPosts];
+      const { hasMore, followingPosts, skip } = action.payload;
+
+      if (skip === 0) {
+        state.followingPosts = followingPosts; // reset si on recharge depuis 0
+      } else {
+        const existingIds = new Set(state.followingPosts.map((p) => p._id));
+        const newPosts = followingPosts.filter(
+          (post: Post) => !existingIds.has(post._id)
+        );
+        state.followingPosts = [...state.followingPosts, ...newPosts];
+      }
+
       state.error = null;
       state.hasMoreFollowingPosts = hasMore; // ✅ Mettre à jour hasMoreFollowingPosts
       console.log(
@@ -146,6 +152,8 @@ const postsSlice = createSlice({
     createPostRequested: (
       state,
       action: PayloadAction<{
+        pictureUrl: string;
+        publicId: string;
         message: string;
         posterId: string;
       }>

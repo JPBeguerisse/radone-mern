@@ -46,10 +46,7 @@ export const SuggestedUsers = () => {
               className="flex items-center gap-3"
             >
               <img
-                src={`${process.env.REACT_APP_API_URL}/${user.picture?.replace(
-                  /^\//,
-                  ""
-                )}`}
+                src={user.picture}
                 alt={user.userName}
                 className="w-10 h-10 rounded-full object-cover"
               />

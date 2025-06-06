@@ -7,19 +7,39 @@ export interface PostsFollowingResponse {
 }
 
 //creation de post
-export const createPost = async (formData: FormData) => {
-  console.log(
-    "Données envoyées à l'API :",
-    Object.fromEntries(formData.entries())
-  );
+// export const createPost = async (formData: FormData) => {
+//   console.log(
+//     "Données envoyées à l'API :",
+//     Object.fromEntries(formData.entries())
+//   );
 
-  const response = await api.post("/post", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+//   const response = await api.post("/post", formData, {
+//     headers: { "Content-Type": "multipart/form-data" },
+//   });
+
+//   console.log("Réponse de l'API :", response);
+
+//   return response.data; //
+// };
+
+export const createPost = async ({
+  pictureUrl,
+  publicId,
+  message,
+  posterId,
+}: {
+  pictureUrl?: string;
+  publicId?: string;
+  message: string;
+  posterId: string;
+}): Promise<Post> => {
+  const response = await api.post("/post", {
+    pictureUrl,
+    publicId,
+    message,
+    posterId,
   });
-
-  console.log("Réponse de l'API :", response);
-
-  return response.data; //
+  return response.data;
 };
 
 // Récupère les publications

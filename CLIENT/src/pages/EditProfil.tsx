@@ -167,7 +167,7 @@ export const EditProfil = () => {
     <div className="px-4 sm:px-8 md:px-48">
       <h1 className="font-bold text-xl sm:text-2xl mb-4">Modifier le profil</h1>
 
-      {/* 🧍‍♂️ Bloc utilisateur avec image + infos */}
+      {/*  Bloc utilisateur avec image + infos */}
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4 p-4 mt-6 w-full bg-white rounded-lg shadow-sm">
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
           <div className="flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-20 h-20">
@@ -216,7 +216,7 @@ export const EditProfil = () => {
       </div>
       {/* <UpdatePictureForm /> */}
 
-      {/* 📋 Formulaire */}
+      {/* Formulaire */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="mt-6 rounded-lg flex flex-col gap-6 pb-16"

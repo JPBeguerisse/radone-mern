@@ -15,14 +15,7 @@ export const PostImageCard: React.FC<CardProps> = ({ post, onOpen }) => {
     >
       <img
         className="w-full h-full object-cover aspect-square rounded-lg"
-        src={
-          post.picture
-            ? `${process.env.REACT_APP_API_URL}/${post.picture.replace(
-                /^\//,
-                ""
-              )}`
-            : "/placeholder.jpg" // 🔹 Ajoute une image par défaut si `post.picture` est vide
-        }
+        src={post.picture}
         alt="post-picture"
       />
     </div>

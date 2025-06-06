@@ -60,9 +60,7 @@ const ViewedProfileInfo: React.FC = () => {
         {/* Section de l'image de profil */}
         <div className="user-picture flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-24 h-24 md:w-36 md:h-36">
           <img
-            src={`${
-              process.env.REACT_APP_API_URL
-            }/${viewedUser?.picture?.replace(/^\//, "")}`}
+            src={viewedUser.picture}
             alt="user"
             className="w-full h-full rounded-full object-cover object-center"
           />

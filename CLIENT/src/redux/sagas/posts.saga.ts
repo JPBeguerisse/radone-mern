@@ -111,6 +111,7 @@ function* handleFetchPostsFollowing(
       getPostsByFollowingSuccess({
         followingPosts,
         hasMore: followingPosts.length === limit, // Vérifie s'il y a plus de posts à charger
+        skip,
       })
     );
     // console.log("Posts des followings récupérés :", followingPosts); //
@@ -164,19 +165,50 @@ function* handleUpdatePost(
 }
 
 // Fonction pour créer un post
+// function* handleCreatePost(
+//   action: PayloadAction<{ message: string; posterId: string }>
+// ): Generator<any, void, Post> {
+//   try {
+//     const formData = new FormData();
+//     formData.append("posterId", action.payload.posterId);
+//     formData.append("message", action.payload.message);
+//     if (selectedFile) {
+//       formData.append("postImage", selectedFile);
+//     }
+//     const createdPost = yield call(createPost, formData);
+//     yield put(createPostSuccess(createdPost));
+//     // yield put(getPostsRequested({ skip: 0, limit: 5 })); // Rafraîchir la liste des posts
+//     toast.success("Publication créée avec succès !");
+//   } catch (error: any) {
+//     toast.error(error.response?.data?.message || "Une erreur est survenue !");
+//     yield put(createPostFailed(error.message));
+//   }
+// }
+
+// Fonction pour créer un post avec cloudinary
 function* handleCreatePost(
-  action: PayloadAction<{ message: string; posterId: string }>
+  action: PayloadAction<{
+    message: string;
+    posterId: string;
+    pictureUrl?: string;
+    publicId?: string;
+  }>
 ): Generator<any, void, Post> {
   try {
-    const formData = new FormData();
-    formData.append("posterId", action.payload.posterId);
-    formData.append("message", action.payload.message);
-    if (selectedFile) {
-      formData.append("postImage", selectedFile);
-    }
-    const createdPost = yield call(createPost, formData);
+    const { message, posterId, pictureUrl, publicId } = action.payload;
+
+    // Appel de l'API pour créer le post
+    const createdPost = yield call(createPost, {
+      pictureUrl,
+      publicId,
+      message,
+      posterId,
+    });
+    console.log("Post créé :", createdPost);
     yield put(createPostSuccess(createdPost));
-    // yield put(getPostsRequested({ skip: 0, limit: 5 })); // Rafraîchir la liste des posts
+    yield put(
+      getPostsByFollowingRequested({ userId: posterId, skip: 0, limit: 5 })
+    ); // Rafraîchir la liste des posts
     toast.success("Publication créée avec succès !");
   } catch (error: any) {
     toast.error(error.response?.data?.message || "Une erreur est survenue !");
@@ -194,6 +226,13 @@ function* handleDeletePost(
     //appel saga
     yield put(deletePostSuccess(action.payload.postId));
     yield put(getPostsUserRequested(action.payload.userId));
+    yield put(
+      getPostsByFollowingRequested({
+        userId: action.payload.userId,
+        skip: 0,
+        limit: 5,
+      })
+    );
     toast.success("Post supprimé avec succès !");
   } catch (error: any) {
     toast.error(error.response?.data?.message || "Une erreur est survenue !");

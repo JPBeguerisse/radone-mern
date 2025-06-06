@@ -130,9 +130,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
               >
                 <div>
                   <img
-                    src={`${
-                      process.env.REACT_APP_API_URL
-                    }/${user.picture?.replace(/^\//, "")}`}
+                    src={user.picture}
                     alt="user"
                     className="w-14 h-14 rounded-full object-cover object-center"
                   />
