@@ -97,7 +97,7 @@
   height: 40px;
 }
 
-
+/* 
 .nav-link a{
   color: #282c34;
   text-decoration: none;
@@ -107,9 +107,9 @@
   display: block;
   align-items: center;
   text-align: center;
-}
+} */
 
-.nav-link a:hover{
+/* .nav-link a:hover{
   background-color: #0a2d61;
   color: white;
   border-radius: 5px;
@@ -119,7 +119,7 @@
   background-color: #0a2d61;
   font-weight: bold;
   color: white;
-} 
+}  */
 
 
 /* Main content styles */
@@ -152,7 +152,7 @@
 }
 
 /* Styles pour les onglets de sélection (inscription/connexion) */
-ul {
+/* ul {
   list-style: none;
   padding: 0;
   display: flex;
@@ -168,7 +168,7 @@ ul li {
   border-radius: 5px;
   background-color: #e0e0e0;
   transition: background-color 0.3s;
-}
+} */
 
 /* Changement de style pour l'onglet actif */
 /* ul li.active-btn {
@@ -177,10 +177,10 @@ ul li {
   border-color: #0a2d61;
 } */
 
-ul li:hover {
+/* ul li:hover {
   background-color: #0a2d61;
   color: #fff;
-}
+} */
 
 
 /********FORM*******/
@@ -249,19 +249,19 @@ ul li:hover {
   margin-top: auto; /* Pousse le Logout vers le bas */
   padding-top: 20px;
 }
-
+/* 
 .nav-footer li, a {
   list-style: none;
   cursor: pointer;
   text-decoration: none;
   color: #282c34;
-}
+} */
 
 
 
-.nav-footer li:hover, a:hover {
+/* .nav-footer li:hover, a:hover {
   color: #0a2d61;
-}
+} */
 
 
 /*************PROFIL VIEW*****************/

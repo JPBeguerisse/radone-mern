@@ -90,10 +90,10 @@ export const Home: React.FC = () => {
   return (
     <div className="flex">
       <div className="flex-1 px-4 h-screen overflow-y-auto">
-        <div className="sticky top-0 bg-white z-10 shadow-px-4 lg:pr-24 lg:pl-24 sm:border-t-2">
+        <div className="sticky top-0 bg-white z-10 shadow-px-4 lg:pr-24 lg:pl-24 ">
           <div className="flex gap-4 border-b-2 border-gray-200 pb-4 pt-2">
             <button
-              className={`lg:text-2xl font-bold ${
+              className={` font-bold ${
                 tab === "forYou" ? "text-black" : "text-gray-500"
               }`}
               onClick={() => setTab("forYou")}
@@ -101,7 +101,7 @@ export const Home: React.FC = () => {
               Pour vous
             </button>
             <button
-              className={`lg:text-2xl font-bold ${
+              className={` font-bold ${
                 tab === "yourFollowing" ? "text-black" : "text-gray-500"
               }`}
               onClick={() => setTab("yourFollowing")}

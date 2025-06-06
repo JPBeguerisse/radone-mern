@@ -12,7 +12,7 @@ const Layout = () => {
 
       {/* Contenu principal */}
       <div
-        className={`main-content flex-grow h-full min-h-screen  pt-24 ${
+        className={`main-content flex-grow h-full min-h-screen pt-8 ${
           isOpen ? "ml-64" : "ml-0"
         } md:ml-64 transition-all duration-300`}
       >
