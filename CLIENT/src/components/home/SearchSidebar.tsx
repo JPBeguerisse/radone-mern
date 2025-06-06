@@ -83,7 +83,11 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
             <h2 className="text-2xl font-bold">Recherche</h2>
             <button
               className="text-gray-500 hover:text-black"
-              onClick={() => onSearchOpen(false)}
+              onClick={() => {
+                onSearchOpen(false);
+                setSearchTerm("");
+                setEmptyUser(false);
+              }}
             >
               <X />
             </button>
@@ -120,6 +124,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
                 onClick={() => {
                   onSearchOpen(false);
                   navigate(`/profil/${user.userName}?tab=posts`);
+                  setSearchTerm("");
                 }}
                 className="cursor-pointer flex items-center gap-3 p-2 hover:bg-gray-100 rounded"
               >

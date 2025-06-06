@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { UserContext } from "../AppContext";
 import { Logout } from "../log/Logout";
-import { Loader, Search } from "lucide-react";
+import { Loader, Plus, Search } from "lucide-react";
 import { searchUsers } from "src/services/userService";
 import { User } from "src/types/user.types";
 import SearchSidebar from "../home/SearchSidebar";
@@ -87,10 +87,11 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
               <>
                 <NavLink
                   to="/ajouter"
-                  className="hover:text-gray-300"
                   onClick={toggleSidebar}
+                  className="flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded-lg"
                 >
-                  Créer +
+                  <Plus className="w-4 h-4" />
+                  Créer
                 </NavLink>
                 <div
                   className="hover:text-gray-300 flex items-center gap-2"

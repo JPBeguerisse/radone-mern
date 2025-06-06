@@ -33,6 +33,7 @@ function App() {
           // Mise à jour de l'état avec l'UID
           //console.log("res", response);
           setUid(response.data);
+          console.log("UID récupéré :", response.data);
         }
       } catch (error) {
         console.log("Erreur de récupération du token ou du profil", error);

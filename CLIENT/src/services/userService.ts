@@ -54,15 +54,35 @@ export const updateUser = async (
   return response.data;
 };
 
-//Modifier la photo de profil
-export const updatePicture = async (formData: FormData): Promise<User> => {
-  const response = await api.post("/user/upload-profil", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+//Modifier la photo de profil avec multer
+// export const updatePicture = async (formData: FormData): Promise<User> => {
+//   const response = await api.post("/user/upload-profil", formData, {
+//     headers: { "Content-Type": "multipart/form-data" },
+//   });
+//   return response.data;
+// };
+
+//Modifier la photo de profil avec un cloudinary
+export const updatePicture = async (
+  userId: string,
+  url: string,
+  public_id?: string
+): Promise<User> => {
+  const res = await api.put(`/user/update-profil-picture`, {
+    userId: userId,
+    pictureUrl: url,
+    publicId: public_id,
   });
+  return res.data;
+};
+
+//Supprimer la photo de profil avec un cloudinary
+export const deleteProfilePicture = async (userId: string): Promise<User> => {
+  const response = await api.put(`/user/delete-profil-picture/${userId}`);
   return response.data;
 };
 
-//Supprimer la photo de profil
+//Supprimer la photo de profil avec multer non utilisée
 export const removePicture = async (userId: string): Promise<User> => {
   const response = await api.delete(`/user/remove-profil-picture/${userId}`);
   return response.data;

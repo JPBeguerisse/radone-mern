@@ -54,8 +54,47 @@ const userSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Mis a jour photo profil
-    updatePictureRequested: (state, action: PayloadAction<string>) => {
+    // Mis à jour photo profil avec un cloudinary
+    updateProfilePictureRequested: (
+      state,
+      action: PayloadAction<{
+        userId: string;
+        pictureUrl: string;
+        public_id: string;
+      }>
+    ) => {
+      console.log("Mis a jour photo de profil lancé...", action.payload);
+    },
+
+    updateProfilePictureSuccess: (state, action: PayloadAction<User>) => {
+      if (state.user) {
+        state.user = action.payload; // Met à jour l'utilisateur avec la nouvelle photo de profil
+      }
+    },
+
+    updateProfilePictureFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload; // Met à jour l'état d'erreur avec le message d'erreur
+    },
+
+    //Supprimer la photo de profil avec un cloudinary
+    removeProfilePictureRequested: (state, action: PayloadAction<string>) => {
+      console.log(
+        "Suppression de la photo de profil lancée...",
+        action.payload
+      );
+    },
+
+    removeProfilePictureSuccess: (state, action: PayloadAction<User>) => {
+      if (state.user) {
+        state.user = action.payload; // Met à jour l'utilisateur après la suppression de la photo de profil
+      }
+    },
+    removeProfilePictureFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload; // Met à jour l'état d'erreur avec le message d'erreur
+    },
+
+    // Mis a jour photo profil avec multipart/form-data non utilisée
+    updatePictureRequested: (state, action: PayloadAction<FormData>) => {
       console.log("Mis a jour photo de profil lancé...", action.payload);
     },
 
@@ -175,6 +214,12 @@ export const {
   getPostsUserRequested,
   getPostsUserSuccess,
   getPostsUserFailed,
+  updateProfilePictureRequested,
+  updateProfilePictureSuccess,
+  updateProfilePictureFailed,
+  removeProfilePictureRequested,
+  removeProfilePictureSuccess,
+  removeProfilePictureFailed,
 } = userSlice.actions;
 
 export const userReducer = userSlice.reducer;
