@@ -107,7 +107,7 @@ app.get("/api", (req, res) => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
-app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads"))); // Pour servir les fichiers statiques (images, vidéos, etc.)
 
 app.listen(process.env.PORT, () => {
   console.log(`Listenning on port ${process.env.PORT}`);

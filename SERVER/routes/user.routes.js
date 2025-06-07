@@ -230,6 +230,54 @@ router.post("/register", authController.signUp);
  */
 router.get("/", userController.getUsers);
 
+// Rechercher des utilisateurs
+/**
+ * @swagger
+ * /api/user/search:
+ *   get:
+ *     summary: Rechercher des utilisateurs
+ *     description: Recherche des utilisateurs par nom ou nom d'utilisateur (userName).
+ *     tags:
+ *       - Utilisateurs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: query
+ *         in: query
+ *         required: true
+ *         description: Terme de recherche (nom ou nom d'utilisateur)
+ *         schema:
+ *           type: string
+ *           example: john
+ *     responses:
+ *       200:
+ *         description: Liste des utilisateurs correspondant à la recherche
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID de l'utilisateur
+ *                   name:
+ *                     type: string
+ *                     description: Prénom de l'utilisateur
+ *                   userName:
+ *                     type: string
+ *                     description: Nom d'utilisateur
+ *                   picture:
+ *                     type: string
+ *                     description: URL de la photo de profil
+ *       400:
+ *         description: Terme de recherche vide ou invalide
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+router.get("/search", verifyToken, userController.searchUsers);
+
 //RECUPERER LES INFOS D'UN USER
 /**
  * @swagger
@@ -275,10 +323,10 @@ router.get("/", userController.getUsers);
  */
 router.get("/:id", verifyToken, userController.getUser);
 
-//RECUPERER LES INFOS D'UN USER
+//RECUPERER LES INFOS D'UN USER PAR USERNAME
 /**
  * @swagger
- * /api/user/username/{userName}:
+ * /api/user/by-username/{userName}:
  *   get:
  *     summary: Récupérer un utilisateur par son username
  *     description: Récupère les informations d'un utilisateur spécifique en utilisant son username, sans renvoyer son mot de passe.
@@ -318,6 +366,7 @@ router.get("/:id", verifyToken, userController.getUser);
  */
 router.get("/by-username/:username", userController.getUserByUsername);
 
+//UPDATE USER
 /**
  * @swagger
  * /api/user/{id}:
@@ -395,6 +444,7 @@ router.get("/by-username/:username", userController.getUserByUsername);
  */
 router.patch("/:id", verifyToken, userController.updateUser);
 
+//DELETE USER
 /**
  * @swagger
  * /api/user/{id}:
@@ -446,6 +496,88 @@ router.patch("/:id", verifyToken, userController.updateUser);
  */
 router.delete("/:id", userController.deleteUser);
 
+// UPLOAD USER PICTURE
+/**
+ * @swagger
+ * /api/user/update-profil-picture:
+ *   put:
+ *     summary: Mettre à jour la photo de profil de l'utilisateur
+ *     description: Met à jour la photo de profil d'un utilisateur avec une nouvelle URL (Cloudinary par exemple).
+ *     tags:
+ *       - Utilisateurs
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - picture
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: ID de l'utilisateur
+ *               picture:
+ *                 type: string
+ *                 description: URL de la nouvelle image de profil
+ *     responses:
+ *       200:
+ *         description: Photo de profil mise à jour avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur serveur
+ */
+router.put(
+  "/update-profil-picture",
+  verifyToken,
+  uploadController.updatePicture
+);
+
+//Supprimer l'image de profil d'un utilisateur
+/**
+ * @swagger
+ * /api/user/delete-profil-picture/{id}:
+ *   put:
+ *     summary: Supprimer la photo de profil de l'utilisateur
+ *     description: Réinitialise la photo de profil d'un utilisateur en la remplaçant par une image par défaut.
+ *     tags:
+ *       - Utilisateurs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Photo de profil supprimée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur serveur
+ */
+router.put(
+  "/delete-profil-picture/:id",
+  verifyToken,
+  uploadController.removeProfilePicture
+);
+
+// UPLOAD USER PROFILE PICTURE
 /**
  * @swagger
  * /api/user/upload-profil:
@@ -509,8 +641,9 @@ router.delete("/:id", userController.deleteUser);
  *                   type: object
  *                   description: Détails des erreurs
  */
-router.post("/upload-profil", verifyToken, uploadController.uploadProfil);
+//router.post("/upload-profil", verifyToken, uploadController.uploadProfil);
 
+// REMOVE USER PROFILE PICTURE
 /**
  * @swagger
  * /api/user/remove-profil-picture/{id}:
@@ -569,12 +702,13 @@ router.post("/upload-profil", verifyToken, uploadController.uploadProfil);
  *                   type: string
  *                   example: "Erreur lors de la suppression de la photo"
  */
-router.delete(
-  "/remove-profil-picture/:id",
-  verifyToken,
-  uploadController.removePicture
-);
+// router.delete(
+//   "/remove-profil-picture/:id",
+//   verifyToken,
+//   uploadController.removePicture
+// );
 
+// FOLLOW / UNFOLLOW USER
 /**
  * @swagger
  * /api/user/follow/{id}:
@@ -638,6 +772,7 @@ router.delete(
  */
 router.patch("/follow/:id", verifyToken, userController.follow);
 
+// UNFOLLOW USER
 /**
  * @swagger
  * /api/user/unfollow/{id}:
@@ -702,6 +837,7 @@ router.patch("/follow/:id", verifyToken, userController.follow);
 router.patch("/unfollow/:id", verifyToken, userController.unfollow);
 module.exports = router;
 
+// Récupérer les followers et following d'un utilisateur
 /**
  * @swagger
  * /api/user/{userId}/followers:
@@ -746,6 +882,7 @@ module.exports = router;
  */
 router.get("/:userId/followers", userController.getFollowers);
 
+// Récupérer les utilisateurs suivis par un utilisateur
 /**
  * @swagger
  * /api/user/{userId}/following:
@@ -788,4 +925,30 @@ router.get("/:userId/followers", userController.getFollowers);
  *       500:
  *         description: Erreur interne du serveur
  */
-router.get("/:userId/following", userController.getFollowing);
+router.get("/:userId/following", verifyToken, userController.getFollowing);
+
+//se connecter en tant qu'invité
+/**
+ * @swagger
+ * /api/user/login-guest:
+ *   post:
+ *     summary: Connexion en tant qu'invité
+ *     description: Permet à un utilisateur de se connecter en tant qu'invité. Renvoie un token JWT pour l'authentification.
+ *     tags:
+ *       - Authentification
+ *     responses:
+ *       200:
+ *         description: Connexion réussie, renvoie le token JWT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT pour l'authentification de l'invité
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       404:
+ *         description: Utilisateur invité introuvable
+ */
+router.post("/login-guest", authController.loginGuest);

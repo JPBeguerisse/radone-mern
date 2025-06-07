@@ -96,11 +96,9 @@ module.exports.signUp = async (req, res) => {
     <a href="${confirmationUrl}">Confirmer mon adresse e-mail</a>`,
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Un lien de confirmation vous a été envoyé par e-mail.",
-      });
+    return res.status(200).json({
+      message: "Un lien de confirmation vous a été envoyé par e-mail.",
+    });
   } catch (error) {
     res
       .status(500)
@@ -152,6 +150,27 @@ module.exports.login = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+module.exports.loginGuest = async (req, res) => {
+  try {
+    const guestUser = await UserModel.findOne({ isGuest: true });
+
+    if (!guestUser)
+      return res
+        .status(404)
+        .json({ message: "Utilisateur invité introuvable." });
+
+    // Générer un token comme pour un login normal
+    const token = jwt.sign({ id: guestUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
+
+    //res.status(200).json({ token, user: guestUser });
+    res.status(200).json({ token });
+  } catch (err) {
+    res.status(500).json({ message: "Erreur serveur", error: err.message });
   }
 };
 

@@ -4,89 +4,126 @@ const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 const UserModel = require("../models/user.model");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config();
 
-//Fonction pour créer un post
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "profil", // nom du dossier dans Cloudinary
+    allowed_formats: ["jpg", "png", "jpeg"],
+    transformation: [{ width: 500, height: 500, crop: "limit" }],
+  },
+});
+
+//Fonction pour créer un post avec multer
+// module.exports.createPost = async (req, res) => {
+//   //GERER L'UPLOAD
+//   const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//       const uploadDir = path.join(__dirname, "../uploads/posts");
+//       console.log("Upload directory:", uploadDir);
+//       if (!fs.existsSync(uploadDir)) {
+//         fs.mkdirSync(uploadDir);
+//       }
+//       cb(null, uploadDir);
+//     },
+
+//     filename: (req, file, cb) => {
+//       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+//       cb(null, uniqueSuffix + path.extname(file.originalname));
+//     },
+//   });
+
+//   // Configuration de multer pour la validation des fichiers
+//   const upload = multer({
+//     storage: storage,
+//     limits: { fileSize: 500 * 1024 }, // Limite de taille de fichier à 500 Ko
+//     fileFilter: (req, file, cb) => {
+//       const filetypes = /jpeg|jpg|png/;
+//       const mimetype = filetypes.test(file.mimetype);
+//       const extname = filetypes.test(
+//         path.extname(file.originalname).toLowerCase()
+//       );
+
+//       if (mimetype && extname) {
+//         return cb(null, true);
+//       } else {
+//         cb(
+//           new Error(
+//             "Le fichier doit être une image au format PNG, JPG ou JPEG, et ne doit pas dépasser 500 Ko."
+//           )
+//         );
+//       }
+//     },
+//   }).single("postImage");
+
+//   upload(req, res, async (err) => {
+//     if (err) {
+//       return res.status(500).json({
+//         message: "Erreur lors de l'upload de l'image.",
+//         error: err.message,
+//       });
+//     }
+//     try {
+//       const { posterId, message, video } = req.body;
+//       const imagePath = req.file ? `/uploads/posts/${req.file.filename}` : null;
+//       const newPost = new PostModel({
+//         message,
+//         posterId,
+//         picture: imagePath,
+//         likers: [],
+//         comments: [],
+//       });
+
+//       const savedPost = await newPost.save();
+//       res.status(201).json(savedPost);
+//     } catch (error) {
+//       console.log(error);
+//       res.status(500).json({
+//         message: "Une erreur est survenue lors de la création du post.",
+//         error,
+//       });
+//     }
+//   });
+// };
+
+// Fonction pour créer un post avec cloudinary
 module.exports.createPost = async (req, res) => {
-  // Validation de base
-  //   if (!message || !posterId) {
-  //     return res
-  //       .status(400)
-  //       .json({ message: "Le message et l'ID du posteur sont obligatoires." });
-  //   }
-  // const { posterId } = req.body;
-
-  // if (!posterId) {
-  //   return res.status(400).json({ error: "Le poster ID  est requis" });
-  // }
-
-  //GERER L'UPLOAD
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      const uploadDir = path.join(__dirname, "../uploads/posts");
-      console.log("Upload directory:", uploadDir);
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir);
-      }
-      cb(null, uploadDir);
-    },
-
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
-    },
-  });
-
-  // Configuration de multer pour la validation des fichiers
-  const upload = multer({
-    storage: storage,
-    limits: { fileSize: 500 * 1024 }, // Limite de taille de fichier à 500 Ko
-    fileFilter: (req, file, cb) => {
-      const filetypes = /jpeg|jpg|png/;
-      const mimetype = filetypes.test(file.mimetype);
-      const extname = filetypes.test(
-        path.extname(file.originalname).toLowerCase()
-      );
-
-      if (mimetype && extname) {
-        return cb(null, true);
-      } else {
-        cb(
-          new Error(
-            "Le fichier doit être une image au format PNG, JPG ou JPEG, et ne doit pas dépasser 500 Ko."
-          )
-        );
-      }
-    },
-  }).single("postImage");
-
-  upload(req, res, async (err) => {
-    if (err) {
-      return res.status(500).json({
-        message: "Erreur lors de l'upload de l'image.",
-        error: err.message,
-      });
+  try {
+    const { posterId, pictureUrl, publicId, message, video } = req.body;
+    // Vérification des champs requis
+    if (!posterId || (!pictureUrl && !message && !video)) {
+      return res.status(400).json({ message: "Tous les champs sont requis." });
     }
-    try {
-      const { posterId, message, video } = req.body;
-      const imagePath = req.file ? `/uploads/posts/${req.file.filename}` : null;
-      const newPost = new PostModel({
-        message,
-        posterId,
-        picture: imagePath,
-        likers: [],
-        comments: [],
-      });
 
-      const savedPost = await newPost.save();
-      res.status(201).json(savedPost);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        message: "Une erreur est survenue lors de la création du post.",
-        error,
-      });
-    }
-  });
+    // Création du nouveau post
+    const newPost = new PostModel({
+      posterId,
+      picture: pictureUrl || null, // Utilisation de l'URL de l'image si fournie
+      public_id: publicId || null, // Utilisation du public_id si fourni
+      message: message || null, // Message du post
+      video: video || null, // Vidéo du post
+      likers: [], // Tableau vide pour les likes
+      comments: [], // Tableau vide pour les commentaires
+    });
+    // Sauvegarde du post dans la base de données
+    const savedPost = await newPost.save();
+    // Retourne le post créé en réponse
+    res.status(201).json(savedPost);
+  } catch (error) {
+    res.status(500).json({
+      message: "Une erreur est survenue lors de la création du post.",
+      error: error.message,
+    });
+  }
 };
 
 //Fonction pour récupérer les posts
@@ -198,7 +235,7 @@ module.exports.getPostsForYou = async (req, res) => {
 
 // controllers/post.controller.js
 
-// Fonction pour récupérer les posts avec pagination
+// Fonction pour récupérer les posts avec pagination non utilisé
 module.exports.getPosts = async (req, res) => {
   const limit = parseInt(req.query.limit) || 5;
   const skip = parseInt(req.query.skip) || 0;
@@ -383,34 +420,60 @@ module.exports.updatePost = async (req, res) => {
   }
 };
 
-//Fonction pour supprimer un post
+//Fonction pour supprimer un post avec image multer
+// module.exports.deletePost = async (req, res) => {
+//   const postId = req.params.id;
+
+//   try {
+//     // Chercher le post dans la base de données par son ID
+//     const postToDelete = await PostModel.findById(postId);
+
+//     // Si le post n'existe pas, retourner une erreur 404
+//     if (!postToDelete) {
+//       return res.status(404).json({ message: "Post non trouvé" });
+//     }
+
+//     // Si le post contient une image, supprimer le fichier de l'image
+//     if (postToDelete.picture) {
+//       const imagePath = path.join(__dirname, "..", postToDelete.picture);
+
+//       // Vérifier si le fichier existe avant de le supprimer
+//       if (fs.existsSync(imagePath)) {
+//         fs.unlinkSync(imagePath); // Supprimer l'image
+//       } else {
+//         console.log("L'image n'existe pas ou a déjà été supprimée.");
+//       }
+//     }
+
+//     // Supprimer le post de la base de données
+//     await PostModel.findByIdAndDelete(postId);
+
+//     // Retourner un message de succès après la suppression
+//     res.status(200).json({ message: "Post et image supprimés avec succès." });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "Erreur lors de la suppression du post",
+//     });
+//   }
+// };
+
+// Fonction pour supprimer un post avec image cloudinary
 module.exports.deletePost = async (req, res) => {
   const postId = req.params.id;
-
   try {
     // Chercher le post dans la base de données par son ID
     const postToDelete = await PostModel.findById(postId);
-
     // Si le post n'existe pas, retourner une erreur 404
     if (!postToDelete) {
       return res.status(404).json({ message: "Post non trouvé" });
     }
-
-    // Si le post contient une image, supprimer le fichier de l'image
-    if (postToDelete.picture) {
-      const imagePath = path.join(__dirname, "..", postToDelete.picture);
-
-      // Vérifier si le fichier existe avant de le supprimer
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath); // Supprimer l'image
-      } else {
-        console.log("L'image n'existe pas ou a déjà été supprimée.");
-      }
+    // Si le post contient une image sur Cloudinary, supprimer l'image
+    if (postToDelete.public_id) {
+      await cloudinary.uploader.destroy(postToDelete.public_id);
     }
-
     // Supprimer le post de la base de données
     await PostModel.findByIdAndDelete(postId);
-
     // Retourner un message de succès après la suppression
     res.status(200).json({ message: "Post et image supprimés avec succès." });
   } catch (error) {

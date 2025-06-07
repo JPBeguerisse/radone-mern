@@ -14,6 +14,8 @@ function App() {
   // Utilisation du hook `useDispatch` pour dispatcher des actions dans le store Redux
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(true);
+
   //si la page se rechage on récupère le token s'il est toujours disponible
   useEffect(() => {
     const fetchToken = async () => {
@@ -37,6 +39,8 @@ function App() {
         }
       } catch (error) {
         console.log("Erreur de récupération du token ou du profil", error);
+      } finally {
+        setIsLoading(false); // Mettre à jour l'état de chargement une fois la récupération terminée
       }
     };
 
@@ -52,7 +56,7 @@ function App() {
   // Rendu du composant
   return (
     // Fournir l'UID au contexte UserContext pour le rendre accessible aux autres composants
-    <UserContext.Provider value={{ uid, setUid }}>
+    <UserContext.Provider value={{ uid, setUid, isLoading }}>
       <ToastContainer
         position="top-right"
         autoClose={3000}

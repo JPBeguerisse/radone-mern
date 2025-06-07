@@ -8,19 +8,30 @@ import { MyProfile } from "src/features/user/pages/MyProfile";
 import ConfirmEmail from "../log/ConfirmEmail";
 import { Login } from "../log/Login";
 import { Register } from "../log/Register";
+import { ProtectedRoute } from "../log/ProtectedRoute";
 
 const index = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        {/* Routes publiques */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/confirmation/:token" element={<ConfirmEmail />} />
+
+        {/* Toutes les autres routes passent par ProtectedRoute */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/" element={<Home />} />
           <Route path="/profil/:id" element={<ViewedProfil />} />
           <Route path="/my-profil" element={<MyProfile />} />
           <Route path="/ajouter" element={<AddPost />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/confirmation/:token" element={<ConfirmEmail />} />
           <Route path="/edit-profil" element={<EditProfil />} />
         </Route>
       </Routes>

@@ -57,6 +57,14 @@ const userSchema = new mongoose.Schema(
       ref: "User",
       default: [],
     },
+    public_id: {
+      type: String,
+      unique: true, // Assure que chaque utilisateur a un public_id unique
+    },
+    isGuest: {
+      type: Boolean,
+      default: false, // Indique si l'utilisateur est un invité
+    },
   },
   {
     timestamps: true,

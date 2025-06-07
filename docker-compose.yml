@@ -33,6 +33,8 @@ services:
       - '27017:27017'
     volumes:
       - mongo-data:/data/db  # Volume pour stocker les données MongoDB
+      - ./mongo-data:/data/db        # Les données sont visibles dans ton dossier local
+
 
 volumes:
   mongo-data:

@@ -21,40 +21,6 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
   const toggleSidebar = () => setIsOpen(!isOpen);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [searchResults, setSearchResults] = useState<User[]>([]);
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState("");
-  // const navigate = useNavigate();
-
-  // const handleSearch = async () => {
-  //   if (!searchTerm.trim()) return;
-
-  //   try {
-  //     setLoading(true);
-  //     const users = await searchUsers(searchTerm.trim());
-  //     setSearchResults(users);
-  //     setError("");
-  //   } catch (err: any) {
-  //     setError("Erreur lors de la recherche.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const delay = setTimeout(() => {
-  //     // Vérifie si l'utilisateur a arrêté de taper
-  //     if (searchTerm.trim()) {
-  //       handleSearch();
-  //     } else {
-  //       setSearchResults([]);
-  //     }
-  //   }, 500); // Attends 500ms après que l’utilisateur ait arrêté de taper
-
-  //   return () => clearTimeout(delay);
-  // }, [searchTerm]);
-
   return (
     <div className="relative">
       {/* Bouton pour ouvrir la sidebar en mode mobile */}

@@ -15,7 +15,7 @@ import {
 import { toast } from "react-toastify";
 import { setSelectedPicture } from "src/redux/sagas/user.saga";
 import { Eye, EyeClosed } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "src/components/AppContext";
 import { uploadToCloudinary } from "src/services/uploadToCloudinary";
 import { updatePicture } from "src/services/userService";
@@ -108,23 +108,14 @@ export const EditProfil = () => {
     }
   }, [errorsServer]);
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate("/login"); // ✅ Redirection vers la page de login
-  //   }
-  // }, [user, navigate]);
+  // En cours de chargement (token en cours de vérification)
+  if (userContext?.isLoading) {
+    return <div>Chargement...</div>; // ou un spinner
+  }
 
-  useEffect(() => {
-    if (!currentUserUid) {
-      navigate("/login"); // Redirection si l'utilisateur n'est pas connecté
-    }
-  }, [currentUserUid, navigate]);
-
-  //toujours mettre ça en dessous des hooks
-  if (!user) {
-    return (
-      <p className="text-center text-gray-500">Chargement des données...</p>
-    );
+  // ❌ Pas connecté
+  if (!userContext?.uid) {
+    return <Navigate to="/login" replace />;
   }
 
   const onSubmit = (data: UpdateUserForm) => {
