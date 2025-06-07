@@ -45,8 +45,8 @@ export const EditProfil = () => {
   const user = useSelector((state: User) => state.userReducer.user);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
-  console.log("User", user);
-  console.log("currentUserUid", currentUserUid);
+  // console.log("User", user);
+  // console.log("currentUserUid", currentUserUid);
 
   const errorsServer = useSelector((state: any) => state.userReducer.error);
   const defaultPicture = "uploads/profil/random-user.jpeg";
@@ -114,6 +114,12 @@ export const EditProfil = () => {
   //   }
   // }, [user, navigate]);
 
+  useEffect(() => {
+    if (!currentUserUid) {
+      navigate("/login"); // Redirection si l'utilisateur n'est pas connecté
+    }
+  }, [currentUserUid, navigate]);
+
   //toujours mettre ça en dessous des hooks
   if (!user) {
     return (
@@ -163,9 +169,22 @@ export const EditProfil = () => {
     }
   };
 
+  // Vérifie si l'utilisateur est un invité pour afficher ou non certaines options
+  const isGuest = user?.isGuest;
+
   return (
     <div className="px-4 sm:px-8 md:px-48">
-      <h1 className="font-bold text-xl sm:text-2xl mb-4">Modifier le profil</h1>
+      <div>
+        <h1 className="font-bold text-xl sm:text-2xl mb-4">
+          Modifier le profil
+        </h1>
+        {isGuest && (
+          <p className="text-red-500 mb-4">
+            Vous êtes connecté en tant qu'invité. Certaines fonctionnalités sont
+            désactivées.
+          </p>
+        )}
+      </div>
 
       {/*  Bloc utilisateur avec image + infos */}
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4 p-4 mt-6 w-full bg-white rounded-lg shadow-sm">
@@ -196,7 +215,12 @@ export const EditProfil = () => {
           <div className="w-full sm:w-auto flex justify-center items-center">
             <label
               htmlFor="file-upload"
-              className="w-full sm:w-auto text-center px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300 cursor-pointer"
+              className={`w-full sm:w-auto text-center px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300 cursor-pointer ${
+                isGuest ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              style={{
+                pointerEvents: isGuest ? "none" : "auto",
+              }}
             >
               Modifier la photo
             </label>
@@ -206,7 +230,10 @@ export const EditProfil = () => {
             {user && user.picture && user.picture !== defaultPicture && (
               <button
                 onClick={deleteProfilePicture}
-                className="w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition"
+                className={`w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition" ${
+                  isGuest ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isGuest}
               >
                 Supprimer la photo
               </button>
@@ -231,6 +258,7 @@ export const EditProfil = () => {
             id="name"
             type="text"
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest}
           />
           {errors.name && (
             <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -250,6 +278,7 @@ export const EditProfil = () => {
             id="userName"
             type="text"
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest} // Désactive le champ si l'utilisateur est un invité
           />
           {errors.userName && (
             <p className="text-sm text-red-500">{errors.userName.message}</p>
@@ -266,6 +295,7 @@ export const EditProfil = () => {
             id="email"
             type="email"
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest} // Désactive le champ si l'utilisateur est un invité
           />
           {errors.email && (
             <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -282,6 +312,7 @@ export const EditProfil = () => {
             id="bio"
             rows={3}
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest}
           />
           {errors.bio && (
             <p className="text-sm text-red-500">{errors.bio.message}</p>
@@ -352,7 +383,10 @@ export const EditProfil = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-secondary transition w-full sm:w-auto"
+            disabled={isGuest}
+            className={`bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-secondary transition w-full sm:w-auto ${
+              isGuest ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             Enregistrer les modifications
           </button>

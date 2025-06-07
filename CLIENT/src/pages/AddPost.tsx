@@ -12,6 +12,7 @@ const AddPost: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isNext, setIsNext] = useState<boolean>(false);
+  const isGuest = user?.isGuest || false;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -107,7 +108,10 @@ const AddPost: React.FC = () => {
               {isNext && (
                 <button
                   onClick={handleCreatePost}
-                  className="text-white bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition"
+                  className={`text-white bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition" ${
+                    isGuest ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isGuest}
                 >
                   Partager
                 </button>
@@ -118,6 +122,11 @@ const AddPost: React.FC = () => {
             <div>
               <div className="border-b pb-3 text-center text-lg font-semibold text-gray-700">
                 Créer une nouvelle publication
+                {isGuest && (
+                  <div className="mt-4 text-red-500 text-center">
+                    Vous êtes en mode invité, vous ne pouvez pas publier.
+                  </div>
+                )}
               </div>
 
               <div
