@@ -34,29 +34,16 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <ul className="flex justify-around mb-8 text-center">
-          <li
-            onClick={handleRegister}
-            className={`cursor-pointer text-base md:text-lg lg:text-xl p-2 w-full md:w-1/2 ${
-              isRegister
-                ? "bg-primary text-white font-semibold"
-                : "text-gray-700"
-            } rounded-l-lg hover:bg-secondary hover:text-white`}
-          >
-            S'inscrire
-          </li>
+    <div className="flex h-screen">
+      <div className="hidden md:flex w-1/2 items-center justify-center bg-gray-50">
+        <img
+          src="/logImage.png"
+          alt="Illustration"
+          className="w-[600px] max-w-full"
+        />
+      </div>
 
-          <li
-            onClick={handleLogin}
-            className={`cursor-pointer text-base md:text-lg lg:text-xl p-2 w-full md:w-1/2 ${
-              isLogin ? "bg-primary text-white font-semibold" : "text-gray-700"
-            } rounded-r-lg hover:bg-secondary hover:text-white`}
-          >
-            Se connecter
-          </li>
-        </ul>
+      <div className="flex flex-col justify-center items-center w-full md:w-1/2 px-6 bg-white shadow-lg">
         {children}
       </div>
     </div>

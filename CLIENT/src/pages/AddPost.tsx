@@ -122,7 +122,7 @@ const AddPost: React.FC = () => {
             <div>
               <div className="border-b pb-3 text-center text-lg font-semibold text-gray-700">
                 Créer une nouvelle publication
-                {isGuest && (
+                {isNext && isGuest && (
                   <div className="mt-4 text-red-500 text-center">
                     Vous êtes en mode invité, vous ne pouvez pas publier.
                   </div>

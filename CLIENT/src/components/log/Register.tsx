@@ -72,10 +72,14 @@ export const Register = () => {
 
   return (
     <AuthLayout>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-md space-y-6"
+      >
         <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
           Inscription
         </h2>
+
         <div>
           <label
             htmlFor="name"
@@ -94,6 +98,7 @@ export const Register = () => {
             <div className="text-red-500 text-sm">{errors.name.message}</div>
           )}
         </div>
+
         <div>
           <label
             htmlFor="userName"
@@ -114,6 +119,7 @@ export const Register = () => {
             </div>
           )}
         </div>
+
         <div>
           <label
             htmlFor="email"
@@ -132,6 +138,7 @@ export const Register = () => {
             <div className="text-red-500 text-sm">{errors.email.message}</div>
           )}
         </div>
+
         <div className="relative">
           <label
             htmlFor="password"
@@ -163,6 +170,7 @@ export const Register = () => {
             </div>
           )}
         </div>
+
         <div className="relative">
           <label
             htmlFor="passwordRepeat"
@@ -194,6 +202,7 @@ export const Register = () => {
             </div>
           )}
         </div>
+
         <button
           type="submit"
           className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
@@ -201,6 +210,16 @@ export const Register = () => {
           S'inscrire
         </button>
       </form>
+
+      <p className="mt-4 text-sm text-gray-600">
+        Vous avez déjà un compte ?{" "}
+        <a
+          onClick={() => navigate("/login")}
+          className="text-blue-500 hover:underline"
+        >
+          Se connecter
+        </a>
+      </p>
     </AuthLayout>
   );
 };

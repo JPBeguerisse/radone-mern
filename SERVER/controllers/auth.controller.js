@@ -1,16 +1,17 @@
-//auth.controller.js
 const UserModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer"); // ✅ Import manquant
+const nodemailer = require("nodemailer");
 require("dotenv").config();
 // const maxAge = 3 * 24 * 60 * 60 * 1000; // 3 jours
 const maxAge = 1 * 60 * 60 * 1000; // 1h
 
+// Inscription avec envoi d'un lien de confirmation par e-mail
 module.exports.signUp = async (req, res) => {
   const { name, userName, email, password } = req.body;
   const errors = {};
 
+  // Vérification des champs requis
   if (!name) {
     errors.name = "Le nom complet est requis.";
   }
@@ -45,6 +46,7 @@ module.exports.signUp = async (req, res) => {
   }
 
   try {
+    // Vérification des doublons
     const isExistEmail = await UserModel.findOne({ email });
     if (isExistEmail) {
       errors.email = "Cette adresse email existe déjà!";
@@ -59,15 +61,7 @@ module.exports.signUp = async (req, res) => {
       return res.status(400).json({ errors });
     }
 
-    // const user = await UserModel.create({
-    //   name,
-    //   userName,
-    //   email,
-    //   password,
-    // });
-
-    // res.status(201).json({ user: user.id });
-    // console.log(user);
+    // Création du token de confirmation
     const token = jwt.sign(
       { name, userName, email, password },
       process.env.JWT_SECRET,
@@ -76,9 +70,9 @@ module.exports.signUp = async (req, res) => {
       }
     );
 
-    const confirmationUrl = `${process.env.REACT_APP_CLIENT_UR}/confirmation/${token}`;
+    const confirmationUrl = `${process.env.REACT_APP_CLIENT_URL}/confirmation/${token}`;
 
-    // Configurer le transport Nodemailer
+    // Envoi de l'e-mail via Nodemailer
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -107,6 +101,7 @@ module.exports.signUp = async (req, res) => {
   }
 };
 
+// Confirmation d'email via le lien reçu
 module.exports.confirmEmail = async (req, res) => {
   try {
     const { token } = req.params; // Récupérer le token de l'URL
@@ -119,19 +114,12 @@ module.exports.confirmEmail = async (req, res) => {
   }
 };
 
+// Connexion avec vérification des identifiants
 module.exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const user = await UserModel.findOne({ email });
-
-    // if (!user)
-    //   return res.status(404).json({ message: "Utilisateur non trouvé" });
-
-    // const isMatch = await bcrypt.compare(password, user.password);
-    // if (!isMatch) {
-    //   return res.status(400).json({ message: "Mot de passe incorrect" });
-    // }
 
     // Si l'utilisateur n'est pas trouvé ou si le mot de passe ne correspond pas
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -153,6 +141,7 @@ module.exports.login = async (req, res) => {
   }
 };
 
+// Connexion en tant qu'invité
 module.exports.loginGuest = async (req, res) => {
   try {
     const guestUser = await UserModel.findOne({ isGuest: true });
@@ -162,18 +151,17 @@ module.exports.loginGuest = async (req, res) => {
         .status(404)
         .json({ message: "Utilisateur invité introuvable." });
 
-    // Générer un token comme pour un login normal
     const token = jwt.sign({ id: guestUser._id }, process.env.JWT_SECRET, {
       expiresIn: "2h",
     });
 
-    //res.status(200).json({ token, user: guestUser });
     res.status(200).json({ token });
   } catch (err) {
     res.status(500).json({ message: "Erreur serveur", error: err.message });
   }
 };
 
+// Déconnexion
 module.exports.logout = (req, res) => {
   res.status(200).json({ message: "Déconnexion réussie." });
 };

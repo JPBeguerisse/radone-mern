@@ -110,10 +110,14 @@ export const Login = () => {
   // Rendu du formulaire de connexion
   return (
     <AuthLayout>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-md space-y-6"
+      >
         <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
           Connexion
         </h2>
+
         <div>
           <label
             htmlFor="email"
@@ -132,6 +136,7 @@ export const Login = () => {
             <div className="text-red-500 text-sm">{errors.email.message}</div>
           )}
         </div>
+
         <div className="relative">
           <label
             htmlFor="password"
@@ -163,6 +168,7 @@ export const Login = () => {
             </div>
           )}
         </div>
+
         <button
           type="submit"
           className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
@@ -176,12 +182,22 @@ export const Login = () => {
           </p>
         )}
       </form>
+
       <button
         onClick={handleGuestLogin}
-        className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
+        className="mt-4 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
       >
         Continuer en tant que visiteur
       </button>
+      <p className="mt-4 text-sm text-gray-600">
+        Pas de compte ?{" "}
+        <button
+          onClick={() => navigate("/register")}
+          className="text-blue-500 hover:underline"
+        >
+          S'inscrire
+        </button>
+      </p>
     </AuthLayout>
   );
 };

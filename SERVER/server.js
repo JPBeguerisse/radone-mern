@@ -1,19 +1,26 @@
+// Chargement des variables d'environnement
 require("dotenv").config({ path: "./config/.env" });
+
+// Connexion à la base de données MongoDB
 require("./config/db");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocs = require("./swagger"); // Importer la configuration Swagger
 const path = require("path");
 
+// Importation des routes
 const userRoutes = require("./routes/user.routes");
 const postRoutes = require("./routes/post.routes");
 const cors = require("cors");
 
+// Importation des middlewares pour la vérification du token
 const { requireAuth, verifyToken } = require("./middlewares/checkToken");
 
 const app = express();
 
+// Configuration CORS pour autoriser les requêtes du front-end
 const corsOption = {
   origin: process.env.REACT_APP_CLIENT_URL,
   credentials: true,
@@ -31,12 +38,8 @@ app.use(cors(corsOption));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configuration de Swagger pour servir la documentation
+// Documentation Swagger disponible à /api-docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-// router.get("/profile", verifyToken, (req, res) => {
-//   res.send(req.userId);
-// });
 
 // Route pour obtenir les informations de l'utilisateur (juste l'id) connecté depuis le token
 /**
@@ -105,10 +108,14 @@ app.get("/api", (req, res) => {
   res.send("Bienvenue sur l'API");
 });
 
+// Routes pour les utilisateurs et les posts
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
-app.use("/api/uploads", express.static(path.join(__dirname, "uploads"))); // Pour servir les fichiers statiques (images, vidéos, etc.)
 
+// Pour servir les fichiers statiques (images, vidéos, etc.)
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Démarrage du serveur
 app.listen(process.env.PORT, () => {
   console.log(`Listenning on port ${process.env.PORT}`);
 });

@@ -17,6 +17,6 @@ mongoose.connect("mongodb://localhost:27017/rando");
   });
 
   await guestUser.save();
-  console.log("Compte invité créé !");
+  //console.log("Compte invité créé !");
   mongoose.disconnect();
 })();
