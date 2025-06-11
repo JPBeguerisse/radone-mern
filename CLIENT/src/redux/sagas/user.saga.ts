@@ -24,9 +24,15 @@ import {
   getPostsUserFailed,
   getPostsUserSuccess,
   getPostsUserRequested,
+  updateProfilePictureRequested,
+  updateProfilePictureSuccess,
+  updateProfilePictureFailed,
+  removeProfilePictureSuccess,
+  removeProfilePictureRequested,
 } from "../reducers/user.reducer";
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
+  deleteProfilePicture,
   followUser,
   getUser,
   removePicture,
@@ -118,6 +124,48 @@ function* handleUpdateUser(
   }
 }
 
+// fonction pour mettre à jour la photo de profil d'un utilisateur avec cloudinary
+function* handleUpdateProfilePicture(
+  action: PayloadAction<{
+    userId: string;
+    pictureUrl: string;
+    public_id: string;
+  }>
+): Generator<any, void, User> {
+  try {
+    const { userId, pictureUrl, public_id } = action.payload;
+    const updatedPicture = yield call(
+      updatePicture,
+      userId,
+      pictureUrl,
+      public_id
+    );
+    console.log("UPDATED PICTURE", updatedPicture);
+    yield put(updateProfilePictureSuccess(updatedPicture));
+    yield put(getUserRequested(userId));
+    toast.success("Votre photo de profil a été modifié.");
+  } catch (error: any) {
+    yield put(updateProfilePictureFailed(error.message));
+    toast.error("Échec de la mise à jour de la photo de profil.");
+  }
+}
+
+// fonction pour supprimer la photo de profil d'un utilisateur aavec cloudinary
+function* handleRemoveProfilePicture(
+  action: PayloadAction<string>
+): Generator<any, void, User> {
+  try {
+    const removedPicture = yield call(deleteProfilePicture, action.payload);
+    yield put(removeProfilePictureSuccess(removedPicture));
+    yield put(getUserRequested(action.payload));
+    toast.success("Votre photo de profil a été supprimé.");
+  } catch (error: any) {
+    yield put(updateUserFailed(error.message));
+    toast.error("Échec de la mise à jour de la photo de profil.");
+  }
+}
+
+// fonction pour mettre à jour la photo de profil d'un utilisateur avec multipart/form-data non utilisée en ce moment
 function* handleUpdatePictureUser(
   action: PayloadAction<string>
 ): Generator<any, void, User> {
@@ -127,9 +175,9 @@ function* handleUpdatePictureUser(
     formData.append("profileImage", selectedFile!);
     // console.log(action.payload);
 
-    const updatedPicture = yield call(updatePicture, formData);
-    yield put(updatePictureSuccess(updatedPicture));
-    yield put(getUserRequested(action.payload));
+    //const updatedPicture = yield call(updatePicture, formData);
+    // yield put(updatePictureSuccess(updatedPicture));
+    // yield put(getUserRequested(action.payload));
     toast.success("Votre photo de profil a été modifié.");
   } catch (error: any) {
     yield put(updateUserFailed(error.message));
@@ -137,6 +185,7 @@ function* handleUpdatePictureUser(
   }
 }
 
+// fonction pour supprimer la photo de profil d'un utilisateur avec multipart/form-data non utilisée en ce moment
 function* handleRemovePictureUser(
   action: PayloadAction<string>
 ): Generator<any, void, User> {
@@ -236,5 +285,13 @@ export default function* userSaga() {
   yield takeLatest(unfollowUserRequested.type, handleUnfollowUser);
   yield takeLatest(getPostsSavedRequested.type, handleGetPostsSaved);
   yield takeLatest(getPostsUserRequested.type, handleGetPostsUser);
+  yield takeLatest(
+    updateProfilePictureRequested.type,
+    handleUpdateProfilePicture
+  );
+  yield takeLatest(
+    removeProfilePictureRequested.type,
+    handleRemoveProfilePicture
+  );
   // yield takeLatest(getUserByUsernameRequested.type, handleGetUserByUsername);
 }

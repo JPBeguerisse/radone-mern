@@ -1,18 +1,24 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { User } from "src/types/user.types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  getUserRequested,
   removePictureRequested,
+  removeProfilePictureRequested,
   updatePictureRequested,
+  updateProfilePictureRequested,
   updateUserRequested,
 } from "src/redux/reducers/user.reducer";
 import { toast } from "react-toastify";
 import { setSelectedPicture } from "src/redux/sagas/user.saga";
 import { Eye, EyeClosed } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { UserContext } from "src/components/AppContext";
+import { uploadToCloudinary } from "src/services/uploadToCloudinary";
+import { updatePicture } from "src/services/userService";
 
 export const updateUserSchema = z.object({
   name: z.string().min(2, "Le nom est requis"),
@@ -36,7 +42,12 @@ export const updateUserSchema = z.object({
 });
 
 export const EditProfil = () => {
-  const currentUser: User = useSelector((state: any) => state.userReducer.user);
+  const user = useSelector((state: User) => state.userReducer.user);
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
+  // console.log("User", user);
+  // console.log("currentUserUid", currentUserUid);
+
   const errorsServer = useSelector((state: any) => state.userReducer.error);
   const defaultPicture = "uploads/profil/random-user.jpeg";
   const [showOldPassword, setShowOldPassword] = useState(false);
@@ -54,24 +65,24 @@ export const EditProfil = () => {
   } = useForm<UpdateUserForm>({
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
-      name: currentUser?.name || "",
-      userName: currentUser?.userName || "",
-      email: currentUser?.email || "",
-      bio: currentUser?.bio || "",
+      name: user?.name || "",
+      userName: user?.userName || "",
+      email: user?.email || "",
+      bio: user?.bio || "",
     },
   });
 
   // ✅ Dès que currentUser est dispo → on injecte les valeurs dans le formulaire
   useEffect(() => {
-    if (currentUser) {
+    if (user) {
       reset({
-        name: currentUser.name || "",
-        userName: currentUser.userName || "",
-        email: currentUser.email || "",
-        bio: currentUser.bio || "",
+        name: user.name || "",
+        userName: user.userName || "",
+        email: user.email || "",
+        bio: user.bio || "",
       });
     }
-  }, [currentUser, reset]);
+  }, [user, reset]);
 
   useEffect(() => {
     if (errorsServer && typeof errorsServer === "object") {
@@ -97,51 +108,87 @@ export const EditProfil = () => {
     }
   }, [errorsServer]);
 
-  useEffect(() => {
-    if (!currentUser) {
-      navigate("/login"); // ✅ Redirection vers la page de login
-    }
-  }, [currentUser, navigate]);
+  // En cours de chargement (token en cours de vérification)
+  if (userContext?.isLoading) {
+    return <div>Chargement...</div>; // ou un spinner
+  }
 
-  //toujours mettre ça en dessous des hooks
-  // if (!currentUser) {
-  //   return (
-  //     <p className="text-center text-gray-500">Chargement des données...</p>
-  //   );
-  // }
+  // ❌ Pas connecté
+  if (!userContext?.uid) {
+    return <Navigate to="/login" replace />;
+  }
 
   const onSubmit = (data: UpdateUserForm) => {
-    dispatch(updateUserRequested({ id: currentUser._id!, data }));
-    // optionnel : toast ou redirection ici
+    dispatch(updateUserRequested({ id: user._id!, data }));
   };
 
-  const handleUpdatePicture = (e: any) => {
-    const file = e.target.files?.[0];
-    setSelectedPicture(file || null);
-    dispatch(updatePictureRequested(currentUser._id!));
-  };
+  // const handleUpdatePicture = (e: any) => {
+  //   //const file = e.target.files?.[0];
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
+
+  //   const formData = new FormData();
+  //   formData.append("profileImage", file); // doit correspondre au nom utilisé dans `multer`
+  //   formData.append("userId", currentUserUid!);
+  //   setSelectedPicture(file || null);
+  //   //dispatch(updatePictureRequested(currentUserUid!));
+  //   dispatch(updatePictureRequested(formData));
+  // };
 
   const deleteProfilePicture = () => {
-    dispatch(removePictureRequested(currentUser._id!));
+    dispatch(removeProfilePictureRequested(currentUserUid!));
   };
+
+  const handleUpdatePicture = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const { secure_url, public_id } = await uploadToCloudinary(file);
+      dispatch(
+        updateProfilePictureRequested({
+          userId: currentUserUid!,
+          pictureUrl: secure_url,
+          public_id: public_id,
+        })
+      );
+    } catch (err) {
+      console.error("Erreur d'upload :", err);
+      alert("Erreur pendant l'upload de l'image.");
+    }
+  };
+
+  // Vérifie si l'utilisateur est un invité pour afficher ou non certaines options
+  const isGuest = user?.isGuest;
 
   return (
     <div className="px-4 sm:px-8 md:px-48">
-      <h1 className="font-bold text-xl sm:text-2xl mb-4">Modifier le profil</h1>
+      <div>
+        <h1 className="font-bold text-xl sm:text-2xl mb-4">
+          Modifier le profil
+        </h1>
+        {isGuest && (
+          <p className="text-red-500 mb-4">
+            Vous êtes connecté en tant qu'invité. Certaines fonctionnalités sont
+            désactivées.
+          </p>
+        )}
+      </div>
 
-      {/* 🧍‍♂️ Bloc utilisateur avec image + infos */}
+      {/*  Bloc utilisateur avec image + infos */}
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4 p-4 mt-6 w-full bg-white rounded-lg shadow-sm">
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
           <div className="flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-20 h-20">
-            <img
-              src={`${
-                currentUser && process.env.REACT_APP_API_URL
-              }/${currentUser.picture?.replace(/^\//, "")}`}
-              alt="user"
-              className="w-full h-full rounded-full object-cover object-center"
-            />
+            {user && (
+              <img
+                src={user.picture}
+                alt="user"
+                className="w-full h-full rounded-full object-cover object-center"
+              />
+            )}
           </div>
-
           <input
             type="file"
             id="file-upload"
@@ -151,25 +198,33 @@ export const EditProfil = () => {
             onChange={handleUpdatePicture}
           />
           <div className="text-center sm:text-left">
-            <h3 className="font-bold text-lg">{currentUser.userName}</h3>
-            <h5 className="text-gray-600">{currentUser.name}</h5>
+            <h3 className="font-bold text-lg">{user && user.userName}</h3>
+            <h5 className="text-gray-600">{user && user.name}</h5>
           </div>
         </div>
-        <div className="md:flex gap-4">
-          <div className="w-full sm:w-auto flex items-center">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-8">
+          <div className="w-full sm:w-auto flex justify-center items-center">
             <label
               htmlFor="file-upload"
-              className="w-full  flex textrr-center cursor-pointer px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300"
+              className={`w-full sm:w-auto text-center px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300 cursor-pointer ${
+                isGuest ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              style={{
+                pointerEvents: isGuest ? "none" : "auto",
+              }}
             >
               Modifier la photo
             </label>
           </div>
 
           <div className="w-full sm:w-auto flex items-center">
-            {currentUser.picture && currentUser.picture !== defaultPicture && (
+            {user && user.picture && user.picture !== defaultPicture && (
               <button
                 onClick={deleteProfilePicture}
-                className="w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition"
+                className={`w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition" ${
+                  isGuest ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isGuest}
               >
                 Supprimer la photo
               </button>
@@ -179,7 +234,7 @@ export const EditProfil = () => {
       </div>
       {/* <UpdatePictureForm /> */}
 
-      {/* 📋 Formulaire */}
+      {/* Formulaire */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="mt-6 rounded-lg flex flex-col gap-6 pb-16"
@@ -194,6 +249,7 @@ export const EditProfil = () => {
             id="name"
             type="text"
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest}
           />
           {errors.name && (
             <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -213,6 +269,7 @@ export const EditProfil = () => {
             id="userName"
             type="text"
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest} // Désactive le champ si l'utilisateur est un invité
           />
           {errors.userName && (
             <p className="text-sm text-red-500">{errors.userName.message}</p>
@@ -229,6 +286,7 @@ export const EditProfil = () => {
             id="email"
             type="email"
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest} // Désactive le champ si l'utilisateur est un invité
           />
           {errors.email && (
             <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -245,6 +303,7 @@ export const EditProfil = () => {
             id="bio"
             rows={3}
             className="w-full border border-gray-300 rounded-md p-2"
+            disabled={isGuest}
           />
           {errors.bio && (
             <p className="text-sm text-red-500">{errors.bio.message}</p>
@@ -315,7 +374,10 @@ export const EditProfil = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-secondary transition w-full sm:w-auto"
+            disabled={isGuest}
+            className={`bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-secondary transition w-full sm:w-auto ${
+              isGuest ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             Enregistrer les modifications
           </button>

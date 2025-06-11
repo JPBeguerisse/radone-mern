@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setSelectedPicturePost } from "src/redux/sagas/posts.saga";
+import { uploadToCloudinary } from "src/services/uploadToCloudinary";
 
 const AddPost: React.FC = () => {
   const user = useSelector((state: any) => state.userReducer.user);
@@ -11,6 +12,7 @@ const AddPost: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isNext, setIsNext] = useState<boolean>(false);
+  const isGuest = user?.isGuest || false;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -29,19 +31,49 @@ const AddPost: React.FC = () => {
     setMessage(e.target.value);
   };
 
-  const handlePost = async () => {
+  // const handlePost = async () => {
+  //   if (!user?._id) {
+  //     console.error("Erreur : posterId manquant !");
+  //     return;
+  //   }
+  //   setSelectedPicturePost(selectedFile || null);
+  //   dispatch(
+  //     createPostRequested({
+  //       posterId: user._id,
+  //       message: message,
+  //     })
+  //   );
+
+  //   handleCloseModal();
+  // };
+
+  const handleCreatePost = async () => {
     if (!user?._id) {
       console.error("Erreur : posterId manquant !");
       return;
     }
-    setSelectedPicturePost(selectedFile || null);
-    dispatch(
-      createPostRequested({
-        posterId: user._id,
-        message: message,
-      })
-    );
 
+    const file = selectedFile;
+    if (!file) return;
+
+    try {
+      const { secure_url, public_id } = await uploadToCloudinary(file);
+      dispatch(
+        createPostRequested({
+          posterId: user._id,
+          message: message,
+          pictureUrl: secure_url,
+          publicId: public_id,
+        })
+      );
+    } catch (error) {
+      console.error("Erreur lors de la création de la publication :", error);
+      return;
+    }
+
+    // Dispatch de l'action pour créer la publication
+
+    // Fermer le modal et rediriger vers la page d'accueil
     handleCloseModal();
   };
 
@@ -75,8 +107,11 @@ const AddPost: React.FC = () => {
 
               {isNext && (
                 <button
-                  onClick={handlePost}
-                  className="text-white bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition"
+                  onClick={handleCreatePost}
+                  className={`text-white bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-secondary transition" ${
+                    isGuest ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isGuest}
                 >
                   Partager
                 </button>
@@ -87,6 +122,11 @@ const AddPost: React.FC = () => {
             <div>
               <div className="border-b pb-3 text-center text-lg font-semibold text-gray-700">
                 Créer une nouvelle publication
+                {isGuest && (
+                  <div className="mt-4 text-red-500 text-center">
+                    Vous êtes en mode invité, vous ne pouvez pas publier.
+                  </div>
+                )}
               </div>
 
               <div
@@ -137,13 +177,7 @@ const AddPost: React.FC = () => {
                     {/* Infos utilisateur */}
                     <div className="flex gap-3 items-center">
                       <img
-                        src={
-                          user.picture
-                            ? `${
-                                process.env.REACT_APP_API_URL
-                              }${user.picture.replace(/^\//, "")}`
-                            : "/default-avatar.png"
-                        }
+                        src={user.picture}
                         alt="user"
                         className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
                       />

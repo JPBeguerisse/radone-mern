@@ -5,6 +5,7 @@ export interface Post {
   posterId?: string; // ID de l'utilisateur qui a créé la publication
   message?: string; // Le message de la publication
   picture?: string; // Lien vers une image (optionnel)
+  publicId?: string; // ID public de l'image pour la gestion des médias
   likers?: string[]; // Liste des ID des utilisateurs qui ont aimé la publication
   savedBy?: string[]; // Liste des ID des utilisateurs ayant enregistré la publication
   comments?: Comment[]; // Liste des commentaires sur la publication

@@ -53,6 +53,30 @@ module.exports.getUserByUsername = async (req, res) => {
   }
 };
 
+// Rechercher des utilisateurs par nom ou username
+module.exports.searchUsers = async (req, res) => {
+  const { query } = req.query; // Récupère la requête de recherche
+  if (!query || query.trim() === "") {
+    return res.status(400).json({ message: "Requête de recherche vide." });
+  }
+  try {
+    // Recherche dans les champs "name" et "userName" avec une expression régulière
+    const users = await UserModel.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } }, // "i" pour insensible à la casse
+        { userName: { $regex: query, $options: "i" } },
+      ],
+    }).select("userName name picture"); // afficher uniquement les champs nécessaires
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Erreur lors de la recherche d'utilisateurs :", error);
+    res.status(500).json({
+      error: "Une erreur est survenue lors de la recherche d'utilisateurs.",
+    });
+  }
+};
+
 // Mise à jour d’un utilisateur
 module.exports.updateUser = async (req, res) => {
   const userId = req.params.id;

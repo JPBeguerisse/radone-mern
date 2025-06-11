@@ -67,9 +67,7 @@ const FollowersList: React.FC<FollowingListProps> = ({ userId, onClose }) => {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full overflow-hidden border-2">
                     <img
-                      src={`${
-                        process.env.REACT_APP_API_URL
-                      }/${user.picture?.replace(/^\//, "")}`}
+                      src={user.picture}
                       alt="user"
                       className="w-full h-full rounded-full object-cover object-center"
                     />

@@ -18,6 +18,15 @@ const postSchema = new mongoose.Schema(
       type: String, // Stocke l'URL de l'image du post
     },
 
+    public_id: {
+      type: String, // Stocke l'ID public de l'image sur Cloudinary
+      unique: true, // Assure que chaque post a un public_id unique
+    },
+
+    video: {
+      type: String, // Stocke l'URL de la vidéo du post
+    },
+
     likers: {
       type: [String], // Tableau des IDs des utilisateurs qui ont liké
       default: [], // Initialise à un tableau vide

@@ -33,6 +33,12 @@ export const getUserByUsername = async (username: string): Promise<User> => {
   return response.data;
 };
 
+// Rechercher des utilisateurs par nom d'utilisateur
+export const searchUsers = async (searchTerm: string): Promise<User[]> => {
+  const response = await api.get(`/user/search?query=${searchTerm}`);
+  return response.data;
+};
+
 //Récupérer un utilisateur par son ID (user connecté)
 export const getUser = async (id: string): Promise<User> => {
   const response = await api.get(`/user/${id}`);
@@ -48,15 +54,35 @@ export const updateUser = async (
   return response.data;
 };
 
-//Modifier la photo de profil
-export const updatePicture = async (formData: FormData): Promise<User> => {
-  const response = await api.post("/user/upload-profil", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+//Modifier la photo de profil avec multer
+// export const updatePicture = async (formData: FormData): Promise<User> => {
+//   const response = await api.post("/user/upload-profil", formData, {
+//     headers: { "Content-Type": "multipart/form-data" },
+//   });
+//   return response.data;
+// };
+
+//Modifier la photo de profil avec un cloudinary
+export const updatePicture = async (
+  userId: string,
+  url: string,
+  public_id?: string
+): Promise<User> => {
+  const res = await api.put(`/user/update-profil-picture`, {
+    userId: userId,
+    pictureUrl: url,
+    publicId: public_id,
   });
+  return res.data;
+};
+
+//Supprimer la photo de profil avec un cloudinary
+export const deleteProfilePicture = async (userId: string): Promise<User> => {
+  const response = await api.put(`/user/delete-profil-picture/${userId}`);
   return response.data;
 };
 
-//Supprimer la photo de profil
+//Supprimer la photo de profil avec multer non utilisée
 export const removePicture = async (userId: string): Promise<User> => {
   const response = await api.delete(`/user/remove-profil-picture/${userId}`);
   return response.data;
@@ -83,18 +109,6 @@ export const unFollowUser = async (
   });
   return response.data;
 };
-
-//Récupérer les followers d'un utilisateur
-// export const getFollowers = async (userId: string): Promise<User[]> => {
-//   const response = await api.get(`/user/${userId}/followers/`);
-//   return response.data;
-// };
-
-//Récupérer les utilisateurs suivis par un utilisateur
-// export const getFollowing = async (userId: string): Promise<User[]> => {
-//   const response = await api.get(`/user/${userId}/following`);
-//   return response.data;
-// };
 
 //Récupérer les followers d'un utilisateur
 export const getFollowers = async (
@@ -139,3 +153,15 @@ export const getFollowing = async (
   console.log("Following: ", response.data);
   return response.data;
 };
+
+//Récupérer les followers d'un utilisateur
+// export const getFollowers = async (userId: string): Promise<User[]> => {
+//   const response = await api.get(`/user/${userId}/followers/`);
+//   return response.data;
+// };
+
+//Récupérer les utilisateurs suivis par un utilisateur
+// export const getFollowing = async (userId: string): Promise<User[]> => {
+//   const response = await api.get(`/user/${userId}/following`);
+//   return response.data;
+// };

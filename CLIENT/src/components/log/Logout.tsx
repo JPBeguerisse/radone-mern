@@ -1,3 +1,4 @@
+import { LogOut, Settings } from "lucide-react";
 import React from "react";
 
 export const Logout = () => {
@@ -6,8 +7,12 @@ export const Logout = () => {
     window.location.href = "/login"; //
   };
   return (
-    <li onClick={handleLogout} className="nav-link nav-footer">
+    <button
+      onClick={handleLogout}
+      className="flex items-center gap-2 rounded-lg hover:bg-gray-100 transition text-gray-600"
+    >
+      <LogOut className="w-6 h-6" />
       Se déconnecter
-    </li>
+    </button>
   );
 };

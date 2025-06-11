@@ -170,10 +170,7 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
         >
           <img
             className=":max-h-full max-w-full object-contain"
-            src={`${process.env.REACT_APP_API_URL}/${post?.picture?.replace(
-              /^\//,
-              ""
-            )}`}
+            src={post.picture}
             alt="Post"
           />
         </div>
@@ -196,9 +193,7 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
                     */}
                     <div className="flex w-full items-center gap-2">
                       <img
-                        src={`${
-                          process.env.REACT_APP_API_URL
-                        }/${user.picture?.replace(/^\//, "")}`}
+                        src={user.picture}
                         alt="user"
                         className="w-10 h-10 rounded-full object-cover"
                       />

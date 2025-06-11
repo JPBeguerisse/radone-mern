@@ -8,6 +8,7 @@ import { UserContext } from "../AppContext";
 import { api } from "src/api/api";
 import { Eye, EyeClosed } from "lucide-react";
 import { AuthLayout } from "./AuthLayout";
+import { toast } from "react-toastify";
 
 export const userLoginSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -80,6 +81,32 @@ export const Login = () => {
       }
     }
   };
+
+  const handleGuestLogin = async () => {
+    try {
+      const res = await api.post("/user/login-guest");
+
+      const accessToken = res.data.token;
+
+      const profile = await api.get(
+        `${process.env.REACT_APP_API_URL}/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      localStorage.setItem("accessToken", res.data.token);
+      console.log("Connexion en tant qu'invité réussie", profile.data);
+      userContext?.setUid(profile.data);
+      //dispatch(loginSuccess(res.data.user));
+      navigate("/");
+    } catch (err) {
+      toast.error("Connexion en tant qu'invité échouée.");
+    }
+  };
+
   // Rendu du formulaire de connexion
   return (
     <AuthLayout>
@@ -142,12 +169,19 @@ export const Login = () => {
         >
           Se connecter
         </button>
+
         {confirmationMessage && (
           <p className="text-green-500 text-sm text-center">
             {confirmationMessage}
           </p>
         )}
       </form>
+      <button
+        onClick={handleGuestLogin}
+        className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
+      >
+        Continuer en tant que visiteur
+      </button>
     </AuthLayout>
   );
 };
