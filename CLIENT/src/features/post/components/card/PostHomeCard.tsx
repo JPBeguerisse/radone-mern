@@ -20,25 +20,30 @@ interface PostHomeCardProps {
 export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const user = useSelector((state: any) => state.userReducer.user);
   const users = useSelector((state: any) => state.usersReducer.users);
+  const selectedPost = useSelector((state: any) => state.postsReducer.post);
+
+  const poster = users.find((user: User) => user._id === post.posterId);
+
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editedMessage, setEditedMessage] = useState<string>("");
-  const poster = users.find((user: User) => user._id === post.posterId);
-  const selectedPost = useSelector((state: any) => state.postsReducer.post);
+
+  // Gère l'ouverture du modal pour afficher les détails du post
   const handleOpenModal = () => {
     setIsOpen(true);
-    //lancer une action pour récupérer le post
     dispatch(getPostRequested(post._id!));
-    // console.log("POST ", postSelect);
   };
 
+  // Gère la fermeture du modal
   const closeModal = () => {
     setIsOpen(false);
   };
 
+  // Gère la redirection vers le profil de l'utilisateur
   const handleGoProfile = (userName: string) => {
     if (user && userName === user.userName) {
       navigate("/my-profil");
@@ -48,6 +53,7 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
     }
   };
 
+  // Sauvegarde l'édition du message du post
   const handleSave = () => {
     try {
       const updatedData = { message: editedMessage };
@@ -60,17 +66,20 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
     setEditMode(false);
   };
 
+  // Met à jour le message édité si le post sélectionné change
   useEffect(() => {
     if (selectedPost) {
       setEditedMessage(selectedPost.message || ""); // ✅ Met à jour `editedMessage` quand Redux change
     }
   }, [selectedPost]);
 
-  if (!poster) return null; // ou un petit message/placeholder
+  if (!poster) return null;
 
   return (
     <>
+      {/* Carte du post */}
       <div className="flex flex-col gap-2 p-4 border-b border-gray-300 lg:w-[470px] lg:mx-auto">
+        {/* Header avec photo, nom et date */}
         <div className="flex items-center gap-2">
           <div className="flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-10 h-10">
             <img
@@ -93,26 +102,30 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
           </p>
         </div>
 
+        {/* Image du post */}
         <div>
           <img
             className="w-full h-auto aspect-square object-cover rounded-lg sm:w-[468px] sm:h-[468px] cursor-pointer"
             src={post.picture}
-            alt="post-picture"
+            alt="post"
             onClick={handleOpenModal}
           />
         </div>
 
+        {/* Actions like / save / comment */}
         <PostButtonAction
           post={post}
           showComments={isCommentsOpen}
           onOpenPostView={handleOpenModal}
         />
 
+        {/* Description du post */}
         <div className="flex gap-2">
           <p className="text-sm font-semibold">{poster.userName}</p>
           <p className="text-sm text-gray-500">{post.message}</p>
         </div>
 
+        {/* Lien vers les commentaires */}
         {post.comments?.length! > 0 && (
           <p
             onClick={handleOpenModal}
@@ -123,7 +136,7 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
         )}
       </div>
 
-      {/* Modal pour afficher les détails du post */}
+      {/* Modale PostDetails */}
       {isOpen && selectedPost && (
         <PostDetails
           post={selectedPost}

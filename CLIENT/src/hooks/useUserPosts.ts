@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ProfilUserContext } from "src/components/AppContext";
-import { getPostsByUser } from "src/services/postService";
+import { getPostsByUser } from "src/services/posts/postService";
 import { Post } from "src/types/post.types";
 
 export const useUserPosts = () => {

@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 //récupérer tous les utilisateurs (sans mot de passe)
 module.exports.getUsers = async (req, res) => {
   try {
-    const users = await UserModel.find().select("-password");
+    const users = await UserModel.find().select("-password -email");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({
@@ -21,7 +21,7 @@ module.exports.getUser = async (req, res) => {
     return res.status(400).send("ID utilisateur invalide : " + userId);
 
   try {
-    const user = await UserModel.findById(userId).select("-password");
+    const user = await UserModel.findById(userId).select("-password -email");
 
     user
       ? res.status(200).json(user)

@@ -41,6 +41,7 @@ module.exports.getPostsFollowing = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Une erreur est survenue lors de la récupération des posts.",
+      error: error.message,
     });
   }
 };
@@ -80,6 +81,7 @@ module.exports.getPostsForYou = async (req, res) => {
     res.status(500).json({
       message:
         "Une erreur est survenue lors de la récupération des posts 'For You'.",
+      error: error.message,
     });
   }
 };

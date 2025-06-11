@@ -11,12 +11,35 @@ module.exports.updatePost = async (req, res) => {
     return res.status(400).send("ID de post invalide : " + postId);
   }
 
+  // Vérifier si au moins un champ à mettre à jour est fourni
+  if (!message) {
+    return res.status(400).send("Aucun champ à mettre à jour fourni");
+  }
+
+  // Vérifier si les champs message et picture sont valides
+  if (message && typeof message !== "string") {
+    return res
+      .status(400)
+      .send("Le message doit être une chaîne de caractères");
+  }
+
+  //si le user a le droit de mettre à jour le post
+
   // Créer un objet updateFields avec uniquement les champs à mettre à jour
   const updateFields = {};
   if (message) updateFields.message = message;
   if (picture) updateFields.picture = picture;
 
   try {
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).send("Post non trouvé");
+    }
+    if (post.posterId.toString() !== req.userId) {
+      return res
+        .status(403)
+        .send("Vous n'avez pas les droits pour mettre à jour ce post.");
+    }
     // Chercher et mettre à jour le post en utilisant les champs fournis
     const updatedPost = await PostModel.findByIdAndUpdate(
       postId,

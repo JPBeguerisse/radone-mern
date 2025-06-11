@@ -2,19 +2,25 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../api/api";
 
+// Composant de confirmation d'adresse email
 const ConfirmEmail = () => {
-  const { token } = useParams();
+  const { token } = useParams(); // Récupère le token de l'URL
+  const navigate = useNavigate();
+
+  // État du statut de confirmation : en attente, réussi ou erreur
   const [status, setStatus] = useState<"pending" | "success" | "error">(
     "pending"
   );
-  const navigate = useNavigate();
 
   useEffect(() => {
     const confirm = async () => {
       try {
+        // Appel à l'API pour confirmer l'adresse e-mail
         await api.get(`/user/confirm-email/${token}`);
         setStatus("success");
-        setTimeout(() => navigate("/login"), 3000); // redirige après 3 sec
+
+        // Redirection vers la page de login après 3 secondes
+        setTimeout(() => navigate("/login"), 3000);
       } catch (err) {
         setStatus("error");
       }

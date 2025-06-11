@@ -1,3 +1,5 @@
+// Description : Composant qui affiche le profil de l'utilisateur connecté
+
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -9,15 +11,18 @@ import { Post } from "src/types/post.types";
 import { User } from "src/types/user.types";
 
 export const MyProfile: React.FC = () => {
-  const user = useSelector((state: User) => state.userReducer.user);
-  const userContext = useContext(UserContext);
-  const currentUserUid = userContext?.uid;
-  const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
-  const postsUser = useSelector((state: any) => state.userReducer.posts);
-  const [openModalFollow, setOpenModalFollow] = useState(false);
-  const [title, setTitle] = useState<string>();
   const navigate = useNavigate();
 
+  const userContext = useContext(UserContext);
+  const currentUserUid = userContext?.uid;
+  const postsUser = useSelector((state: any) => state.userReducer.posts);
+  const user = useSelector((state: User) => state.userReducer.user);
+
+  const [openModalFollow, setOpenModalFollow] = useState(false);
+  const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
+  const [title, setTitle] = useState<string>();
+
+  // Calcule le nombre de publications
   useEffect(() => {
     if (postsUser && user && postsUser.length > 0) {
       const countPost = postsUser.filter(
@@ -27,6 +32,7 @@ export const MyProfile: React.FC = () => {
     }
   }, [postsUser, user]);
 
+  // Ferme la modale
   const handleCloseModal = useCallback(() => {
     setOpenModalFollow(false);
   }, []);
@@ -58,7 +64,6 @@ export const MyProfile: React.FC = () => {
             {
               /* Vérifie si l'utilisateur est connecté et s'il s'agit de son propre profil */
               currentUserUid && currentUserUid === user._id && (
-                //currentUserUid === userId &&
                 // Si l'utilisateur est connecté et que c'est son propre profil, afficher le bouton de modification
                 <button
                   onClick={() => navigate("/edit-profil")}
@@ -88,6 +93,8 @@ export const MyProfile: React.FC = () => {
               </span>{" "}
               Followers
             </button>
+
+            {/* stats */}
             <div
               className="user-following text-gray-600 cursor-pointer"
               onClick={() => {

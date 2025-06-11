@@ -10,7 +10,7 @@ import {
   getUserByUsernameSuccess,
 } from "../reducers/viewed-user.reducer";
 import { call, put, takeEvery } from "redux-saga/effects";
-import { getPostsByUser } from "src/services/postService";
+import { getPostsByUser } from "src/services/posts/postService";
 import { Post } from "src/types/post.types";
 
 // fonction pour récupérer un utilisateur par son username

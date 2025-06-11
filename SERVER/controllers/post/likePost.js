@@ -4,10 +4,8 @@ const ObjectID = require("mongoose").Types.ObjectId;
 //Liiker un post
 module.exports.like = async (req, res) => {
   const postId = req.params.id;
-  const userId = req.body.userId;
 
-  if (!ObjectID.isValid(userId) || !ObjectID.isValid(postId))
-    res.status(404).send("Unknow ID");
+  if (!ObjectID.isValid(postId)) res.status(404).send("Unknow ID");
 
   try {
     const liked = await PostModel.findByIdAndUpdate(
@@ -15,7 +13,7 @@ module.exports.like = async (req, res) => {
       {
         $addToSet: {
           //adToset ajoute seulement si l'id n'existe pas déjà
-          likers: userId,
+          likers: req.userId,
         },
       },
       { new: true }
@@ -34,9 +32,8 @@ module.exports.like = async (req, res) => {
 // Unlike d'un post
 module.exports.unlike = async (req, res) => {
   const postId = req.params.id;
-  const userId = req.body.userId;
 
-  if (!ObjectID.isValid(postId) || !ObjectID.isValid(userId)) {
+  if (!ObjectID.isValid(postId)) {
     return res.status(400).send("ID inconnu");
   }
 
@@ -45,7 +42,7 @@ module.exports.unlike = async (req, res) => {
     const unliked = await PostModel.findByIdAndUpdate(
       postId,
       {
-        $pull: { likers: userId }, // Retire l'userId du tableau likers
+        $pull: { likers: req.userId }, // Retire l'userId du tableau likers
       },
       { new: true }
     );

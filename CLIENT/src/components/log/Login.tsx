@@ -10,6 +10,7 @@ import { Eye, EyeClosed } from "lucide-react";
 import { AuthLayout } from "./AuthLayout";
 import { toast } from "react-toastify";
 
+// Schéma de validation Zod pour le formulaire de connexion
 export const userLoginSchema = z.object({
   email: z.string().email("Email invalide"),
   password: z.string().min(1, "Le password est requis"),
@@ -18,20 +19,20 @@ export const userLoginSchema = z.object({
 export const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const userContext = useContext(UserContext);
+
   const [confirmationMessage, setConfirmationMessage] = useState<
     string | null
   >();
-  const userContext = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
 
   type userLoginForm = z.infer<typeof userLoginSchema>;
 
-  // Récupération du message de confirmation passé dans l'URL
-  // Capture le message et le vide immédiatement après
+  // Affiche un message de confirmation s’il existe dans le state de l’URL
   useEffect(() => {
     if (location.state?.confirmationMessage) {
       setConfirmationMessage(location.state.confirmationMessage);
-      navigate(location.pathname, { replace: true }); // supprime le state de l'historique
+      navigate(location.pathname, { replace: true }); // nettoie le state
     }
   }, [location, navigate]);
 
@@ -42,72 +43,61 @@ export const Login = () => {
     formState: { errors },
   } = useForm<userLoginForm>({
     resolver: zodResolver(userLoginSchema),
-    defaultValues: {
-      email: "",
-    },
+    defaultValues: { email: "" },
   });
 
+  // Soumission du formulaire principal
   const onSubmit = async (data: userLoginForm) => {
     try {
       const res = await loginUser(data);
-
-      // Récupération du token d'authentification dans la réponse du serveur
       const accessToken = res.token;
-      //console.log(accessToken);
 
+      // Récupération du profil utilisateur
       const profile = await api.get(
         `${process.env.REACT_APP_API_URL}/profile`,
         {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-      userContext?.setUid(profile.data);
-      //console.log("Profile", profile);
 
-      // Stockage du token dans le localStorage du navigateur
+      // Stockage du token et du profil
       localStorage.setItem("accessToken", accessToken);
+      userContext?.setUid(profile.data);
 
       navigate("/");
-      //window.location.href = "/";
     } catch (error: any) {
       const serverErrors = error.response;
       if (serverErrors) {
         setError("password", {
-          type: "server", // Utilisation de type 'manual' car l'erreur vient du serveur
+          type: "server",
           message: serverErrors.data.message,
         });
       }
     }
   };
 
+  // Connexion en tant qu’invité
   const handleGuestLogin = async () => {
     try {
       const res = await api.post("/user/login-guest");
-
       const accessToken = res.data.token;
 
       const profile = await api.get(
         `${process.env.REACT_APP_API_URL}/profile`,
         {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
 
-      localStorage.setItem("accessToken", res.data.token);
-      console.log("Connexion en tant qu'invité réussie", profile.data);
+      localStorage.setItem("accessToken", accessToken);
       userContext?.setUid(profile.data);
-      //dispatch(loginSuccess(res.data.user));
+
       navigate("/");
     } catch (err) {
       toast.error("Connexion en tant qu'invité échouée.");
     }
   };
 
-  // Rendu du formulaire de connexion
   return (
     <AuthLayout>
       <form
@@ -118,6 +108,7 @@ export const Login = () => {
           Connexion
         </h2>
 
+        {/* Champ Email */}
         <div>
           <label
             htmlFor="email"
@@ -137,6 +128,7 @@ export const Login = () => {
           )}
         </div>
 
+        {/* Champ Mot de passe */}
         <div className="relative">
           <label
             htmlFor="password"
@@ -169,6 +161,7 @@ export const Login = () => {
           )}
         </div>
 
+        {/* Bouton de connexion */}
         <button
           type="submit"
           className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
@@ -176,6 +169,7 @@ export const Login = () => {
           Se connecter
         </button>
 
+        {/* Message de confirmation email */}
         {confirmationMessage && (
           <p className="text-green-500 text-sm text-center">
             {confirmationMessage}
@@ -183,12 +177,15 @@ export const Login = () => {
         )}
       </form>
 
+      {/* Connexion visiteur */}
       <button
         onClick={handleGuestLogin}
         className="mt-4 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
       >
         Continuer en tant que visiteur
       </button>
+
+      {/* Redirection vers l'inscription */}
       <p className="mt-4 text-sm text-gray-600">
         Pas de compte ?{" "}
         <button

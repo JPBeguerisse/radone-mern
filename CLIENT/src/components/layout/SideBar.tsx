@@ -1,47 +1,39 @@
-import { useContext, useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { UserContext } from "../AppContext";
 import { Logout } from "../log/Logout";
-import { Home, Loader, Plus, Search, Settings } from "lucide-react";
-import { searchUsers } from "src/services/userService";
-import { User } from "src/types/user.types";
+import { Home, Plus, Search, Settings } from "lucide-react";
 import SearchSidebar from "../home/SearchSidebar";
 import { useSelector } from "react-redux";
 
 interface SideBarProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  isOpen: boolean; // Indique si la sidebar est ouverte
+  setIsOpen: (isOpen: boolean) => void; // Fonction pour basculer l'état d'ouverture de la sidebar
 }
 
 const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
-  const userContext = useContext(UserContext);
-  const currentUserUid = userContext?.uid;
+  const currentUserUid = useContext(UserContext)?.uid;
   const user = useSelector((state: any) => state.userReducer.user);
-
-  const toggleSidebar = () => setIsOpen(!isOpen);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Bascule l'état d'ouverture de la sidebar
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
   return (
     <div className="relative">
-      {/* Bouton pour ouvrir la sidebar en mode mobile */}
-      {/* <button
-        onClick={toggleSidebar}
-        className="p-3 text-white bg-primary md:hidden fixed top-4 left-4 z-60"
-      >
-        {isOpen ? "✕" : "☰"}
-      </button> */}
-
-      {/* Sidebar */}
+      {/* Sidebar principale */}
       <nav
         className={`fixed top-0 left-0 h-full bg-white text-black w-64 p-4 transform border-r-2 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out md:translate-x-0 z-50`}
       >
         <div className="sidebar flex flex-col h-full justify-between">
+          {/* Logo */}
           <div className="logo mb-8">
             <img src="/logo192.png" alt="logo" className="w-16 h-16 mx-auto" />
           </div>
 
+          {/* Liens de navigation */}
           <div className="nav-link flex flex-col gap-4">
             <NavLink
               to="/"
@@ -69,6 +61,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
               <span className="hidden sm:inline text-base">Créer</span>
             </NavLink>
 
+            {/* Ouvre la barre de recherche */}
             <div
               onClick={() => {
                 toggleSidebar();
@@ -80,6 +73,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
               <span className="hidden sm:inline text-base">Rechercher</span>
             </div>
 
+            {/* Lien vers le profil utilisateur */}
             <NavLink
               to="/my-profil"
               onClick={toggleSidebar}
@@ -98,45 +92,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
             </NavLink>
           </div>
 
-          {/* {currentUserUid ? (
-              <>
-                <NavLink
-                  to="/ajouter"
-                  onClick={toggleSidebar}
-                  className="flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded-lg"
-                >
-                  <Plus className="w-4 h-4" />
-                  Créer
-                </NavLink>
-                <div
-                  className="hover:text-gray-300 flex items-center gap-2"
-                  onClick={() => {
-                    toggleSidebar(); // ferme la sidebar principale
-                    setIsSearchOpen(true); // ouvre la recherche
-                  }}
-                >
-                  <Search width={15} height={15} />
-                  Rechercher
-                </div>
-                <NavLink
-                  to={"/my-profil"}
-                  className="hover:text-gray-300"
-                  onClick={toggleSidebar}
-                >
-                  Profil
-                </NavLink>
-              </>
-            ) : (
-              <NavLink
-                to="/login"
-                className="hover:text-gray-300"
-                onClick={toggleSidebar}
-              >
-                Se connecter
-              </NavLink>
-            )}
-          </div> */}
-
+          {/* Liens du bas de la sidebar (paramètres et déconnexion) */}
           <div className="nav-footer mt-auto">
             {currentUserUid && (
               <>
@@ -163,19 +119,21 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
                 >
                   <Logout />
                 </NavLink>
-                {/* <Logout /> */}
               </>
             )}
           </div>
         </div>
       </nav>
+
+      {/* Barre latérale de recherche */}
       <SearchSidebar
         isSidebarOpen={isOpen}
         onSidebarOpen={setIsOpen}
         isSearchOpen={isSearchOpen}
         onSearchOpen={setIsSearchOpen}
       />
-      {/* Bottom nav mobile style */}
+
+      {/* Barre de navigation mobile en bas de l'écran */}
       <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around py-2 md:hidden z-50">
         <NavLink
           to="/"

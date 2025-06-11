@@ -26,21 +26,21 @@ module.exports.getSavedPosts = async (req, res) => {
 //Sauvegarder un post
 module.exports.savePost = async (req, res) => {
   const postId = req.params.id;
-  const { userId } = req.body;
 
   // Vérification des IDs
   if (!ObjectID.isValid(postId))
     return res.status(400).send("Post ID invalide");
-  if (!ObjectID.isValid(userId))
-    return res.status(400).send("User ID invalide");
 
   try {
+    const post = await PostModel.findById(postId);
+    if (!post) return res.status(404).send("Post non trouvé");
+
     const savedPost = await PostModel.findByIdAndUpdate(
       postId,
       {
         // Utiliser $addToSet pour ajouter l'userId au tableau savedBy
         $addToSet: {
-          savedBy: userId,
+          savedBy: req.userId,
         },
       },
       { new: true }
@@ -58,18 +58,15 @@ module.exports.savePost = async (req, res) => {
 // Retirer un post sauvegardé
 module.exports.unsavePost = async (req, res) => {
   const postId = req.params.id;
-  const { userId } = req.body;
 
   if (!ObjectID.isValid(postId))
     return res.status(400).send("Post ID invalide");
-  if (!ObjectID.isValid(userId))
-    return res.status(400).send("User ID invalide");
 
   try {
     const unSavedPost = await PostModel.findByIdAndUpdate(
       postId,
       {
-        $pull: { savedBy: userId }, // Retire l'userId du tableau
+        $pull: { savedBy: req.userId }, // Retire l'userId du tableau
       },
       { new: true }
     );

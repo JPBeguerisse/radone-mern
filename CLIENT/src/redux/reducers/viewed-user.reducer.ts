@@ -2,37 +2,47 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Post } from "src/types/post.types";
 import { User, UserState } from "src/types/user.types";
 
+// État initial du slice `viewedUser`
 const initialState: UserState = {
   user: null,
   error: null,
   posts: null,
 };
 
+// Slice Redux pour gérer l'utilisateur consulté (via son userName) et ses publications
 const viewedUserSlice = createSlice({
   name: "viewedUser",
   initialState,
   reducers: {
-    // 🟡 Chargement de l'utilisateur by username
+    //  Récupération de l'utilisateur via son `userName`
     getUserByUsernameRequested: (state, action: PayloadAction<string>) => {
-      console.log("Get user by username lancé", action.payload);
-    },
-    getUserByUsernameSuccess: (state, action: PayloadAction<User>) => {
-      // Cette action est déclenchée lorsqu'un utilisateur est récupéré avec succès.
-      state.user = action.payload; // On met à jour `user` avec les données récupérées.
-    },
-    getUserByUsernameFailed: (state, action: PayloadAction<string>) => {
-      // Cette action est déclenchée lorsqu'il y a une erreur lors de la récupération de l'utilisateur.
-      state.error = action.payload; // On met à jour `error` avec le message d'erreur.
+      // Aucune mutation ici : déclenche simplement l'effet de récupération
     },
 
+    //  Succès de la récupération de l'utilisateur
+    getUserByUsernameSuccess: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+      state.error = null;
+    },
+
+    //  Échec de la récupération
+    getUserByUsernameFailed: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+
+    //  Récupération des posts d'un utilisateur
     getPostsByUserRequested: (state, action: PayloadAction<string>) => {
       state.loading = true;
-      console.log("Récupération des posts d'un user lancé:", action.payload);
     },
+
+    //  Succès récupération des posts
     getPostsByUserSuccess: (state, action: PayloadAction<Post[]>) => {
       state.loading = false;
       state.posts = action.payload;
+      state.error = null;
     },
+
+    //  Échec récupération des posts
     getPostsByUserFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
@@ -40,6 +50,7 @@ const viewedUserSlice = createSlice({
   },
 });
 
+//  Export des actions
 export const {
   getUserByUsernameRequested,
   getUserByUsernameSuccess,
@@ -49,4 +60,5 @@ export const {
   getPostsByUserFailed,
 } = viewedUserSlice.actions;
 
+//  Export du reducer
 export const viewedUserReducer = viewedUserSlice.reducer;

@@ -22,19 +22,20 @@ services:
       - /app/node_modules  # Évite les problèmes avec node_modules
       - ./server/uploads:/app/uploads
     environment:
-      - REACT_APP_CLIENT_URL=http://localhost:3000
-    depends_on:
-      - mongo
+      # - REACT_APP_CLIENT_URL=http://localhost:3000
+      - REACT_APP_CLIENT_URL=${REACT_APP_CLIENT_URL}
+    # depends_on:
+    #   - mongo
 
-  mongo:
-    image: mongo:latest
-    container_name: RANDO_MONGO
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongo-data:/data/db  # Volume pour stocker les données MongoDB
-      - ./mongo-data:/data/db        # Les données sont visibles dans ton dossier local
+  # mongo:
+  #   image: mongo:latest
+  #   container_name: RANDO_MONGO
+  #   ports:
+  #     - '27017:27017'
+  #   volumes:
+  #     - mongo-data:/data/db  # Volume pour stocker les données MongoDB
+  #     - ./mongo-data:/data/db        # Les données sont visibles dans ton dossier local
 
 
-volumes:
-  mongo-data:
+# volumes:
+#   mongo-data:

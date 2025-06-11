@@ -4,14 +4,18 @@ const ObjectID = require("mongoose").Types.ObjectId;
 //Liker un comment
 module.exports.addLikeComment = async (req, res) => {
   const postId = req.params.id;
-  const { commentId, userId } = req.body;
+  const { commentId } = req.body;
 
   if (!ObjectID.isValid(postId)) return res.status(400).send("Post ID inconnu");
   if (!ObjectID.isValid(commentId))
     return res.status(400).send("Comment ID inconnu");
-  if (!ObjectID.isValid(userId)) return res.status(400).send("User ID inconnu");
 
   try {
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).send("Post non trouvé");
+    }
+
     const result = await PostModel.findOneAndUpdate(
       {
         _id: postId, // Chercher le post par ID
@@ -20,7 +24,7 @@ module.exports.addLikeComment = async (req, res) => {
       {
         $addToSet: {
           // Utiliser $addToSet pour ajouter l'userId aux likers du commentaire
-          "comments.$.likers": userId,
+          "comments.$.likers": req.userId, // req.userId est défini par votre middleware d'authentification donc l'utilisateur authentifié
         },
       },
       { new: true }
@@ -41,14 +45,18 @@ module.exports.addLikeComment = async (req, res) => {
 // Uniker un comment
 module.exports.unLikeComment = async (req, res) => {
   const postId = req.params.id;
-  const { commentId, userId } = req.body;
+  const { commentId } = req.body;
 
   if (!ObjectID.isValid(postId)) return res.status(400).send("Post ID inconnu");
   if (!ObjectID.isValid(commentId))
     return res.status(400).send("Comment ID inconnu");
-  if (!ObjectID.isValid(userId)) return res.status(400).send("User ID inconnu");
 
   try {
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).send("Post non trouvé");
+    }
+
     const result = await PostModel.findOneAndUpdate(
       {
         _id: postId, // Chercher le post par ID
@@ -57,7 +65,7 @@ module.exports.unLikeComment = async (req, res) => {
       {
         $pull: {
           // Utiliser $pull pour retirer l'userId des likers du commentaire
-          "comments.$.likers": userId,
+          "comments.$.likers": req.userId, // req.userId est défini par votre middleware d'authentification donc l'utilisateur authentifié
         },
       },
       {

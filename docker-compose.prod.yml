@@ -1,0 +1,18 @@
+services:
+  client:
+    build:
+      context: ./CLIENT
+    container_name: SOCIAL_APP_CLIENT
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=https://monsite.com/api
+
+  server:
+    build:
+      context: ./SERVER
+    container_name: SOCIAL_APP_SERVER
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./SERVER/.env.production

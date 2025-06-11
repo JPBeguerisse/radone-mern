@@ -14,45 +14,45 @@ import {
 import { usePostStatus } from "src/hooks/usePostStatus";
 
 interface PostButtonActionProps {
+  post: Post;
   showComments: boolean;
   onToggleComments?: (value: boolean) => void;
-  post: Post;
+  onOpenPostView?: () => void;
   isMobile?: boolean;
-  onOpenPostView?: () => void; // Fonction pour ouvrir le modal de la publication
 }
 
 const PostButtonAction: React.FC<PostButtonActionProps> = ({
+  post,
   showComments,
   onToggleComments,
-  post,
-  isMobile,
   onOpenPostView,
+  isMobile,
 }) => {
+  const dispatch = useDispatch();
+
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
-  const dispatch = useDispatch();
 
   const { isLiked } = usePostStatus(post, currentUserUid!);
   const { isSaved } = usePostStatus(post, currentUserUid!);
+
   const [showLoginWarning, setShowLoginWarning] = useState(false);
   const [showSaveWarning, setShowSaveWarning] = useState(false);
 
+  // Gère l'action de like sur un post
   const handleLike = () => {
     if (!currentUserUid) {
       setShowLoginWarning(true);
-      // setTimeout(() => {
-      //   setShowLoginWarning(false);
-      // }, 3000); // Le message disparaît après 3 secondes
       return;
     }
     dispatch(
       likePostRequested({
         postId: post._id!,
-        userId: currentUserUid!,
       })
     );
   };
 
+  // Gère l'action de unlike sur un post
   const handleUnlike = () => {
     if (!currentUserUid) {
       return null; // Ne pas afficher le bouton si l'utilisateur n'est pas connecté
@@ -60,11 +60,11 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
     dispatch(
       unLikePostRequested({
         postId: post._id!,
-        userId: currentUserUid!,
       })
     );
   };
 
+  // Gérer les favoris
   const handleSave = () => {
     if (!currentUserUid) {
       setShowSaveWarning(true);
@@ -81,6 +81,7 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
     );
   };
 
+  // Gère l'action de un-save sur un post
   const handleUnsave = () => {
     if (!currentUserUid) {
       return null; // Ne pas afficher le bouton si l'utilisateur n'est pas connecté
@@ -95,6 +96,7 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
 
   return (
     <div>
+      {/* Boutons d'action principaux */}
       <div className="flex justify-between">
         <div className="flex gap-2 mt-4 relative ">
           {isLiked ? (
@@ -111,11 +113,14 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
               <Heart width={30} height={30} />
             </button>
           )}
+          {/* Avertissement si non connecté */}
           {showLoginWarning && (
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow w-auto sm:max-w-[90vw] lg:w-max">
               Vous devez être connecté pour aimer cette publication.
             </div>
           )}
+
+          {/* Bouton pour afficher les commentaires */}
           <button
             onClick={() => {
               onToggleComments && onToggleComments(!showComments);
@@ -125,6 +130,7 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
             <MessageCircle width={30} height={30} />
           </button>
         </div>
+        {/* Bouton de sauvegarde */}
         <div className="relative">
           {isSaved ? (
             <div className="flex gap-2 mt-4 ">
@@ -148,6 +154,8 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
               />
             </div>
           )}
+
+          {/* Avertissement si non connecté pour la sauvegarde */}
           {showSaveWarning && (
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-xs px-2 py-1 rounded shadow w-auto sm:max-w-[90vw] lg:w-max z-0">
               Vous devez être connecté pour enregistrer cette publication.
@@ -155,6 +163,8 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
           )}
         </div>
       </div>
+
+      {/* Informations supplémentaires sur le post */}
       <div className="mt-2">
         {post.likers?.length && post.likers?.length > 0 ? (
           <p>{post.likers?.length} J'aime</p>

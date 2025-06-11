@@ -13,11 +13,11 @@ import {
   updateUserRequested,
 } from "src/redux/reducers/user.reducer";
 import { toast } from "react-toastify";
-import { setSelectedPicture } from "src/redux/sagas/user.saga";
+
 import { Eye, EyeClosed } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "src/components/AppContext";
-import { uploadToCloudinary } from "src/services/uploadToCloudinary";
+import { uploadToCloudinary } from "src/services/posts/uploadToCloudinary";
 import { updatePicture } from "src/services/userService";
 
 export const updateUserSchema = z.object({

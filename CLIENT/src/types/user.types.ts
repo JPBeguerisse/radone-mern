@@ -31,6 +31,8 @@ export interface UserState {
 
 export interface UsersState {
   users: User[] | null;
+  followers: User[] | null;
+  following: User[] | null;
   error: string | null;
 }
 

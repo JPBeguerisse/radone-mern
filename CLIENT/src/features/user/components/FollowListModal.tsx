@@ -1,4 +1,4 @@
-// Modal qui affiche la liste des abonnés et des abonnements d'un utilisateur
+// Description : Modal qui affiche la liste des abonnés ("Followers") ou abonnements ("Following") d'un utilisateur
 import React, { useContext, useEffect, useState } from "react";
 import FollowersList from "./FollowersList";
 import FollowingList from "./FollowingList";
@@ -6,10 +6,10 @@ import { UserContext } from "../../../components/AppContext";
 import { useSelector } from "react-redux";
 
 export interface FollowModalProps {
-  onClose: () => void;
-  title?: string;
-  onTitleChange: (title: string) => void;
-  page: "myProfile" | "viewedProfile";
+  onClose: () => void; // Fonction pour fermer la modal
+  title?: string; // Onglet actif : "followers" ou "following"
+  onTitleChange: (title: string) => void; // Callback pour changer d’onglet
+  page: "myProfile" | "viewedProfile"; // Page actuelle
 }
 
 const FollowListModal: React.FC<FollowModalProps> = ({
@@ -24,7 +24,10 @@ const FollowListModal: React.FC<FollowModalProps> = ({
 
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
+
   const viewedUser = useSelector((state: any) => state.viewedUserReducer.user);
+
+  // Gère l'onglet sélectionné
   useEffect(() => {
     if (title === "followers") {
       setShowFollowers(true);
@@ -35,49 +38,53 @@ const FollowListModal: React.FC<FollowModalProps> = ({
     }
   }, [title]);
 
+  // Définit l’ID de l’utilisateur concerné selon la page affichée
   useEffect(() => {
     if (page === "myProfile" && currentUserUid) {
-      // Si on est sur la page de profil de l'utilisateur connecté, on utilise son ID
-      setUserId(currentUserUid!);
+      setUserId(currentUserUid);
     } else if (page === "viewedProfile") {
-      // Si on est sur la page de profil consulté, on utilise l'ID de l'utilisateur consulté
-      setUserId(viewedUser?._id);
+      setUserId(viewedUser?._id || null);
     }
   }, [page, currentUserUid, viewedUser]);
 
   return (
     <div className="fixed inset-0 overflow-auto bg-black bg-opacity-80 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md p-8">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+        {/*  Bouton pour fermer la modal */}
         <button
           onClick={onClose}
-          className="text-gray-500 font-bold text-lg z-20"
+          className="absolute top-2 right-4 text-gray-500 font-bold text-lg"
         >
           ✖
         </button>
-        <div className="flex items-center p-4 gap-8">
+
+        {/*  Sélecteur d'onglet (Followers / Following) */}
+        <div className="flex justify-center gap-8 mt-2 mb-4">
           <button
-            className={`p-3 transition duration-300 flex items-center gap-3  ${
-              showFollowers && "text-black border-b-2 border-black font-bold"
-            } `}
             onClick={() => onTitleChange("followers")}
+            className={`p-2 transition ${
+              showFollowers && "text-black border-b-2 border-black font-bold"
+            }`}
           >
             Followers
           </button>
           <button
-            className={`p-3 transition duration-300 flex items-center gap-3  ${
-              showFollowing && "text-black border-b-2 border-black font-bold"
-            } `}
             onClick={() => onTitleChange("following")}
+            className={`p-2 transition ${
+              showFollowing && "text-black border-b-2 border-black font-bold"
+            }`}
           >
             Following
           </button>
         </div>
+
+        {/*  Contenu : Liste des abonnés ou abonnements */}
         <div className="max-h-[40vh] overflow-y-auto">
-          {title && title === "followers" && userId && (
+          {showFollowers && userId && (
             <FollowersList userId={userId} onClose={onClose} />
           )}
-          {title && title === "following" && userId && (
-            <FollowingList userId={userId!} onClose={onClose} />
+          {showFollowing && userId && (
+            <FollowingList userId={userId} onClose={onClose} />
           )}
         </div>
       </div>

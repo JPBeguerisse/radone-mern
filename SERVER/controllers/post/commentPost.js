@@ -34,6 +34,7 @@ module.exports.addCommentPost = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de l'ajout du commentaire.",
+      error: error.message,
     });
   }
 };
@@ -69,6 +70,7 @@ module.exports.updateComment = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la modification du commentaire.",
+      error: error.message,
     });
   }
 };
@@ -77,8 +79,21 @@ module.exports.updateComment = async (req, res) => {
 module.exports.deleteComment = async (req, res) => {
   const postId = req.params.id;
   const commentId = req.body.commentId;
-
+  if (!ObjectID.isValid(postId) || !ObjectID.isValid(commentId)) {
+    return res.status(400).send("ID(s) invalide(s)");
+  }
   try {
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).send("Post non trouvé");
+    }
+
+    if (post.posterId.toString() !== req.userId) {
+      return res
+        .status(403)
+        .send("Vous n'avez pas les droits pour supprimer ce commentaire.");
+    }
+
     const deletedComment = await PostModel.findByIdAndUpdate(postId, {
       $pull: {
         // Utiliser $pull pour retirer le commentaire spécifique
@@ -92,6 +107,7 @@ module.exports.deleteComment = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la suppression du commentaire.",
+      error: error.message,
     });
   }
 };

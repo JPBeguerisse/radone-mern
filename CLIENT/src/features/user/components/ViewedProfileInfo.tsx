@@ -13,27 +13,32 @@ import {
 import FollowListModal from "./FollowListModal";
 
 const ViewedProfileInfo: React.FC = () => {
-  const userName = useContext(ProfilUserContext);
-  const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
-  const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
-  const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userName = useContext(ProfilUserContext);
+
+  const viewedUser = useSelector((state: User) => state.viewedUserReducer.user);
+  const postsUser = useSelector((state: any) => state.viewedUserReducer.posts);
+
+  const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
   const [openModalFollow, setOpenModalFollow] = useState(false);
   const [title, setTitle] = useState<string>();
 
+  // Récupération des posts de l'utilisateur consulté
   useEffect(() => {
     if (userName) {
       dispatch(getPostsByUserRequested(userName!));
     }
   }, [userName, dispatch]);
 
+  // Récupération des données de l'utilisateur consulté par son nom d'utilisateur
   useEffect(() => {
     if (userName) {
       dispatch(getUserByUsernameRequested(userName));
     }
   }, [userName, navigate]);
 
+  // Calcul du nombre de posts de l'utilisateur consulté
   useEffect(() => {
     if (postsUser && viewedUser && postsUser.length > 0) {
       const countPost = postsUser.filter(
@@ -43,10 +48,12 @@ const ViewedProfileInfo: React.FC = () => {
     }
   }, [postsUser, viewedUser]);
 
+  // Fonction pour fermer la modale de suivi
   const handleCloseModal = useCallback(() => {
     setOpenModalFollow(false);
   }, []);
 
+  // Vérification si l'utilisateur consulté est disponible
   if (!userName || !viewedUser) {
     // Si l'utilisateur n'est pas trouvé ou si les données de l'utilisateur ne sont pas disponibles, afficher un message de chargement
     return (

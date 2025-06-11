@@ -1,0 +1,43 @@
+#docker-compose
+services:
+  client:
+    build: ./CLIENT
+    container_name: SOCIAL_APP_CLIENT
+    environment:
+      # - REACT_APP_API_URL=http://localhost:8000/
+       - REACT_APP_API_URL=${REACT_APP_API_URL}
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./CLIENT:/app  # Monte le code local dans le conteneur
+      - /app/node_modules  # Évite les conflits avec node_modules
+      - ./server/uploads:/app/uploads
+  server:
+    build: ./SERVER
+    container_name: SOCIAL_APP_SERVER
+    ports:
+      - '8000:8000'
+    env_file:
+      - ./SERVER/.env.development
+    volumes:
+      - ./SERVER:/app  # Monte le code local dans le conteneur
+      - /app/node_modules  # Évite les problèmes avec node_modules
+      - ./server/uploads:/app/uploads
+    environment:
+      # - REACT_APP_CLIENT_URL=http://localhost:3000
+      - REACT_APP_CLIENT_URL=${REACT_APP_CLIENT_URL}
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: SOCIAL_APP_MONGO
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db  # Volume pour stocker les données MongoDB
+      - ./mongo-data:/data/db        # Les données sont visibles dans ton dossier local
+
+
+volumes:
+  mongo-data:

@@ -58,3 +58,8 @@ export type AddCommentProps = {
   commenterId: string;
   message?: string;
 };
+
+export interface PostsFollowingResponse {
+  posts: Post[];
+  total: number;
+}

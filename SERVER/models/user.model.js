@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
 
     picture: {
       type: String,
-      default: "./uploads/profil/random-user.jpeg",
+      default: "/random-user.jpeg",
     },
 
     followers: {
@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema(
     },
     public_id: {
       type: String,
-      unique: true, // Assure que chaque utilisateur a un public_id unique
+      default: null,
     },
     isGuest: {
       type: Boolean,
@@ -75,7 +75,8 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   const user = this;
 
-  if (user.isModified("password")) {
+  if (user.isModified("password") && !user.password.startsWith("$2b$")) {
+    // Vérifie si le mot de passe n'est pas déjà haché
     const salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, salt);
   }

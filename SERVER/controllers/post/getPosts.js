@@ -17,6 +17,7 @@ module.exports.getAllPosts = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Une erreur est survenue lors de la récupération des posts.",
+      error: error.message,
     });
   }
 };
@@ -44,7 +45,10 @@ module.exports.getPosts = async (req, res) => {
 
     res.status(200).json(sortedPosts);
   } catch (err) {
-    res.status(500).json({ message: "Erreur lors du chargement des posts" });
+    res.status(500).json({
+      message: "Erreur lors du chargement des posts",
+      error: err.message,
+    });
   }
 };
 
@@ -74,6 +78,7 @@ module.exports.getPost = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Une erreur est survenue lors de la récupération du post.",
+      error: error.message,
     });
   }
 };

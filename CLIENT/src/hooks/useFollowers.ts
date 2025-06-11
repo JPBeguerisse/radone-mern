@@ -1,3 +1,4 @@
+// Hooks personnalisés pour récupérer les followers et following avec pagination et recherche
 import { QueryFunctionContext, useInfiniteQuery } from "@tanstack/react-query";
 import {
   FollowersResponse,
@@ -6,27 +7,14 @@ import {
   getFollowing,
 } from "src/services/userService";
 
-// export const useFollowers = (userId: string) => {
-//   return useQuery<User[]>({
-//     queryKey: ["followers", userId],
-//     queryFn: () => getFollowers(userId),
-//   });
-// };
-
-// export const useFollowing = (userId: string) => {
-//   return useQuery<User[]>({
-//     queryKey: ["following", userId],
-//     queryFn: () => getFollowing(userId),
-//   });
-// };
-
+// Hook pour récupérer les abonnés (followers)
 export const useFollowers = (
   userId: string,
   limit: number = 5,
   search?: string
 ) => {
   return useInfiniteQuery<FollowersResponse>({
-    queryKey: ["followers", userId, search],
+    queryKey: ["followers", userId, search], // Clé de cache unique
     queryFn: async ({ pageParam = 1 }: QueryFunctionContext) => {
       const page = pageParam as number;
       return await getFollowers(userId, page, limit, search);
@@ -38,10 +26,11 @@ export const useFollowers = (
       const totalFetched = allPages.flatMap((page) => page.followers).length;
       return totalFetched < lastPage.total ? allPages.length + 1 : undefined;
     },
-    initialPageParam: 1, // ✅ Ajout de initialPageParam
+    initialPageParam: 1, // Page initiale
   });
 };
 
+// Hook pour récupérer les abonnements (following)
 export const useFollowing = (
   userId: string,
   limit: number = 5,
@@ -60,6 +49,6 @@ export const useFollowing = (
       const totalFetched = allPages.flatMap((page) => page.following).length;
       return totalFetched < lastPage.total ? allPages.length + 1 : undefined;
     },
-    initialPageParam: 1, // ✅ Ajout de initialPageParam
+    initialPageParam: 1,
   });
 };

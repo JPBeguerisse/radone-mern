@@ -7,21 +7,22 @@ import { Eye, EyeClosed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AuthLayout } from "./AuthLayout";
 
+// Schéma de validation des champs avec Zod
 export const userRegisterSchema = z
   .object({
     name: z.string().min(2, "Le nom est requis"),
     userName: z.string().min(2, "Le nom d'utilisateur est requis"),
     email: z.string().email("Email invalide"),
-    password: z.string().refine(
-      (val) => {
-        if (!val) return true; // facultatif
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(val);
-      },
-      {
-        message:
-          "Le mot de passe doit contenir 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
-      }
-    ),
+    password: z
+      .string()
+      .refine(
+        (val) =>
+          !val || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(val),
+        {
+          message:
+            "Le mot de passe doit contenir 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
+        }
+      ),
     passwordRepeat: z.string(),
   })
   .refine((data) => data.password === data.passwordRepeat, {
@@ -31,12 +32,12 @@ export const userRegisterSchema = z
 
 export const Register = () => {
   const navigate = useNavigate();
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
-
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
+
   type userRegisterForm = z.infer<typeof userRegisterSchema>;
 
+  // Hook React Hook Form avec validation Zod
   const {
     register,
     handleSubmit,
@@ -51,14 +52,14 @@ export const Register = () => {
     },
   });
 
+  // Soumission du formulaire d'inscription
   const onSubmit = async (data: userRegisterForm) => {
     try {
-      const res = await createUser(data); // service API
-      console.log(res);
-      navigate("/login", { state: { confirmationMessage: res.message } }); // redirection vers la page de connexion en passant le message de confirmation
+      const res = await createUser(data);
+      navigate("/login", { state: { confirmationMessage: res.message } });
     } catch (error: any) {
       const serverErrors = error.response?.data?.errors;
-      // ✅ Gestion des erreurs champ par champ
+      // Affichage des erreurs serveur champ par champ
       if (serverErrors && typeof serverErrors === "object") {
         Object.entries(serverErrors).forEach(([field, message]) => {
           setError(field as keyof userRegisterForm, {
@@ -80,6 +81,7 @@ export const Register = () => {
           Inscription
         </h2>
 
+        {/* Champ Nom */}
         <div>
           <label
             htmlFor="name"
@@ -91,14 +93,14 @@ export const Register = () => {
             {...register("name")}
             type="text"
             id="name"
-            name="name"
             className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
           />
           {errors.name && (
-            <div className="text-red-500 text-sm">{errors.name.message}</div>
+            <p className="text-red-500 text-sm">{errors.name.message}</p>
           )}
         </div>
 
+        {/* Champ Nom de profil */}
         <div>
           <label
             htmlFor="userName"
@@ -110,16 +112,14 @@ export const Register = () => {
             {...register("userName")}
             type="text"
             id="userName"
-            name="userName"
             className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
           />
           {errors.userName && (
-            <div className="text-red-500 text-sm">
-              {errors.userName.message}
-            </div>
+            <p className="text-red-500 text-sm">{errors.userName.message}</p>
           )}
         </div>
 
+        {/* Champ Email */}
         <div>
           <label
             htmlFor="email"
@@ -131,14 +131,14 @@ export const Register = () => {
             {...register("email")}
             type="email"
             id="email"
-            name="email"
             className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
           />
           {errors.email && (
-            <div className="text-red-500 text-sm">{errors.email.message}</div>
+            <p className="text-red-500 text-sm">{errors.email.message}</p>
           )}
         </div>
 
+        {/* Champ Mot de passe */}
         <div className="relative">
           <label
             htmlFor="password"
@@ -150,7 +150,6 @@ export const Register = () => {
             {...register("password")}
             type={showPassword ? "text" : "password"}
             id="password"
-            name="password"
             className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
           />
           <button
@@ -165,12 +164,11 @@ export const Register = () => {
             )}
           </button>
           {errors.password && (
-            <div className="text-red-500 text-sm">
-              {errors.password.message}
-            </div>
+            <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
         </div>
 
+        {/* Champ Confirmation Mot de passe */}
         <div className="relative">
           <label
             htmlFor="passwordRepeat"
@@ -182,7 +180,6 @@ export const Register = () => {
             {...register("passwordRepeat")}
             type={showPasswordRepeat ? "text" : "password"}
             id="passwordRepeat"
-            name="passwordRepeat"
             className="w-full p-2 mt-1 border rounded-md focus:border-blue-400"
           />
           <button
@@ -197,12 +194,13 @@ export const Register = () => {
             )}
           </button>
           {errors.passwordRepeat && (
-            <div className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm">
               {errors.passwordRepeat.message}
-            </div>
+            </p>
           )}
         </div>
 
+        {/* Bouton de soumission */}
         <button
           type="submit"
           className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
@@ -211,11 +209,12 @@ export const Register = () => {
         </button>
       </form>
 
+      {/* Lien vers la connexion */}
       <p className="mt-4 text-sm text-gray-600">
         Vous avez déjà un compte ?{" "}
         <a
           onClick={() => navigate("/login")}
-          className="text-blue-500 hover:underline"
+          className="text-blue-500 hover:underline cursor-pointer"
         >
           Se connecter
         </a>

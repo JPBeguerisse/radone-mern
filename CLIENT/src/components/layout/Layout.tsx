@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SideBar from "./SideBar";
 import { Outlet } from "react-router-dom";
 

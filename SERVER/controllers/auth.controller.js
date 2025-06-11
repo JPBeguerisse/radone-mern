@@ -49,7 +49,7 @@ module.exports.signUp = async (req, res) => {
     // Vérification des doublons
     const isExistEmail = await UserModel.findOne({ email });
     if (isExistEmail) {
-      errors.email = "Cette adresse email existe déjà!";
+      errors.email = "Cette adresse email est déjà utilisée!";
     }
 
     const isExistUserName = await UserModel.findOne({ userName });
@@ -61,14 +61,27 @@ module.exports.signUp = async (req, res) => {
       return res.status(400).json({ errors });
     }
 
-    // Création du token de confirmation
+    // Hachage du mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // const pendingUser = await PendingUserModel.create({
+    //   name,
+    //   userName,
+    //   email,
+    //   password: hashedPassword,
+    // });
+
+    //Création du token de confirmation
     const token = jwt.sign(
-      { name, userName, email, password },
+      { name, userName, email, password: hashedPassword },
       process.env.JWT_SECRET,
       {
         expiresIn: maxAge,
       }
     );
+
+    // const token = jwt.sign({ id: pendingUser._id }, process.env.JWT_SECRET, {
+    //   expiresIn: maxAge,
+    // });
 
     const confirmationUrl = `${process.env.REACT_APP_CLIENT_URL}/confirmation/${token}`;
 
@@ -97,7 +110,6 @@ module.exports.signUp = async (req, res) => {
     res
       .status(500)
       .json({ message: "Erreur lors de l'inscription", error: error.message });
-    console.error("Erreur lors de l'inscription:", error);
   }
 };
 
@@ -106,11 +118,24 @@ module.exports.confirmEmail = async (req, res) => {
   try {
     const { token } = req.params; // Récupérer le token de l'URL
     const decoded = jwt.verify(token, process.env.JWT_SECRET); // Vérifier le token
+
+    // const pendingUser = await PendingUserModel.findById(decoded.id);
+    // if (!pendingUser) {
+    //   return res.status(404).json({ message: "Utilisateur non trouvé." });
+    // }
+
     const { name, userName, email, password } = decoded; // Extraire les informations du token
-    const user = await UserModel.create({ name, userName, email, password });
+    const user = await UserModel.create({
+      name,
+      userName,
+      email,
+      password, // Le mot de passe est déjà haché dans le token
+    });
     return res.status(201).json({ message: "Compte activé avec succès." });
   } catch (error) {
-    return res.status(400).json({ message: "Lien invalide ou expiré." });
+    return res
+      .status(400)
+      .json({ message: "Lien invalide ou expiré.", error: error.message });
   }
 };
 

@@ -21,10 +21,29 @@ const { requireAuth, verifyToken } = require("./middlewares/checkToken");
 const app = express();
 
 // Configuration CORS pour autoriser les requêtes du front-end
-const corsOption = {
-  origin: process.env.REACT_APP_CLIENT_URL,
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_CLIENT_URL
+      : ["http://localhost:3000", "http://192.168.1.104:3000"], // mobile + dev
   credentials: true,
 };
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     if (
+//       !origin || // permet les requêtes sans origin (comme Postman)
+//       origin.includes("localhost") ||
+//       origin.startsWith("http://192.168.")
+//     ) {
+//       callback(null, true);
+//     } else {
+//       console.log("Blocked origin:", origin); // Affiche les appels bloqués
+
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// };
 
 //Pour tester sur mon mobile
 // app.use(
@@ -34,7 +53,7 @@ const corsOption = {
 //   })
 // );
 
-app.use(cors(corsOption));
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

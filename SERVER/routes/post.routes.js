@@ -141,7 +141,7 @@ const { verifyToken, requireAuth } = require("../middlewares/checkToken");
  *                   type: string
  *                   example: "Description de l'erreur"
  */
-router.post("/", postController.createPost);
+router.post("/", verifyToken, postController.createPost);
 //RECUPERATION DES POSTS
 /**
  * @swagger
@@ -223,7 +223,7 @@ router.get("/post-old", postController.getPosts);
  *       500:
  *         description: Erreur lors du chargement des posts
  */
-router.get("/", postController.getPosts);
+router.get("/", verifyToken, postController.getPosts);
 
 /**
  * @swagger
@@ -330,7 +330,7 @@ router.get("/following/:id", verifyToken, postController.getPostsFollowing);
  *       500:
  *         description: Erreur serveur
  */
-router.get("/for-you/:id", postController.getPostsForYou);
+router.get("/for-you/:id", verifyToken, postController.getPostsForYou);
 
 //RECUPERER UN POST
 /**
@@ -376,7 +376,7 @@ router.get("/for-you/:id", postController.getPostsForYou);
  *                   type: string
  *                   example: "Une erreur est survenue lors de la récupération du post."
  */
-router.get("/:id", postController.getPost);
+router.get("/:id", verifyToken, postController.getPost);
 
 //RECUPERER UN POST PAR USERNAME
 /**
@@ -421,7 +421,7 @@ router.get("/:id", postController.getPost);
  *       500:
  *         description: Erreur interne du serveur
  */
-router.get("/user/:username", postController.getPostsByUsername);
+router.get("/user/:username", verifyToken, postController.getPostsByUsername);
 
 //RECUPERER UN POST PAR USER ID
 /**

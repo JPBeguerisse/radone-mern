@@ -1,4 +1,3 @@
-// PostsForYou.tsx
 import { PostHomeCard } from "src/features/post/components/card/PostHomeCard";
 import { SuggestedUsers } from "./SuggestedUsers";
 import { Post } from "src/types/post.types";
@@ -7,25 +6,33 @@ import { useContext, useEffect, useRef } from "react";
 import { UserContext } from "../AppContext";
 import { useSelector } from "react-redux";
 
+type Props = {
+  posts: Post[];
+  loading: boolean;
+  hasMore: boolean;
+  loadMorePosts: () => void;
+};
+
 export const PostsForYou = ({
   posts,
   loading,
   hasMore,
   loadMorePosts,
-}: {
-  posts: Post[];
-  loading: boolean;
-  hasMore: boolean;
-  loadMorePosts: () => void;
-}) => {
+}: Props) => {
   const currentUserUid = useContext(UserContext)?.uid;
-  const users = useSelector((state: any) => state.usersReducer.users);
-  const sentinelRef = useRef(null);
 
+  // Liste des utilisateurs pour filtrer les posts valides
+  const users = useSelector((state: any) => state.usersReducer.users);
+
+  // Référence à l'élément observé pour le scroll infini
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Ne garder que les posts dont le créateur existe dans `users`
   const filteredPosts = posts.filter((post: Post) =>
     users.some((user: any) => user._id === post.posterId)
   );
 
+  // Scroll infini grâce à Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -40,37 +47,40 @@ export const PostsForYou = ({
       }
     );
 
-    if (sentinelRef.current) {
-      observer.observe(sentinelRef.current);
-    }
+    if (sentinelRef.current) observer.observe(sentinelRef.current);
 
     return () => {
-      if (sentinelRef.current) {
-        observer.unobserve(sentinelRef.current);
-      }
+      if (sentinelRef.current) observer.unobserve(sentinelRef.current);
     };
-  }, [hasMore, loading]);
+  }, [hasMore, loading, loadMorePosts]);
 
-  console.log("Posts For You:", filteredPosts);
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:px-40">
+      {/* Colonne principale contenant les posts */}
       <div className="w-full lg:w-2/3">
         {filteredPosts.map((post: Post) => (
           <PostHomeCard key={post._id} post={post} />
         ))}
+
+        {/* Chargement */}
         {loading && (
           <div className="flex justify-center my-4">
             <Loader className="animate-spin text-gray-500" />
           </div>
         )}
+
+        {/*  Fin des posts */}
         {!hasMore && !loading && (
           <p className="text-center text-gray-400 mt-4">
             Plus aucun post à afficher.
           </p>
         )}
-        <div ref={sentinelRef} className="h-10" /> {/* 👈 sentinelle */}
+
+        {/* Élément d’observation pour chargement automatique */}
+        <div ref={sentinelRef} className="h-10" />
       </div>
 
+      {/* Suggestions d'utilisateurs visibles si connecté */}
       {currentUserUid && <SuggestedUsers />}
     </div>
   );

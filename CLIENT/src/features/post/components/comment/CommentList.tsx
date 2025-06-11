@@ -17,7 +17,7 @@ interface CommentListProps {
   post: Post;
   usersData: User[];
   onDelete: (commentId: string, type: "post" | "comment") => void;
-  onClose: () => void; // pour pouvoir fermer le modal aussi depuis ce composant
+  onClose: () => void;
 }
 
 const CommentList: React.FC<CommentListProps> = ({
@@ -27,18 +27,21 @@ const CommentList: React.FC<CommentListProps> = ({
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const user = useSelector((state: any) => state.userReducer.user);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
+
   const [loginWarning, setLoginWarning] = useState<{ [key: string]: boolean }>(
     {}
   );
-
-  const MAX_LENGTH = 100;
   const [isExpandedText, setIsExpandedText] = React.useState<{
     [key: string]: boolean;
   }>({});
 
+  const MAX_LENGTH = 100;
+
+  // Gère l'expansion ou réduction d'un commentaire
   const toggleExpandedText = (commentId: string) => {
     setIsExpandedText((prevState) => ({
       ...prevState,
@@ -46,39 +49,38 @@ const CommentList: React.FC<CommentListProps> = ({
     }));
   };
 
+  // Gère l'action de like sur un commentaire
   const handleLikeComment = useCallback(
     (postId: string, comment: Comment, userId: string) => {
       if (!currentUserUid) {
         setLoginWarning((prev) => ({ ...prev, [comment._id]: true })); //
-        // setTimeout(() => {
-        //   setLoginWarning((prev) => ({ ...prev, [comment._id]: false }));
-        // }, 3000); // Le message disparaît après 3 secondes
         return;
       }
       dispatch(
         likeCommentRequested({
           postId: postId!,
           commentId: comment._id,
-          userId: userId!,
+          //userId: userId!,
         })
       );
     },
     [currentUserUid]
   );
 
+  // Gère l'action d’unlike sur un commentaire
   const handleUnlikeComment = useCallback(
     (postId: string, comment: Comment, userId: string) => {
       dispatch(
         unLikeCommentRequested({
           postId: postId!,
           commentId: comment._id,
-          userId: userId!,
         })
       );
     },
     [currentUserUid] // relancer la fonction si currentUserUid change sinon on ne relance pas la fonction
   );
 
+  // Gère la redirection vers le profil de l'utilisateur
   const handleGoProfile = (userName: string) => {
     if (userName === user.userName) {
       navigate("/my-profil");
@@ -92,11 +94,11 @@ const CommentList: React.FC<CommentListProps> = ({
     <div className="flex-1 overflow-auto p-2 gap-4">
       {post && post.comments?.length! > 0 ? (
         post.comments?.map((comment) => {
-          // const isLiked = includesUser(comment.likers, currentUserUid!)
           return usersData.map(
             (user: User) =>
               user._id === comment.commenterId && (
                 <div key={user._id} className="flex gap-4 mb-4 relative">
+                  {/* Avatar utilisateur */}
                   <div className="">
                     <img
                       src={user.picture}
@@ -104,14 +106,17 @@ const CommentList: React.FC<CommentListProps> = ({
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </div>
+                  {/* Contenu commentaire */}
                   <div className="flex justify-between items-center w-full">
                     <div>
+                      {/* Pseudo cliquable */}
                       <p
                         className="font-bold cursor-pointer"
                         onClick={() => handleGoProfile(user.userName!)}
                       >
                         {user.userName}
                       </p>
+                      {/* Message du commentaire */}
                       <p className="text-gray-800">
                         {isExpandedText[comment._id] ||
                         comment.text.length <= MAX_LENGTH
@@ -119,7 +124,7 @@ const CommentList: React.FC<CommentListProps> = ({
                           : `${comment.text.substring(0, MAX_LENGTH)}...`}{" "}
                         {/* ✅ Tronque le texte */}
                       </p>
-                      {/* ✅ Afficher "Voir plus" seulement si le texte est trop long */}
+                      {/* Bouton Voir plus / Voir moins */}
                       {comment.text.length > MAX_LENGTH && (
                         <button
                           onClick={() => toggleExpandedText(comment._id)}
@@ -130,6 +135,7 @@ const CommentList: React.FC<CommentListProps> = ({
                             : "Voir plus"}
                         </button>
                       )}
+                      {/* Date + nombre de likes */}
                       <div className="flex gap-2">
                         <p className="text-xs text-gray-400">
                           {formatDistanceToNow(new Date(comment.timestamp!), {
@@ -144,6 +150,7 @@ const CommentList: React.FC<CommentListProps> = ({
                         </p>
                       </div>
                     </div>
+                    {/* Actions like / delete */}
                     <div className="flex gap-4 relative">
                       {currentUserUid &&
                         (comment.likers?.includes(currentUserUid) ? (
@@ -196,7 +203,7 @@ const CommentList: React.FC<CommentListProps> = ({
       ) : (
         <div className="flex flex-col items-center justify-center h-full text-center">
           <p className="text-lg font-bold">Aucun commentaire pour l’instant.</p>
-          <p className="text-gray-400 text-sm">Lancer la conversation.</p>
+          <p className="text-gray-400 text-sm">Lancer la conversation !</p>
         </div>
       )}
     </div>

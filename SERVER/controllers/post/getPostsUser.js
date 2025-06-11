@@ -1,6 +1,6 @@
 const PostModel = require("../../models/post.model");
 const ObjectID = require("mongoose").Types.ObjectId;
-
+const UserModel = require("../../models/user.model");
 // Obtenir les posts d'un utilisateur spécifique avec id
 module.exports.getPostsUser = async (req, res) => {
   const userId = req.params.id;
@@ -50,6 +50,8 @@ module.exports.getPostsByUsername = async (req, res) => {
       })
       .lean();
 
+    console.log("Posts username", posts);
+
     const sortedPosts = posts.map((post) => ({
       ...post,
       comments: post.comments.sort(
@@ -60,7 +62,9 @@ module.exports.getPostsByUsername = async (req, res) => {
     res.status(200).json(sortedPosts);
   } catch (error) {
     res.status(500).json({
-      message: "Erreur lors de la récupération des posts de l'utilisateur.",
+      message:
+        "Erreur lors de la récupération des posts de l'utilisateur par username.",
+      error: error.message,
     });
   }
 };
