@@ -49,7 +49,7 @@ const FollowListModal: React.FC<FollowModalProps> = ({
 
   return (
     <div className="fixed inset-0 overflow-auto bg-black bg-opacity-80 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-2 relative">
         {/*  Bouton pour fermer la modal */}
         <button
           onClick={onClose}

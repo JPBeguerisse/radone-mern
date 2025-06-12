@@ -54,6 +54,7 @@ export const PostsFollowing = ({
     <div>
       <div className="flex flex-col lg:flex-row gap-4 lg:px-40">
         {/* Colonne principale des posts */}
+
         <div className="w-full lg:w-2/3">
           {filteredPosts.map((post) => (
             <PostHomeCard key={post._id} post={post} />

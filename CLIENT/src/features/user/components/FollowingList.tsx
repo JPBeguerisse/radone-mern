@@ -63,7 +63,7 @@ const FollowingList: React.FC<FollowingListProps> = ({ onClose, userId }) => {
   );
 
   return (
-    <div className="max-w-lg mx-auto p-4">
+    <div className="max-w-lg mx-auto sm:p-4">
       {/* 🔍 Champ de recherche */}
       <input
         type="text"

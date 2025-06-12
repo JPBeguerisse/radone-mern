@@ -2,9 +2,10 @@ import { PostHomeCard } from "src/features/post/components/card/PostHomeCard";
 import { SuggestedUsers } from "./SuggestedUsers";
 import { Post } from "src/types/post.types";
 import { Loader } from "lucide-react";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../AppContext";
 import { useSelector } from "react-redux";
+import { getPostsForYouRequested } from "src/redux/reducers/posts.reducer";
 
 type Props = {
   posts: Post[];
@@ -57,6 +58,7 @@ export const PostsForYou = ({
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:px-40">
       {/* Colonne principale contenant les posts */}
+
       <div className="w-full lg:w-2/3">
         {filteredPosts.map((post: Post) => (
           <PostHomeCard key={post._id} post={post} />
@@ -85,3 +87,6 @@ export const PostsForYou = ({
     </div>
   );
 };
+function dispatch(arg0: any) {
+  throw new Error("Function not implemented.");
+}

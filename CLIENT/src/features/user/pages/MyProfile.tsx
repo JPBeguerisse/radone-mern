@@ -2,8 +2,9 @@
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { UserContext } from "src/components/AppContext";
+import { Logout } from "src/components/log/Logout";
 import FollowListModal from "src/features/user/components/FollowListModal";
 import ProfileTabs from "src/features/user/components/ProfileTabs";
 
@@ -113,6 +114,14 @@ export const MyProfile: React.FC = () => {
           <div className="user-bio text-gray-700">
             <p className="font-bold text-black">{user?.name}</p>
             <p>{user?.bio}</p>
+          </div>
+          <div className="mt-8 md:hidden">
+            <NavLink
+              to="/login"
+              className="flex items-center justify-center gap-2 text-red-500 font-semibold border border-red-500 py-2 px-4 rounded-md mx-auto w-fit"
+            >
+              <Logout />
+            </NavLink>
           </div>
         </div>
       </div>
