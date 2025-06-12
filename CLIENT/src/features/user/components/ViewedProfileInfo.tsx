@@ -69,14 +69,14 @@ const ViewedProfileInfo: React.FC = () => {
           <img
             src={viewedUser.picture}
             alt="user"
-            className="w-full h-full rounded-full object-cover object-center"
+            className="w-full h-full  rounded-full object-cover object-center"
           />
         </div>
 
         {/* Section des informations de l'utilisateur */}
         <div className="user-info flex flex-col space-y-4 text-center md:text-left">
           {/* Nom de l'utilisateur et bouton de modification */}
-          <div className="user-name">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="text-2xl font-semibold flex items-center gap-2">
               {viewedUser?.userName}
             </h1>

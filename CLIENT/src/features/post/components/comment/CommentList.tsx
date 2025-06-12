@@ -12,6 +12,8 @@ import {
 } from "src/redux/reducers/posts.reducer";
 import { useNavigate } from "react-router-dom";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
+//@ts-ignore
+import ShowMoreText from "react-show-more-text";
 
 interface CommentListProps {
   post: Post;
@@ -117,24 +119,16 @@ const CommentList: React.FC<CommentListProps> = ({
                         {user.userName}
                       </p>
                       {/* Message du commentaire */}
-                      <p className="text-gray-800">
-                        {isExpandedText[comment._id] ||
-                        comment.text.length <= MAX_LENGTH
-                          ? comment.text // ✅ Affiche le texte complet si le bouton est cliqué
-                          : `${comment.text.substring(0, MAX_LENGTH)}...`}{" "}
-                        {/* ✅ Tronque le texte */}
-                      </p>
-                      {/* Bouton Voir plus / Voir moins */}
-                      {comment.text.length > MAX_LENGTH && (
-                        <button
-                          onClick={() => toggleExpandedText(comment._id)}
-                          className="text-gray-700 font-semibold hover:underline text-sm mt-1"
-                        >
-                          {isExpandedText[comment._id]
-                            ? "Voir moins"
-                            : "Voir plus"}
-                        </button>
-                      )}
+                      <ShowMoreText
+                        lines={2}
+                        more="Voir plus"
+                        less="Voir moins"
+                        expanded={false}
+                        width={0}
+                        anchorClass="text-gray-700 font-semibold hover:underline text-sm"
+                      >
+                        {comment.text}
+                      </ShowMoreText>
                       {/* Date + nombre de likes */}
                       <div className="flex gap-2">
                         <p className="text-xs text-gray-400">

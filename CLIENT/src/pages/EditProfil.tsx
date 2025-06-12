@@ -5,10 +5,7 @@ import { User } from "src/types/user.types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  getUserRequested,
-  removePictureRequested,
   removeProfilePictureRequested,
-  updatePictureRequested,
   updateProfilePictureRequested,
   updateUserRequested,
 } from "src/redux/reducers/user.reducer";
@@ -18,7 +15,6 @@ import { Eye, EyeClosed } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "src/components/AppContext";
 import { uploadToCloudinary } from "src/services/posts/uploadToCloudinary";
-import { updatePicture } from "src/services/userService";
 
 export const updateUserSchema = z.object({
   name: z.string().min(2, "Le nom est requis"),

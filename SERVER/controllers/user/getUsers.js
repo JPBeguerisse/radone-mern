@@ -21,7 +21,7 @@ module.exports.getUser = async (req, res) => {
     return res.status(400).send("ID utilisateur invalide : " + userId);
 
   try {
-    const user = await UserModel.findById(userId).select("-password -email");
+    const user = await UserModel.findById(userId).select("-password ");
 
     user
       ? res.status(200).json(user)

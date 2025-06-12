@@ -59,7 +59,7 @@ export const MyProfile: React.FC = () => {
         {/* Section des informations de l'utilisateur */}
         <div className="user-info flex flex-col space-y-4 text-center md:text-left">
           {/* Nom de l'utilisateur et bouton de modification */}
-          <div className="user-name">
+          <div className="lg:flex lg:items-center lg:justify-between">
             <h1 className="text-2xl font-semibold">{user?.userName} </h1>
             {
               /* Vérifie si l'utilisateur est connecté et s'il s'agit de son propre profil */

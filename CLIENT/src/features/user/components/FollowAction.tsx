@@ -111,7 +111,7 @@ export const FollowAction: React.FC<FollowActionProps> = ({
         <p
           onClick={handleFollow}
           className={`cursor-pointer font-semibold ${
-            isInProfilePage
+            isInProfilePage && !homePage
               ? "bg-blue-500 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-600"
               : "text-gray-800 hover:text-gray-500"
           }`}

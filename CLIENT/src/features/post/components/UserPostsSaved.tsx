@@ -48,7 +48,7 @@ const UserPostsSaved = () => {
   };
 
   return (
-    <div className="p-4">
+    <div>
       {isLoading ? (
         <p className="text-center text-gray-500">Chargement des données...</p>
       ) : (

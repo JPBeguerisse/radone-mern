@@ -17,6 +17,8 @@ import { UserContext } from "../../../components/AppContext";
 import { FollowAction } from "../../user/components/FollowAction";
 import { useNavigate } from "react-router-dom";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
+//@ts-ignore
+import ShowMoreText from "react-show-more-text";
 
 export const PostDetails: React.FC<PostDetailsProps> = ({
   post,
@@ -107,27 +109,55 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
         }`}
         ref={modalRef}
       >
+        {isDesktop && (
+          <div className="absolute top-4 right-4 z-50">
+            <button
+              onClick={onClose}
+              className="text-white text-2xl font-bold bg-black/60 rounded-full w-8 h-8 flex items-center justify-center hover:bg-black"
+            >
+              ✖
+            </button>
+          </div>
+        )}
+        {isMobile && (
+          <div className="fixed top-0 left-0 right-0 flex justify-between items-center p-4 border-b border-gray-200 bg-white z-50">
+            <button onClick={onClose} className="text-lg">
+              ✖
+            </button>
+            <p className="text-lg font-semibold">Publication</p>
+            {currentUserUid === post.posterId ? (
+              <button
+                onClick={() => setShowOptions(!showOptions)}
+                className="text-xl font-bold"
+              >
+                ⋮
+              </button>
+            ) : (
+              <div className="w-6" /> // pour équilibrer
+            )}
+          </div>
+        )}
         {/* Boutons de fermeture / options */}
-        <div className="absolute top-4 w-full flex justify-between px-4">
+        {/* <div className="absolute top-4 w-full flex justify-between px-4">
           <button
             onClick={onClose}
-            className="text-gray-500 font-bold text-lg z-20"
+            className="text-white font-bold text-lg z-20"
           >
             ✖
           </button>
           {isMobile && !isEditing && currentUserUid === post.posterId && (
             <button
               onClick={() => setShowOptions(!showOptions)}
-              className="text-gray-500 text-xl font-bold"
+              className="text-white text-xl font-bold"
             >
               ⋮
             </button>
           )}
-        </div>
+        </div> */}
 
         {/* Menu des options (modifier/supprimer) */}
         {showOptions && (
-          <div className="absolute right-4 top-12 bg-white border rounded shadow-lg">
+          <div className="absolute right-4 top-12 bg-white border rounded shadow-lg z-[999]">
             <button
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
               onClick={() => {
@@ -167,7 +197,7 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
         {/* Colonne image */}
         <div
           className={`bg-black flex items-center justify-center ${
-            isMobile ? "w-full" : "w-1/2"
+            isMobile ? "w-full mt-[64px]" : "w-1/2"
           }`}
         >
           <img
@@ -193,30 +223,61 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
                   >
                     {/* Infos auteur */}
                     <div className="flex w-full items-center gap-2">
-                      <img
-                        src={user.picture}
-                        alt="user"
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
                       <div className="w-full">
-                        <div className="flex gap-2 items-center">
-                          <p
-                            onClick={() => handleGoProfile(user.userName!)}
-                            className="font-bold cursor-pointer"
-                          >
-                            {user?.userName}
-                          </p>
-                          <FollowAction followerId={user._id!} />
+                        <div className="flex justify-between items-center">
+                          {/* Partie gauche : photo + nom + follow */}
+                          <div className="flex items-center gap-2">
+                            <img
+                              src={user.picture}
+                              alt="user"
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <p
+                              onClick={() => handleGoProfile(user.userName!)}
+                              className="font-bold cursor-pointer"
+                            >
+                              {user?.userName}
+                            </p>
+                            <FollowAction followerId={user._id!} />
+                          </div>
+
+                          {/* Bouton ⋮ */}
+                          <div>
+                            {!isMobile &&
+                              !isEditing &&
+                              currentUserUid === post.posterId && (
+                                <button
+                                  onClick={() => setShowOptions(!showOptions)}
+                                  className="text-gray-500 text-xl font-bold"
+                                >
+                                  ⋮
+                                </button>
+                              )}
+                          </div>
                         </div>
-                        {isEditing ? (
-                          <textarea
-                            value={message}
-                            onChange={(e) => setEditedMessage?.(e.target.value)}
-                            className="flex-1 w-full border resize-none p-2 rounded outline-none bg-transparent text-gray-600"
-                          />
-                        ) : (
-                          <p className="text-gray-800">{post?.message}</p>
-                        )}
+                        <div className="pt-2">
+                          {isEditing ? (
+                            <textarea
+                              value={message}
+                              onChange={(e) =>
+                                setEditedMessage?.(e.target.value)
+                              }
+                              className="flex-1 w-full border resize-none p-2 rounded outline-none bg-transparent text-gray-600"
+                            />
+                          ) : (
+                            <ShowMoreText
+                              lines={2}
+                              more="Voir plus"
+                              less="Voir moins"
+                              className="text-gray-800"
+                              anchorClass="text-blue-500 font-semibold"
+                              expanded={false}
+                              width={0}
+                            >
+                              <p className="text-gray-800">{post?.message}</p>
+                            </ShowMoreText>
+                          )}
+                        </div>
                         {isEditing && isMobile && (
                           <div className="p-4 flex w-full gap-2 sticky bottom-0 bg-white z-10">
                             <button
@@ -235,18 +296,6 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
                         )}
                       </div>
                     </div>
-
-                    {/* Bouton d'options sur desktop */}
-                    {!isMobile &&
-                      !isEditing &&
-                      currentUserUid === post.posterId && (
-                        <button
-                          onClick={() => setShowOptions(!showOptions)}
-                          className="text-gray-500 text-xl font-bold"
-                        >
-                          ⋮
-                        </button>
-                      )}
                   </div>
                 )
             )}

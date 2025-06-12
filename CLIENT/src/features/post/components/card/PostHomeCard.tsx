@@ -1,5 +1,5 @@
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, is } from "date-fns/locale";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Post } from "src/types/post.types";
@@ -12,6 +12,10 @@ import {
   getPostRequested,
   updatePostRequested,
 } from "src/redux/reducers/posts.reducer";
+// @ts-ignore
+import ShowMoreText from "react-show-more-text";
+import { FormattedMessage } from "src/components/ui/FormattedMessage";
+import { FollowAction } from "src/features/user/components/FollowAction";
 
 interface PostHomeCardProps {
   post: Post;
@@ -31,7 +35,10 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editedMessage, setEditedMessage] = useState<string>("");
-
+  const [isExpandedText, setIsExpandedText] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const MAX_LENGTH = 100;
   // Gère l'ouverture du modal pour afficher les détails du post
   const handleOpenModal = () => {
     setIsOpen(true);
@@ -73,6 +80,37 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
     }
   }, [selectedPost]);
 
+  // gèrer le voir plus voir moins mais finalement on utilise ShowMoreText
+  const toggleExpandedText = (postId: string) => {
+    setIsExpandedText((prevState) => ({
+      ...prevState,
+      [postId]: !prevState[postId], // ✅ Change uniquement l'état du post cliqué
+    }));
+  };
+
+  // Formate le message pour afficher les hashtags en bleu
+  // const formatMessage = (message: string) => {
+  //   return message.split("\n").map((line, index) => (
+  //     <p key={index} className="whitespace-pre-line">
+  //       {line.split(" ").map((word, i) => {
+  //         if (word.startsWith("#")) {
+  //           return (
+  //             <span key={i} className="text-blue-500 font-semibold mr-1">
+  //               {word}
+  //             </span>
+  //           );
+  //         } else {
+  //           return (
+  //             <span key={i} className="mr-1">
+  //               {word}
+  //             </span>
+  //           );
+  //         }
+  //       })}
+  //     </p>
+  //   ));
+  // };
+
   if (!poster) return null;
 
   return (
@@ -80,26 +118,37 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
       {/* Carte du post */}
       <div className="flex flex-col gap-2 p-4 border-b border-gray-300 lg:w-[470px] lg:mx-auto">
         {/* Header avec photo, nom et date */}
-        <div className="flex items-center gap-2">
-          <div className="flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-10 h-10">
-            <img
-              src={poster.picture}
-              alt="user"
-              className="w-full h-full rounded-full object-cover object-center"
+        <div className="flex flex-col sm:flex-row sm:items-center  sm:gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex-shrink-0 overflow-hidden rounded-full border-2 border-gray-300 w-10 h-10">
+              <img
+                src={poster.picture}
+                alt="user"
+                className="w-full h-full rounded-full object-cover object-center"
+              />
+            </div>
+            <p
+              onClick={() => handleGoProfile(poster.userName)}
+              className="text-sm font-semibold cursor-pointer hover:text-gray-600"
+            >
+              {poster.userName}
+            </p>
+            <FollowAction
+              followerId={poster._id!}
+              profilePage={false}
+              homePage={true}
             />
           </div>
-          <p
-            onClick={() => handleGoProfile(poster.userName)}
-            className="text-sm font-semibold cursor-pointer hover:text-gray-600"
-          >
-            {poster.userName}
-          </p>
-          <p className="text-xs text-gray-400">
-            {formatDistanceToNow(new Date(post.createdAt!), {
-              addSuffix: true,
-              locale: fr,
-            })}
-          </p>
+
+          {/* Date de publication */}
+          <div className="pl-12 sm:pl-0">
+            <p className="text-xs text-gray-400">
+              {formatDistanceToNow(new Date(post.createdAt!), {
+                addSuffix: true,
+                locale: fr,
+              })}
+            </p>
+          </div>
         </div>
 
         {/* Image du post */}
@@ -120,9 +169,20 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
         />
 
         {/* Description du post */}
-        <div className="flex gap-2">
-          <p className="text-sm font-semibold">{poster.userName}</p>
-          <p className="text-sm text-gray-500">{post.message}</p>
+        <div className="flex gap-2 flex-wrap text-sm">
+          <p className="font-semibold text-gray-900">{poster.userName}</p>
+          <div className="whitespace-pre-line break-words overflow-hidden">
+            <ShowMoreText
+              lines={3}
+              more="Voir plus"
+              less="Voir moins"
+              anchorClass="font-semibold hover:underline text-sm"
+              expanded={false}
+              width={0}
+            >
+              <FormattedMessage message={post.message!} />
+            </ShowMoreText>
+          </div>
         </div>
 
         {/* Lien vers les commentaires */}

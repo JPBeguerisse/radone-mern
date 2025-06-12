@@ -86,6 +86,9 @@ const postsSlice = createSlice({
       state.allPosts = state.allPosts.map((post) =>
         post._id === action.payload._id ? action.payload : post
       );
+      state.followingPosts = state.followingPosts.map((post) =>
+        post._id === action.payload._id ? action.payload : post
+      );
     },
     updatePostFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;

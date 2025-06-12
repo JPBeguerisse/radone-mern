@@ -39,7 +39,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
   return (
     <div>
       {/* Onglets */}
-      <div className="flex gap-4 items-center justify-center border-b">
+      <div className="flex gap-4 items-center justify-center">
         <button
           onClick={() => handleTabChange("posts")}
           className={`p-3 flex items-center gap-2 transition duration-300 ${
