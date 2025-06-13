@@ -1,5 +1,6 @@
 import { api } from "src/api/api";
 import { Post } from "src/types/post.types";
+import { LikersResponse, User } from "src/types/user.types";
 
 export interface PostsFollowingResponse {
   posts: Post[];
@@ -171,5 +172,30 @@ export const unSavePost = async (
   userId: string
 ): Promise<Post> => {
   const response = await api.patch(`post/unsave/${postId}`, { userId });
+  return response.data;
+};
+
+// Récupérer les likers d'un post
+// export const getLikers = async ({
+//   postId,
+//   page,
+//   limit,
+// }: {
+//   postId: string;
+//   page?: number;
+//   limit?: number;
+// }): Promise<LikersResponse[]> => {
+//   const response = await api.get(`post/likers`, {
+//     params: {
+//       postId,
+//       page: page || 1,
+//       limit: limit || 5,
+//     },
+//   });
+//   return response.data;
+// };
+
+export const getLikers = async (postId: string): Promise<User[]> => {
+  const response = await api.get(`/post/likers/${postId}`);
   return response.data;
 };

@@ -41,7 +41,6 @@ module.exports.getFollowing = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors du chargement des utilisateurs suivis",
-      error: error.message,
     });
   }
 };

@@ -50,6 +50,8 @@ export const PostsFollowing = ({
     };
   }, [hasMore, loading, loadMorePosts]);
 
+  console.log("posts", posts);
+
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4 lg:px-40">

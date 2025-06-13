@@ -12,6 +12,7 @@ import {
   unSavePostRequested,
 } from "src/redux/reducers/posts.reducer";
 import { usePostStatus } from "src/hooks/usePostStatus";
+import LikersModal from "./modal/LikersModal";
 
 interface PostButtonActionProps {
   post: Post;
@@ -39,6 +40,7 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
   const [showLoginWarning, setShowLoginWarning] = useState(false);
   const [showSaveWarning, setShowSaveWarning] = useState(false);
 
+  const [openLikeModal, setOpenLikeModal] = useState(false);
   // Gère l'action de like sur un post
   const handleLike = () => {
     if (!currentUserUid) {
@@ -167,7 +169,9 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
       {/* Informations supplémentaires sur le post */}
       <div className="mt-2">
         {post.likers?.length && post.likers?.length > 0 ? (
-          <p>{post.likers?.length} J'aime</p>
+          <p className="cursor-pointer" onClick={() => setOpenLikeModal(true)}>
+            {post.likers?.length} J'aime
+          </p>
         ) : null}
         {isMobile && post.comments?.length! > 0 && (
           <p
@@ -186,6 +190,13 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
           })}
         </p>
       </div>
+      {/* Modal pour afficher les likes */}
+      {openLikeModal && (
+        <LikersModal
+          postId={post._id!}
+          onClose={() => setOpenLikeModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 const PostModel = require("../../models/post.model");
 const ObjectID = require("mongoose").Types.ObjectId;
+const UserModel = require("../../models/user.model");
 
 //Liiker un post
 module.exports.like = async (req, res) => {
@@ -53,6 +54,91 @@ module.exports.unlike = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors du unlike.",
+    });
+  }
+};
+
+//Récupérer les likers d'un post
+// module.exports.getLikers = async (req, res) => {
+//   const { page = 1, limit = 5, search = "" } = req.query;
+//   const postId = req.params.id;
+
+//   if (!ObjectID.isValid(postId)) {
+//     return res.status(400).send("ID inconnu");
+//   }
+
+//   try {
+//     // Récupère les IDs des likers
+//     const post = await PostModel.findById(postId).select("likers");
+
+//     if (!post) {
+//       return res.status(404).send("Post non trouvé");
+//     }
+
+//     // Filtrage et pagination manuelle
+//     let likerIds = post.likers;
+
+//     if (search) {
+//       // Recherche parmi les utilisateurs likés par userName
+//       const filteredUsers = await UserModel.find({
+//         _id: { $in: likerIds },
+//         userName: { $regex: search, $options: "i" },
+//       }).select("_id");
+//       likerIds = filteredUsers.map((u) => u._id);
+//     }
+
+//     //
+//     const total = likerIds.length;
+//     const start = (page - 1) * limit;
+//     const end = start + parseInt(limit);
+
+//     const paginatedLikerIds = likerIds.slice(start, end);
+
+//     // Récupère les infos des utilisateurs paginés
+//     const likers = await UserModel.find({
+//       _id: { $in: paginatedLikerIds },
+//     }).select("_id userName picture");
+
+//     res.status(200).json({
+//       likers,
+//       total,
+//       page: parseInt(page),
+//       totalPages: Math.ceil(total / limit),
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "Erreur lors de la récupération des likers.",
+//     });
+//   }
+// };
+
+module.exports.getLikers = async (req, res) => {
+  const postId = req.params.id;
+
+  if (!ObjectID.isValid(postId)) {
+    return res.status(400).send("ID inconnu");
+  }
+
+  try {
+    const post = await PostModel.findById(postId).select("likers");
+
+    if (!post) {
+      return res.status(404).send("Post non trouvé");
+    }
+
+    // _id $in permet de récupérer les utilisateurs dont l'ID est dans le tableau likers
+    // On utilise select pour ne récupérer que les champs nécessaires
+    // _id, userName et picture
+    const reversedLikers = post.likers.slice().reverse(); // copie + reverse
+
+    const likers = await UserModel.find({ _id: { $in: reversedLikers } })
+      .select("_id userName picture")
+      .limit(100);
+
+    res.status(200).json(likers);
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur lors de la récupération des likers.",
     });
   }
 };

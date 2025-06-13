@@ -1241,4 +1241,6 @@ router.patch("/save/:id", verifyToken, postController.savePost);
  *         description: Erreur serveur
  */
 router.patch("/unsave/:id", verifyToken, postController.unsavePost);
+
+router.get("/likers/:id", verifyToken, postController.getLikers);
 module.exports = router;

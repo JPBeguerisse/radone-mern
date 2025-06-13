@@ -4,6 +4,7 @@ import FollowersList from "./FollowersList";
 import FollowingList from "./FollowingList";
 import { UserContext } from "../../../components/AppContext";
 import { useSelector } from "react-redux";
+import { X } from "lucide-react";
 
 export interface FollowModalProps {
   onClose: () => void; // Fonction pour fermer la modal
@@ -48,14 +49,14 @@ const FollowListModal: React.FC<FollowModalProps> = ({
   }, [page, currentUserUid, viewedUser]);
 
   return (
-    <div className="fixed inset-0 overflow-auto bg-black bg-opacity-80 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-2 relative">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-md p-4 max-h-[80vh] overflow-y-auto relative">
         {/*  Bouton pour fermer la modal */}
         <button
           onClick={onClose}
           className="absolute top-2 right-4 text-gray-500 font-bold text-lg"
         >
-          ✖
+          <X size={20} />
         </button>
 
         {/*  Sélecteur d'onglet (Followers / Following) */}

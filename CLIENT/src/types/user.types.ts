@@ -5,7 +5,7 @@ export interface User {
   _id?: string; // L'identifiant unique de l'utilisateur
   name: string; // Le prénom de l'utilisateur
   userName: string; // Le nom de l'utilisateur
-  email: string; // L'email de l'utilisateur
+  email?: string; // L'email de l'utilisateur
   password?: string; // Le mot de passe (peut être optionnel si non requis)
   bio?: string;
   picture?: string; // Le chemin de l'image de profil (facultatif)
@@ -47,4 +47,9 @@ export type UpdateUserPayload = {
 
 export interface ProfilProps {
   userId?: string;
+}
+
+export interface LikersResponse {
+  likers: User[]; // Liste des utilisateurs qui ont aimé le post
+  total: number; // Nombre total de likes
 }
