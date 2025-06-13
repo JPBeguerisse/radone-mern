@@ -126,6 +126,79 @@ router.get("/confirm-email/:token", authController.confirmEmail);
  */
 router.post("/logout", authController.logout);
 
+// mot de passe oublié
+/**
+ * @swagger
+ * /api/user/forgot-password:
+ *   post:
+ *     summary: Mot de passe oublié
+ *     description: Envoie un e-mail avec un lien de réinitialisation du mot de passe à l'utilisateur.
+ *     tags:
+ *       - Authentification
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: L'adresse email de l'utilisateur pour lequel le mot de passe doit être réinitialisé.
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: E-mail envoyé avec succès
+ *       404:
+ *         description: Aucun compte trouvé
+ *       500:
+ *         description: Erreur lors de l'envoi de l'e-mail
+ */
+router.post("/forgot-password", authController.forgotPassword);
+
+//REINITIALISATION DU MOT DE PASSE
+/**
+ /**
+ * @swagger
+ * /api/user/reset-password/{token}:
+ *   post:
+ *     summary: Réinitialiser le mot de passe
+ *     description: Réinitialise le mot de passe de l'utilisateur en utilisant un token de réinitialisation.
+ *     tags:
+ *       - Authentification
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         description: Le token de réinitialisation du mot de passe envoyé par email.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newPassword
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 description: Le nouveau mot de passe de l'utilisateur.
+ *                 example: NouveauMotDePasse123!
+ *     responses:
+ *       200:
+ *         description: Mot de passe réinitialisé avec succès
+ *       400:
+ *         description: Token invalide ou expiré
+ *       500:
+ *         description: Erreur lors de la réinitialisation du mot de passe
+ */
+router.post("/reset-password/:token", authController.resetPassword);
+
 //S'INSCRIRE - CREATE
 /**
  * @swagger
