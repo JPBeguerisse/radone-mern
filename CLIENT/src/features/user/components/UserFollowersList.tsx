@@ -1,12 +1,13 @@
 // Description: Composant qui affiche la liste des abonnés d'un utilisateur avec recherche et scroll infini
 import React, { useEffect, useRef, useState } from "react";
-import { FollowingListProps } from "./FollowingList";
+import { FollowingListProps } from "./UserFollowingList";
 import { useFollowers } from "../../../hooks/useFollowers";
 import { useNavigate } from "react-router-dom";
 import { FollowAction } from "./FollowAction";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
 import { useDebounce } from "use-debounce";
+import { Loader } from "lucide-react";
 
 const FollowersList: React.FC<FollowingListProps> = ({ userId, onClose }) => {
   const dispatch = useDispatch();
@@ -66,7 +67,7 @@ const FollowersList: React.FC<FollowingListProps> = ({ userId, onClose }) => {
 
       {/* Affichage conditionnel */}
       {isLoading ? (
-        <p className="text-center">Chargement...</p>
+        <Loader className="mx-auto my-4 animate-spin text-gray-500" />
       ) : followers.length > 0 ? (
         <>
           <ul className="flex flex-col space-y-4">

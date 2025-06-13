@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { UserContext } from "src/components/AppContext";
 import { Logout } from "src/components/log/Logout";
-import FollowListModal from "src/features/user/components/FollowListModal";
+import FollowListModal from "src/features/user/components/modal/UserFollowListModal";
 import ProfileTabs from "src/features/user/components/ProfileTabs";
 
 import { Post } from "src/types/post.types";

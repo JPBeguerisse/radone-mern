@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserByUsernameRequested } from "../../../redux/reducers/viewed-user.reducer";
 import { User } from "src/types/user.types";
 import { useDebounce } from "use-debounce";
+import { Loader } from "lucide-react";
 
 export interface FollowingListProps {
   onClose: () => void;
@@ -75,7 +76,7 @@ const FollowingList: React.FC<FollowingListProps> = ({ onClose, userId }) => {
 
       {/* Affichage dynamique */}
       {isLoading ? (
-        <p className="text-center">Chargement...</p>
+        <Loader className="mx-auto my-4 animate-spin text-gray-500" />
       ) : following.length > 0 ? (
         <>
           <ul className="flex flex-col space-y-4">

@@ -10,7 +10,10 @@ import {
   getPostsByUserRequested,
   getUserByUsernameRequested,
 } from "src/redux/reducers/viewed-user.reducer";
-import FollowListModal from "./FollowListModal";
+import FollowListModal from "./modal/UserFollowListModal";
+import FollowersModal from "./modal/FollowersModal";
+import FollowingModal from "./modal/FollowingModal";
+import { Loader } from "lucide-react";
 
 const ViewedProfileInfo: React.FC = () => {
   const dispatch = useDispatch();
@@ -23,6 +26,8 @@ const ViewedProfileInfo: React.FC = () => {
   const [postsUserLenght, setPostsUserLenght] = useState<number>(0);
   const [openModalFollow, setOpenModalFollow] = useState(false);
   const [title, setTitle] = useState<string>();
+  const [openModalFollowers, setOpenModalFollowers] = useState(false);
+  const [openModalFollowing, setOpenModalFollowing] = useState(false);
 
   // Récupération des posts de l'utilisateur consulté
   useEffect(() => {
@@ -57,7 +62,7 @@ const ViewedProfileInfo: React.FC = () => {
   if (!userName || !viewedUser) {
     // Si l'utilisateur n'est pas trouvé ou si les données de l'utilisateur ne sont pas disponibles, afficher un message de chargement
     return (
-      <p className="text-center text-gray-500">Chargement des données...</p>
+      <Loader className="animate-spin mx-auto mt-10 text-gray-500" size={32} />
     );
   }
 
@@ -76,7 +81,7 @@ const ViewedProfileInfo: React.FC = () => {
         {/* Section des informations de l'utilisateur */}
         <div className="user-info flex flex-col space-y-4 text-center md:text-left">
           {/* Nom de l'utilisateur et bouton de modification */}
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
             <h1 className="text-2xl font-semibold flex items-center gap-2">
               {viewedUser?.userName}
             </h1>
@@ -94,8 +99,7 @@ const ViewedProfileInfo: React.FC = () => {
             <button
               className="user-follower text-gray-600 cursor-pointer"
               onClick={() => {
-                setOpenModalFollow(true);
-                setTitle("followers");
+                setOpenModalFollowers(true);
               }}
             >
               {" "}
@@ -107,8 +111,7 @@ const ViewedProfileInfo: React.FC = () => {
             <div
               className="user-following text-gray-600 cursor-pointer"
               onClick={() => {
-                setOpenModalFollow(true);
-                setTitle("following");
+                setOpenModalFollowing(true);
               }}
             >
               <span className="font-bold text-lg">
@@ -134,12 +137,26 @@ const ViewedProfileInfo: React.FC = () => {
         <ProfileTabs user={viewedUser} />
         {/* </ProfilUserContext.Provider> */}
       </div>
-      {openModalFollow && (
+      {/* {openModalFollow && (
         <FollowListModal
           title={title}
           onTitleChange={setTitle}
           onClose={handleCloseModal}
           page="viewedProfile"
+        />
+      )} */}
+      {openModalFollowers && (
+        <FollowersModal
+          userId={viewedUser?._id}
+          userName={viewedUser?.userName}
+          onClose={() => setOpenModalFollowers(false)}
+        />
+      )}
+      {openModalFollowing && (
+        <FollowingModal
+          userId={viewedUser?._id}
+          userName={viewedUser?.userName}
+          onClose={() => setOpenModalFollowing(false)}
         />
       )}
     </>

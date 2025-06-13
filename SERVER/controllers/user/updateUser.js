@@ -1,6 +1,7 @@
 const UserModel = require("../../models/user.model");
 const ObjectID = require("mongoose").Types.ObjectId;
-
+const DeletedUserModel = require("../../models/deletedUser.model");
+const PostModel = require("../../models/post.model");
 // Mise à jour d’un utilisateur
 module.exports.updateUser = async (req, res) => {
   const userId = req.params.id;
@@ -86,7 +87,7 @@ module.exports.updateUser = async (req, res) => {
 
 //suppression d’un utilisateur
 module.exports.deleteUser = async (req, res) => {
-  const userId = req.params.id;
+  const userId = req.userId; // Utilisateur connecté récupéré depuis le middleware d'authentification
 
   // Vérification si l'ID est valide
   if (!ObjectID.isValid(userId)) {
@@ -94,21 +95,62 @@ module.exports.deleteUser = async (req, res) => {
   }
 
   try {
-    const deletedUser = await UserModel.findByIdAndDelete(userId).select(
-      "-password"
-    );
+    const user = await UserModel.findById(userId);
 
-    if (!deletedUser) {
-      return res.status(404).send("Utilisateur non trouvé");
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur introuvable." });
+
+    // Vérification si l'utilisateur est un compte invité
+    if (user.isGuest) {
+      return res
+        .status(403)
+        .json({ message: "Le compte invité ne peut pas être supprimé." });
     }
 
+    // 🔁 Sauvegarder dans DeletedUser avant suppression
+    await DeletedUserModel.create({
+      originalId: user._id,
+      userName: user.userName,
+      email: user.email,
+      picture: user.picture,
+      reason: "Suppression volontaire de l'utilisateur", // optionnel
+    });
+
+    // Supprimer les références dans les followers et followings des autres utilisateurs
+    await UserModel.updateMany(
+      { followers: userId },
+      { $pull: { followers: userId } }
+    );
+
+    await UserModel.updateMany(
+      { following: userId },
+      { $pull: { following: userId } }
+    );
+
+    // Supprimer les likes de l'utilisateur sur les posts
+    await PostModel.updateMany(
+      { likers: userId },
+      { $pull: { likers: userId } }
+    );
+
+    // Supprimer les posts de l'utilisateur
+    await PostModel.deleteMany({ posterId: userId });
+
+    // Supprimer l'utilisateur lui-même
+    await UserModel.findByIdAndDelete(userId);
     res.status(200).json({
-      message: "Utilisateur supprimé avec succès.",
-      user: deletedUser,
+      message: "Compte supprimé avec succès.",
     });
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la suppression de l'utilisateur.",
+      error: error.message,
     });
   }
+};
+
+// route
+module.exports.getArchivedUsers = async (req, res) => {
+  const deleted = await DeletedUserModel.find().sort({ deletedAt: -1 });
+  res.status(200).json(deleted);
 };

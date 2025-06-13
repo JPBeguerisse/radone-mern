@@ -18,7 +18,7 @@ function* handleGetFollowing(
 ): Generator<any, void, FollowerUser[]> {
   try {
     const { userId, page, limit, search } = action.payload;
-    const following = yield call(getFollowing, userId, page, limit, search);
+    const following = yield call(getFollowing, page, limit, search);
     const hasMore = following.length === limit;
     yield put(getFollowingSuccess({ following, hasMore }));
   } catch (error: any) {

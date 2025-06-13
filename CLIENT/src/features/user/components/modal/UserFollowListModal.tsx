@@ -1,8 +1,8 @@
 // Description : Modal qui affiche la liste des abonnés ("Followers") ou abonnements ("Following") d'un utilisateur
 import React, { useContext, useEffect, useState } from "react";
-import FollowersList from "./FollowersList";
-import FollowingList from "./FollowingList";
-import { UserContext } from "../../../components/AppContext";
+import FollowersList from "../UserFollowersList";
+import FollowingList from "../UserFollowingList";
+import { UserContext } from "../../../../components/AppContext";
 import { useSelector } from "react-redux";
 import { X } from "lucide-react";
 

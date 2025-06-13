@@ -15,6 +15,8 @@ import { Eye, EyeClosed } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "src/components/AppContext";
 import { uploadToCloudinary } from "src/services/posts/uploadToCloudinary";
+import ConfirmDeleteModal from "src/features/post/components/modal/ConfirmDeleteModal";
+import { deleteAccount } from "src/services/userService";
 
 export const updateUserSchema = z.object({
   name: z.string().min(2, "Le nom est requis"),
@@ -48,6 +50,7 @@ export const EditProfil = () => {
   const defaultPicture = "uploads/profil/random-user.jpeg";
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -152,7 +155,21 @@ export const EditProfil = () => {
       );
     } catch (err) {
       console.error("Erreur d'upload :", err);
-      alert("Erreur pendant l'upload de l'image.");
+      toast.error("Erreur pendant l'upload de l'image.");
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    try {
+      deleteAccount().then(() => {
+        toast.success("Compte supprimé avec succès.");
+        setOpenConfirmModal(false);
+        localStorage.removeItem("token"); // Supprime le token du localStorage
+        navigate("/login"); // Redirige vers la page de connexion après la suppression
+      });
+    } catch (error) {
+      console.error("Erreur lors de la suppression du compte :", error);
+      toast.error("Une erreur est survenue lors de la suppression du compte.");
     }
   };
 
@@ -217,7 +234,7 @@ export const EditProfil = () => {
             {user && user.picture && user.picture !== defaultPicture && (
               <button
                 onClick={deleteProfilePicture}
-                className={`w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition" ${
+                className={`w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-red-800 px-4 py-2 rounded-lg transition" ${
                   isGuest ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isGuest}
@@ -367,7 +384,17 @@ export const EditProfil = () => {
         </div>
 
         {/* Bouton Submit */}
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => setOpenConfirmModal(true)}
+            disabled={isGuest}
+            className={`bg-red-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-red-800 transition w-full sm:w-auto ${
+              isGuest ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            Supprimer mon compte
+          </button>
           <button
             type="submit"
             disabled={isGuest}
@@ -379,6 +406,15 @@ export const EditProfil = () => {
           </button>
         </div>
       </form>
+      {openConfirmModal && (
+        <ConfirmDeleteModal
+          isOpen={openConfirmModal}
+          title="Confirmer la suppression du compte"
+          message="Es-tu sûr de vouloir supprimer ton compte ? Cette action est irréversible."
+          onCancel={() => setOpenConfirmModal(false)}
+          onConfirm={handleDeleteAccount}
+        />
+      )}
     </div>
   );
 };

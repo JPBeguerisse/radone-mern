@@ -6,10 +6,8 @@ module.exports.getFollowing = async (req, res) => {
   try {
     const { page = 1, limit = 5, search = "" } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
-
-    const user = await UserModel.findById(req.params.userId).select(
-      "following"
-    );
+    const userId = req.userId; // Utiliser l'ID de l'utilisateur connecté
+    const user = await UserModel.findById(userId).select("following");
 
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });
@@ -45,15 +43,13 @@ module.exports.getFollowing = async (req, res) => {
   }
 };
 
-// Récupérer les followers d'un utilisateur avec pagination et recherche
+// Récupérer les followers de l'utilisateur connecté avec pagination et recherche
 module.exports.getFollowers = async (req, res) => {
   try {
     const { page = 1, limit = 5, search = "" } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
-
-    const user = await UserModel.findById(req.params.userId).select(
-      "followers"
-    );
+    const userId = req.userId; // Utiliser l'ID de l'utilisateur connecté
+    const user = await UserModel.findById(userId).select("followers");
 
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });
@@ -85,6 +81,57 @@ module.exports.getFollowers = async (req, res) => {
     res
       .status(500)
       .json({ message: "Erreur lors du chargement des utilisateurs suivis" });
+  }
+};
+
+// Récupérer les utilisateurs suivis par un utilisateur spécifique
+module.exports.getProfileFollowers = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!ObjectID.isValid(userId)) {
+      return res.status(400).send("ID inconnu : " + userId);
+    }
+    // Trouver l'utilisateur correspondant
+    const user = await UserModel.findById(userId).select("followers");
+    if (!user) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+    // Récupérer les followers de l'utilisateur
+    const followers = await UserModel.find({
+      _id: { $in: user.followers },
+    }).select("_id userName name picture");
+    res.status(200).json(followers);
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur lors du chargement des followers de l'utilisateur",
+    });
+  }
+};
+
+module.exports.getProfileFollowing = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!ObjectID.isValid(userId)) {
+      return res.status(400).send("ID inconnu : " + userId);
+    }
+    // Trouver l'utilisateur correspondant
+    const user = await UserModel.findById(userId).select("following");
+    if (!user) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+
+    const reversedFollowing = user.following.slice().reverse(); // Inverser l'ordre pour afficher les derniers suivis en premier
+    // Récupérer les utilisateurs suivis par l'utilisateur
+    const following = await UserModel.find({
+      _id: { $in: reversedFollowing },
+    })
+      .select("_id userName name picture")
+      .limit(100); // Limiter à 100 utilisateurs pour éviter de surcharger la réponse
+    res.status(200).json(following);
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur lors du chargement des utilisateurs suivis",
+    });
   }
 };
 
