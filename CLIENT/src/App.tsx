@@ -39,6 +39,7 @@ function App() {
         }
       } catch (error) {
         console.log("Erreur de récupération du token ou du profil", error);
+        localStorage.removeItem("accessToken"); // Supprimer le token en cas d'erreur (expiration, etc.)
       } finally {
         setIsLoading(false); // Mettre à jour l'état de chargement une fois la récupération terminée
       }

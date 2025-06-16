@@ -8,13 +8,15 @@ export const FormAddComment: React.FC<AddCommentProps> = ({
   postId,
   commenterId,
 }) => {
-  const [isAddComment, setIsAddComment] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
   const dispatch = useDispatch();
 
+  const [isAddComment, setIsAddComment] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  // Gère l'ajout d'un commentaire
   const handleAddPost = () => {
     if (!message) return;
 
@@ -32,6 +34,7 @@ export const FormAddComment: React.FC<AddCommentProps> = ({
     }
   };
 
+  // Vérifie si l'utilisateur est connecté
   useEffect(() => {
     if (currentUserUid) {
       setIsLoggedIn(true);

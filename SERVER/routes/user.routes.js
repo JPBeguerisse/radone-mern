@@ -2,7 +2,7 @@
 const router = require("express").Router();
 const authController = require("../controllers/auth.controller");
 const uploadController = require("../controllers/upload.controller");
-const userController = require("../controllers/user.controller");
+const userController = require("../controllers/user/user.controller");
 const { verifyToken, requireAuth } = require("../middlewares/checkToken");
 
 /**
@@ -126,6 +126,79 @@ router.get("/confirm-email/:token", authController.confirmEmail);
  */
 router.post("/logout", authController.logout);
 
+// mot de passe oublié
+/**
+ * @swagger
+ * /api/user/forgot-password:
+ *   post:
+ *     summary: Mot de passe oublié
+ *     description: Envoie un e-mail avec un lien de réinitialisation du mot de passe à l'utilisateur.
+ *     tags:
+ *       - Authentification
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: L'adresse email de l'utilisateur pour lequel le mot de passe doit être réinitialisé.
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: E-mail envoyé avec succès
+ *       404:
+ *         description: Aucun compte trouvé
+ *       500:
+ *         description: Erreur lors de l'envoi de l'e-mail
+ */
+router.post("/forgot-password", authController.forgotPassword);
+
+//REINITIALISATION DU MOT DE PASSE
+/**
+ /**
+ * @swagger
+ * /api/user/reset-password/{token}:
+ *   post:
+ *     summary: Réinitialiser le mot de passe
+ *     description: Réinitialise le mot de passe de l'utilisateur en utilisant un token de réinitialisation.
+ *     tags:
+ *       - Authentification
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         description: Le token de réinitialisation du mot de passe envoyé par email.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newPassword
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 description: Le nouveau mot de passe de l'utilisateur.
+ *                 example: NouveauMotDePasse123!
+ *     responses:
+ *       200:
+ *         description: Mot de passe réinitialisé avec succès
+ *       400:
+ *         description: Token invalide ou expiré
+ *       500:
+ *         description: Erreur lors de la réinitialisation du mot de passe
+ */
+router.post("/reset-password/:token", authController.resetPassword);
+
 //S'INSCRIRE - CREATE
 /**
  * @swagger
@@ -229,6 +302,96 @@ router.post("/register", authController.signUp);
  *         description: Erreur interne du serveur
  */
 router.get("/", userController.getUsers);
+
+// Récupérer les followers et following d'un utilisateur
+/**
+ * @swagger
+ * /api/user/{userId}/followers:
+ *   get:
+ *     summary: Récupérer les followers d'un utilisateur
+ *     description: Récupère la liste des utilisateurs qui suivent un utilisateur spécifique en excluant leurs mots de passe.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur dont on veut récupérer les followers
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des followers de l'utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID du follower
+ *                   name:
+ *                     type: string
+ *                     description: Prénom du follower
+ *                   userName:
+ *                     type: string
+ *                     description: Nom d'utilisateur du follower
+ *                   email:
+ *                     type: string
+ *                     description: Email du follower
+ *       400:
+ *         description: ID de l'utilisateur invalide
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+router.get("/followers", verifyToken, userController.getFollowers);
+
+// Récupérer les utilisateurs suivis par un utilisateur
+/**
+ * @swagger
+ * /api/user/{userId}/following:
+ *   get:
+ *     summary: Récupérer les utilisateurs suivis par un utilisateur
+ *     description: Récupère la liste des utilisateurs que suit un utilisateur spécifique en excluant leurs mots de passe.
+ *     tags:
+ *       - Utilisateurs
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: ID de l'utilisateur dont on veut récupérer les abonnements
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des utilisateurs suivis par l'utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID de l'utilisateur suivi
+ *                   name:
+ *                     type: string
+ *                     description: Prénom de l'utilisateur suivi
+ *                   userName:
+ *                     type: string
+ *                     description: Nom d'utilisateur de l'utilisateur suivi
+ *                   email:
+ *                     type: string
+ *                     description: Email de l'utilisateur suivi
+ *       400:
+ *         description: ID de l'utilisateur invalide
+ *       500:
+ *         description: Erreur interne du serveur
+ */
+router.get("/following", verifyToken, userController.getFollowing);
 
 // Rechercher des utilisateurs
 /**
@@ -494,7 +657,7 @@ router.patch("/:id", verifyToken, userController.updateUser);
  *       500:
  *         description: Erreur interne du serveur lors de la suppression de l'utilisateur
  */
-router.delete("/:id", userController.deleteUser);
+router.delete("/", verifyToken, userController.deleteUser);
 
 // UPLOAD USER PICTURE
 /**
@@ -837,7 +1000,33 @@ router.patch("/follow/:id", verifyToken, userController.follow);
 router.patch("/unfollow/:id", verifyToken, userController.unfollow);
 module.exports = router;
 
-// Récupérer les followers et following d'un utilisateur
+//se connecter en tant qu'invité
+/**
+ * @swagger
+ * /api/user/login-guest:
+ *   post:
+ *     summary: Connexion en tant qu'invité
+ *     description: Permet à un utilisateur de se connecter en tant qu'invité. Renvoie un token JWT pour l'authentification.
+ *     tags:
+ *       - Authentification
+ *     responses:
+ *       200:
+ *         description: Connexion réussie, renvoie le token JWT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT pour l'authentification de l'invité
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       404:
+ *         description: Utilisateur invité introuvable
+ */
+router.post("/login-guest", authController.loginGuest);
+
+// Récupérer les follwers d'un utilisateur
 /**
  * @swagger
  * /api/user/{userId}/followers:
@@ -872,15 +1061,8 @@ module.exports = router;
  *                   userName:
  *                     type: string
  *                     description: Nom d'utilisateur du follower
- *                   email:
- *                     type: string
- *                     description: Email du follower
- *       400:
- *         description: ID de l'utilisateur invalide
- *       500:
- *         description: Erreur interne du serveur
  */
-router.get("/:userId/followers", userController.getFollowers);
+router.get("/:id/followers", verifyToken, userController.getProfileFollowers);
 
 // Récupérer les utilisateurs suivis par un utilisateur
 /**
@@ -917,38 +1099,35 @@ router.get("/:userId/followers", userController.getFollowers);
  *                   userName:
  *                     type: string
  *                     description: Nom d'utilisateur de l'utilisateur suivi
- *                   email:
- *                     type: string
- *                     description: Email de l'utilisateur suivi
- *       400:
- *         description: ID de l'utilisateur invalide
- *       500:
- *         description: Erreur interne du serveur
  */
-router.get("/:userId/following", verifyToken, userController.getFollowing);
+router.get("/:id/following", verifyToken, userController.getProfileFollowing);
 
-//se connecter en tant qu'invité
+// récupérer les utilisateurs archivés
 /**
  * @swagger
- * /api/user/login-guest:
- *   post:
- *     summary: Connexion en tant qu'invité
- *     description: Permet à un utilisateur de se connecter en tant qu'invité. Renvoie un token JWT pour l'authentification.
+ * /api/user/archived:
+ *   get:
+ *     summary: Récupérer les utilisateurs archivés
+ *     description: Récupère la liste des utilisateurs archivés.
  *     tags:
- *       - Authentification
+ *       - Utilisateurs
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Connexion réussie, renvoie le token JWT
+ *         description: Liste des utilisateurs archivés
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   description: Token JWT pour l'authentification de l'invité
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *       404:
- *         description: Utilisateur invité introuvable
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID de l'utilisateur archivé
+ *                   name:
+ *                     type: string
+ *                     description: Prénom de l'utilisateur archivé
  */
-router.post("/login-guest", authController.loginGuest);
+router.get("/archived", verifyToken, userController.getArchivedUsers);

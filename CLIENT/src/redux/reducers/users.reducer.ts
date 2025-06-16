@@ -3,6 +3,8 @@ import { User, UsersState } from "../../types/user.types";
 
 const initialState: UsersState = {
   users: [],
+  followers: [],
+  following: [],
   error: null,
 };
 

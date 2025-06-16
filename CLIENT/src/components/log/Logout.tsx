@@ -1,11 +1,13 @@
-import { LogOut, Settings } from "lucide-react";
-import React from "react";
+import { LogOut } from "lucide-react";
 
+// Composant pour gérer la déconnexion de l'utilisateur
 export const Logout = () => {
+  // Supprime le token et redirige vers la page de connexion
   const handleLogout = () => {
-    localStorage.removeItem("accessToken"); // Si vous stockez le token dans le localStorage
-    window.location.href = "/login"; //
+    localStorage.removeItem("accessToken");
+    window.location.href = "/login";
   };
+
   return (
     <button
       onClick={handleLogout}

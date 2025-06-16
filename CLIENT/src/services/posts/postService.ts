@@ -1,26 +1,11 @@
+import { api } from "src/api/api";
 import { Post } from "src/types/post.types";
-import { api } from "../api/api";
+import { LikersResponse, User } from "src/types/user.types";
 
 export interface PostsFollowingResponse {
   posts: Post[];
   total: number;
 }
-
-//creation de post
-// export const createPost = async (formData: FormData) => {
-//   console.log(
-//     "Données envoyées à l'API :",
-//     Object.fromEntries(formData.entries())
-//   );
-
-//   const response = await api.post("/post", formData, {
-//     headers: { "Content-Type": "multipart/form-data" },
-//   });
-
-//   console.log("Réponse de l'API :", response);
-
-//   return response.data; //
-// };
 
 export const createPost = async ({
   pictureUrl,
@@ -101,7 +86,7 @@ export const getSavedPostsByUser = async (userId: string): Promise<Post[]> => {
   return response.data;
 };
 
-/** ⚙️ Mettre à jour un post */
+/** Mettre à jour un post */
 export const updatePost = async (
   id: string,
   updatedData: Post
@@ -139,32 +124,24 @@ export const deleteCommentPost = async (
 };
 
 // Aimer une publication
-export const addLikePost = async (
-  id: string,
-  userId: string
-): Promise<Post> => {
-  const response = await api.patch(`post/like/${id}`, { userId });
+export const addLikePost = async (id: string): Promise<Post> => {
+  const response = await api.patch(`post/like/${id}`);
   return response.data;
 };
 
 // Unlike une publication
-export const dislikePost = async (
-  id: string,
-  userId: string
-): Promise<Post> => {
-  const response = await api.patch(`post/unlike/${id}`, { userId });
+export const dislikePost = async (id: string): Promise<Post> => {
+  const response = await api.patch(`post/unlike/${id}`);
   return response.data;
 };
 
 //Aimer un commentaire
 export const addLikeComment = async (
   postId: string,
-  commentId: string,
-  userId: string
+  commentId: string
 ): Promise<Post> => {
   const response = await api.patch(`post/comment/like/${postId}`, {
     commentId,
-    userId,
   });
   return response.data;
 };
@@ -172,12 +149,10 @@ export const addLikeComment = async (
 //Unliker un commentaire
 export const unLikeComment = async (
   postId: string,
-  commentId: string,
-  userId: string
+  commentId: string
 ): Promise<Post> => {
   const response = await api.patch(`post/comment/unlike/${postId}`, {
     commentId,
-    userId,
   });
   return response.data;
 };
@@ -197,5 +172,30 @@ export const unSavePost = async (
   userId: string
 ): Promise<Post> => {
   const response = await api.patch(`post/unsave/${postId}`, { userId });
+  return response.data;
+};
+
+// Récupérer les likers d'un post
+// export const getLikers = async ({
+//   postId,
+//   page,
+//   limit,
+// }: {
+//   postId: string;
+//   page?: number;
+//   limit?: number;
+// }): Promise<LikersResponse[]> => {
+//   const response = await api.get(`post/likers`, {
+//     params: {
+//       postId,
+//       page: page || 1,
+//       limit: limit || 5,
+//     },
+//   });
+//   return response.data;
+// };
+
+export const getLikers = async (postId: string): Promise<User[]> => {
+  const response = await api.get(`/post/likers/${postId}`);
   return response.data;
 };

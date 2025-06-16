@@ -1,10 +1,11 @@
-// Description: Composant de la modale d'affichage d'un post
+// Description : Composant d'affichage en modal d'une publication, avec actions (éditer, supprimer, commenter, liker...)
+
 import { useDispatch, useSelector } from "react-redux";
 import { PostDetailsProps } from "../../../types/post.types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { User } from "src/types/user.types";
 import FormAddComment from "./comment/FormAddComment";
-import useMediaQuery from "../../../hooks/useMediaQuery"; // 🔹 Import du hook
+import useMediaQuery from "../../../hooks/useMediaQuery";
 import {
   deleteCommentRequested,
   deletePostRequested,
@@ -16,22 +17,24 @@ import { UserContext } from "../../../components/AppContext";
 import { FollowAction } from "../../user/components/FollowAction";
 import { useNavigate } from "react-router-dom";
 import { getUserByUsernameRequested } from "src/redux/reducers/viewed-user.reducer";
+//@ts-ignore
+import ShowMoreText from "react-show-more-text";
 
 export const PostDetails: React.FC<PostDetailsProps> = ({
   post,
+  message,
   isOpen,
   onClose,
-  message,
-  setEditedMessage,
+  onSave,
   isEditing,
   setIsEditing,
-  onSave,
+  setEditedMessage,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
 
-  const [showOptions, setShowOptions] = useState<boolean>(false);
+  const [showOptions, setShowOptions] = useState(false);
   const usersData = useSelector((state: any) => state.usersReducer.users);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const dispatch = useDispatch();
@@ -43,18 +46,16 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
   } | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // ✅ Détecte si l'utilisateur est sur mobile
   const isMobile = useMediaQuery("(max-width: 767px)");
-
-  // ✅ Afficher les commentaires automatiquement sur desktop
   const isDesktop = !isMobile;
 
-  // ✅ Ouvrir le modal de confirmation et lui donne les paramètre
+  // Déclenche la suppression (post ou commentaire)
   const confirmDelete = (id: string, type: "post" | "comment") => {
     setItemToDelete({ id, type });
     setShowDeleteModal(true);
   };
 
+  // Ferme le modal si clic en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -64,31 +65,28 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
         onClose();
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
+  // Confirme la suppression d'un post ou commentaire
   const handleDeleteConfirmed = () => {
-    if (itemToDelete) {
-      if (itemToDelete.type === "comment") {
-        dispatch(
-          deleteCommentRequested({
-            postId: post._id!,
-            commentId: itemToDelete.id,
-          })
-        );
-      } else if (itemToDelete.type === "post") {
-        dispatch(
-          deletePostRequested({
-            postId: itemToDelete.id,
-            userId: currentUserUid!,
-          })
-        );
-        onClose();
-      }
+    if (!itemToDelete) return;
+    if (itemToDelete.type === "comment") {
+      dispatch(
+        deleteCommentRequested({
+          postId: post._id!,
+          commentId: itemToDelete.id,
+        })
+      );
+    } else {
+      dispatch(
+        deletePostRequested({
+          postId: itemToDelete.id,
+          userId: currentUserUid!,
+        })
+      );
+      onClose();
     }
     setShowDeleteModal(false);
   };
@@ -99,7 +97,9 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
     dispatch(getUserByUsernameRequested(userName));
   };
 
-  return isOpen ? (
+  if (!isOpen) return null;
+
+  return (
     <div className="fixed inset-0 overflow-auto bg-black bg-opacity-80 z-50 flex items-center justify-center">
       <div
         className={`bg-white rounded-lg shadow-lg overflow-hidden ${
@@ -109,30 +109,60 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
         }`}
         ref={modalRef}
       >
-        <div className="absolute top-4 w-full flex justify-between px-4">
+        {isDesktop && (
+          <div className="absolute top-4 right-4 z-50">
+            <button
+              onClick={onClose}
+              className="text-white text-2xl font-bold bg-black/60 rounded-full w-8 h-8 flex items-center justify-center hover:bg-black"
+            >
+              ✖
+            </button>
+          </div>
+        )}
+        {isMobile && (
+          <div className="fixed top-0 left-0 right-0 flex justify-between items-center p-4 border-b border-gray-200 bg-white z-50">
+            <button onClick={onClose} className="text-lg">
+              ✖
+            </button>
+            <p className="text-lg font-semibold">Publication</p>
+            {currentUserUid === post.posterId ? (
+              <button
+                onClick={() => setShowOptions(!showOptions)}
+                className="text-xl font-bold"
+              >
+                ⋮
+              </button>
+            ) : (
+              <div className="w-6" /> // pour équilibrer
+            )}
+          </div>
+        )}
+        {/* Boutons de fermeture / options */}
+        {/* <div className="absolute top-4 w-full flex justify-between px-4">
           <button
             onClick={onClose}
-            className="text-gray-500 font-bold text-lg z-20"
+            className="text-white font-bold text-lg z-20"
           >
             ✖
           </button>
           {isMobile && !isEditing && currentUserUid === post.posterId && (
             <button
-              className="text-gray-500 text-xl font-bold"
               onClick={() => setShowOptions(!showOptions)}
+              className="text-white text-xl font-bold"
             >
               ⋮
             </button>
           )}
-        </div>
+        </div> */}
+
+        {/* Menu des options (modifier/supprimer) */}
         {showOptions && (
-          <div className="absolute right-4 top-12 bg-white border rounded shadow-lg">
+          <div className="absolute right-4 top-12 bg-white border rounded shadow-lg z-[999]">
             <button
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
               onClick={() => {
                 setIsEditing?.(true);
                 setShowOptions(false);
-                console.log("Modifier", isEditing);
               }}
             >
               Modifier
@@ -148,24 +178,26 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
             </button>
           </div>
         )}
-        {/* ✅ Utilisation du composant `ConfirmModal` */}
+
+        {/* Modal de confirmation suppression */}
         <ConfirmDeleteModal
-          isOpen={showDeleteModal} // ✅ Contrôle l'affichage du modal
+          isOpen={showDeleteModal}
           title={`Supprimer ${
             itemToDelete?.type === "post" ? "la publication" : "le commentaire"
-          } ?`} // ✅ Titre dynamique
+          } ?`}
           message={`Voulez-vous vraiment supprimer ${
             itemToDelete?.type === "post"
               ? "cette publication"
               : "ce commentaire"
-          } ?`} // ✅ Message dynamique
-          onConfirm={handleDeleteConfirmed} // ✅ Fonction exécutée quand l’utilisateur clique sur "Supprimer"
-          onCancel={() => setShowDeleteModal(false)} // ✅ Fonction exécutée quand l’utilisateur clique sur "Annuler"
+          } ?`}
+          onConfirm={handleDeleteConfirmed}
+          onCancel={() => setShowDeleteModal(false)}
         />
 
+        {/* Colonne image */}
         <div
           className={`bg-black flex items-center justify-center ${
-            isMobile ? "w-full" : "w-1/2"
+            isMobile ? "w-full mt-[64px]" : "w-1/2"
           }`}
         >
           <img
@@ -175,6 +207,7 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
           />
         </div>
 
+        {/* Colonne contenu */}
         <div
           className={`p-4 flex flex-col ${
             isMobile ? "flex-grow overflow-auto pb-8" : "w-1/2 overflow-auto"
@@ -188,43 +221,67 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
                     key={user._id}
                     className="flex justify-between items-center w-full"
                   >
-                    {/*
-                    ✅ Affichage de l'image de profil et du nom de l'utilisateur
-                    */}
+                    {/* Infos auteur */}
                     <div className="flex w-full items-center gap-2">
-                      <img
-                        src={user.picture}
-                        alt="user"
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
                       <div className="w-full">
-                        <div className="flex gap-2 items-center">
-                          <p
-                            className="font-bold cursor-pointer"
-                            onClick={() => handleGoProfile(user.userName!)}
-                          >
-                            {user?.userName}
-                          </p>
-                          <FollowAction followerId={user._id!} />
+                        <div className="flex justify-between items-center">
+                          {/* Partie gauche : photo + nom + follow */}
+                          <div className="flex items-center gap-2">
+                            <img
+                              src={user.picture}
+                              alt="user"
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <p
+                              onClick={() => handleGoProfile(user.userName!)}
+                              className="font-bold cursor-pointer"
+                            >
+                              {user?.userName}
+                            </p>
+                            <FollowAction followerId={user._id!} />
+                          </div>
+
+                          {/* Bouton ⋮ */}
+                          <div>
+                            {!isMobile &&
+                              !isEditing &&
+                              currentUserUid === post.posterId && (
+                                <button
+                                  onClick={() => setShowOptions(!showOptions)}
+                                  className="text-gray-500 text-xl font-bold"
+                                >
+                                  ⋮
+                                </button>
+                              )}
+                          </div>
                         </div>
-                        {isEditing ? (
-                          <textarea
-                            value={message}
-                            onChange={(e) =>
-                              setEditedMessage &&
-                              setEditedMessage(e.target.value)
-                            }
-                            className="flex-1 w-full border resize-none p-2 rounded outline-none bg-transparent text-gray-600 placeholder-gray-400 focus:ring-0"
-                          />
-                        ) : (
-                          <p className="text-gray-800">{post?.message}</p>
-                        )}
+                        <div className="pt-2">
+                          {isEditing ? (
+                            <textarea
+                              value={message}
+                              onChange={(e) =>
+                                setEditedMessage?.(e.target.value)
+                              }
+                              className="flex-1 w-full border resize-none p-2 rounded outline-none bg-transparent text-gray-600"
+                            />
+                          ) : (
+                            <ShowMoreText
+                              lines={2}
+                              more="Voir plus"
+                              less="Voir moins"
+                              className="text-gray-800"
+                              anchorClass="text-blue-500 font-semibold"
+                              expanded={false}
+                              width={0}
+                            >
+                              <p className="text-gray-800">{post?.message}</p>
+                            </ShowMoreText>
+                          )}
+                        </div>
                         {isEditing && isMobile && (
                           <div className="p-4 flex w-full gap-2 sticky bottom-0 bg-white z-10">
                             <button
-                              onClick={() =>
-                                setIsEditing && setIsEditing(false)
-                              }
+                              onClick={() => setIsEditing?.(false)}
                               className="px-4 w-full py-2 border rounded"
                             >
                               Annuler
@@ -239,34 +296,19 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
                         )}
                       </div>
                     </div>
-
-                    {/* Affichage du bouton option de l'utilisateur */}
-                    {!isMobile &&
-                      !isEditing &&
-                      currentUserUid &&
-                      currentUserUid === post.posterId && (
-                        <button
-                          className="text-gray-500 text-xl font-bold"
-                          onClick={() => setShowOptions(!showOptions)}
-                        >
-                          ⋮
-                        </button>
-                      )}
                   </div>
                 )
             )}
           </div>
 
-          {/* ✅ Affichage des commentaires */}
+          {/* Section commentaires + actions */}
           {isMobile && (
-            <div>
-              <PostButtonAction
-                post={post}
-                showComments={isCommentsOpen}
-                onToggleComments={setIsCommentsOpen}
-                isMobile={isMobile}
-              />
-            </div>
+            <PostButtonAction
+              post={post}
+              showComments={isCommentsOpen}
+              onToggleComments={setIsCommentsOpen}
+              isMobile={isMobile}
+            />
           )}
 
           {isCommentsOpen && isMobile && (
@@ -281,7 +323,6 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
                 <p className="text-lg font-semibold">Commentaires</p>
                 <div></div>
               </div>
-
               <CommentList
                 post={post}
                 usersData={usersData}
@@ -313,18 +354,17 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
                   isMobile={isMobile}
                 />
               </div>
-
               {isEditing ? (
-                <div className="p-4 border-t  w-full flex gap-2 sticky bottom-0 bg-white z-10">
+                <div className="p-4 border-t w-full flex gap-2 sticky bottom-0 bg-white z-10">
                   <button
-                    onClick={() => setIsEditing && setIsEditing(false)}
+                    onClick={() => setIsEditing?.(false)}
                     className="px-4 py-2 w-full border rounded"
                   >
                     Annuler
                   </button>
                   <button
                     onClick={onSave}
-                    className="px-4 py-2  w-full bg-primary text-white rounded"
+                    className="px-4 py-2 w-full bg-primary text-white rounded"
                   >
                     Enregistrer
                   </button>
@@ -342,5 +382,5 @@ export const PostDetails: React.FC<PostDetailsProps> = ({
         </div>
       </div>
     </div>
-  ) : null;
+  );
 };

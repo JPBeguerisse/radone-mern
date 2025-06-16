@@ -1,47 +1,54 @@
 // Description: Composant d'affichage des publications sauvegardées de l'utilisateur connecté
 import { useContext, useEffect, useState } from "react";
-import { Post } from "../../../types/post.types";
 import { useDispatch, useSelector } from "react-redux";
+import { Post } from "../../../types/post.types";
 import { PostImageCard } from "./card/PostImageCard";
-import { getPostRequested } from "../../../redux/reducers/posts.reducer";
 import { PostDetails } from "./PostDetails";
 import { UserContext } from "../../../components/AppContext";
+import {
+  getPostRequested,
+  // updatePostRequested (si édition possible dans l'avenir)
+} from "../../../redux/reducers/posts.reducer";
 import { getPostsSavedRequested } from "src/redux/reducers/user.reducer";
 
 const UserPostsSaved = () => {
-  const [isLoading, setIsLoading] = useState(true); // Gère l'état de chargement
-  const [isOpen, setIsOpen] = useState<boolean>();
-  const selectedPost = useSelector((state: any) => state.postsReducer.post);
-  const savedPosts = useSelector((state: any) => state.userReducer.savedPosts);
+  const dispatch = useDispatch();
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
 
-  const dispatch = useDispatch();
+  const savedPosts = useSelector((state: any) => state.userReducer.savedPosts);
+  const selectedPost = useSelector((state: any) => state.postsReducer.post);
 
-  console?.log("savedPosts", savedPosts);
+  const [isLoading, setIsLoading] = useState(true); // État de chargement initial
+  const [isOpen, setIsOpen] = useState<boolean>(false); //  État d'ouverture de la modale
 
-  // Lance une action pour récupérer les posts sauvegardés de l'utilisateur
+  //  Récupère les posts sauvegardés au montage
   useEffect(() => {
-    dispatch(getPostsSavedRequested(currentUserUid!));
+    if (currentUserUid) {
+      dispatch(getPostsSavedRequested(currentUserUid));
+    }
   }, [currentUserUid, dispatch]);
 
-  // Vérifie si les posts sauvegardés sont chargés
+  //  Met fin au chargement quand les posts sont disponibles
   useEffect(() => {
-    if (savedPosts && savedPosts.length > 0) setIsLoading(false);
+    if (savedPosts && savedPosts.length >= 0) {
+      setIsLoading(false);
+    }
   }, [savedPosts]);
 
-  // ouvrir le modal du post selectionné
+  //  Ouvre la modale et charge le post sélectionné
   const handleOpenModal = (post: Post) => {
     setIsOpen(true);
     dispatch(getPostRequested(post._id!));
   };
 
+  //  Ferme la modale
   const closeModal = () => {
     setIsOpen(false);
   };
 
   return (
-    <div className="p-4">
+    <div>
       {isLoading ? (
         <p className="text-center text-gray-500">Chargement des données...</p>
       ) : (
@@ -55,18 +62,14 @@ const UserPostsSaved = () => {
               />
             ))
           ) : (
-            <p>Aucun post liké</p>
+            <p className="text-gray-400">Aucun post sauvegardé</p>
           )}
         </div>
       )}
 
+      {/*  Modale d'affichage du post */}
       {isOpen && selectedPost && (
-        <PostDetails
-          post={selectedPost}
-          isOpen={isOpen}
-          onClose={closeModal}
-          //currentUser={userData}
-        />
+        <PostDetails post={selectedPost} isOpen={isOpen} onClose={closeModal} />
       )}
     </div>
   );

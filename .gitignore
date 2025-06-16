@@ -11,3 +11,11 @@ yarn-error.log
 
 # Environnement
 .env
+.env.local
+.env.development
+.env.test
+.env.production
+
+#log files
+*.log
+logs/

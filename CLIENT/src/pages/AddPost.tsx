@@ -2,20 +2,29 @@ import { createPostRequested } from "../redux/reducers/posts.reducer";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setSelectedPicturePost } from "src/redux/sagas/posts.saga";
-import { uploadToCloudinary } from "src/services/uploadToCloudinary";
+import { toast } from "react-toastify";
+import { uploadToCloudinary } from "src/services/posts/uploadToCloudinary";
 
 const AddPost: React.FC = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const MAX_FILE_SIZE_MB = 5; // Taille maximale du fichier en Mo
+  const ALLOWED_FILE_TYPES = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+  ]; // Types de fichiers autorisés
+
   const user = useSelector((state: any) => state.userReducer.user);
+
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const [picture, setPicture] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isNext, setIsNext] = useState<boolean>(false);
   const isGuest = user?.isGuest || false;
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   // Gestion de l'image sélectionnée
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,22 +40,7 @@ const AddPost: React.FC = () => {
     setMessage(e.target.value);
   };
 
-  // const handlePost = async () => {
-  //   if (!user?._id) {
-  //     console.error("Erreur : posterId manquant !");
-  //     return;
-  //   }
-  //   setSelectedPicturePost(selectedFile || null);
-  //   dispatch(
-  //     createPostRequested({
-  //       posterId: user._id,
-  //       message: message,
-  //     })
-  //   );
-
-  //   handleCloseModal();
-  // };
-
+  // Gestion de la création de la publication
   const handleCreatePost = async () => {
     if (!user?._id) {
       console.error("Erreur : posterId manquant !");
@@ -55,6 +49,21 @@ const AddPost: React.FC = () => {
 
     const file = selectedFile;
     if (!file) return;
+
+    // Vérification de la taille du fichier
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      toast.error(
+        `La taille du fichier ne doit pas dépasser ${MAX_FILE_SIZE_MB} Mo.`
+      );
+      return;
+    }
+    // Vérification du type de fichier
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      toast.error(
+        "Type de fichier non autorisé. Veuillez télécharger une image au format PNG, JPEG, JPG ou WEBP."
+      );
+      return;
+    }
 
     try {
       const { secure_url, public_id } = await uploadToCloudinary(file);
@@ -70,9 +79,6 @@ const AddPost: React.FC = () => {
       console.error("Erreur lors de la création de la publication :", error);
       return;
     }
-
-    // Dispatch de l'action pour créer la publication
-
     // Fermer le modal et rediriger vers la page d'accueil
     handleCloseModal();
   };
@@ -96,6 +102,7 @@ const AddPost: React.FC = () => {
                 &times;
               </button>
 
+              {/* Bouton pour aller à l'étape suivante */}
               {picture && !isNext && (
                 <button
                   onClick={() => setIsNext(true)}
@@ -105,6 +112,7 @@ const AddPost: React.FC = () => {
                 </button>
               )}
 
+              {/* Bouton pour partager la publication */}
               {isNext && (
                 <button
                   onClick={handleCreatePost}
@@ -122,7 +130,7 @@ const AddPost: React.FC = () => {
             <div>
               <div className="border-b pb-3 text-center text-lg font-semibold text-gray-700">
                 Créer une nouvelle publication
-                {isGuest && (
+                {isNext && isGuest && (
                   <div className="mt-4 text-red-500 text-center">
                     Vous êtes en mode invité, vous ne pouvez pas publier.
                   </div>
@@ -159,7 +167,8 @@ const AddPost: React.FC = () => {
                     type="file"
                     id="file-upload"
                     name="postImage"
-                    accept=".png, .jpg, .jpeg"
+                    accept=".png, .jpg, .jpeg ,.webp"
+                    required
                     className="hidden"
                     onChange={handlePictureChange}
                   />
@@ -186,7 +195,7 @@ const AddPost: React.FC = () => {
                       </h5>
                     </div>
 
-                    {/* Zone de texte stylisée */}
+                    {/* Zone de texte */}
                     <div className="relative">
                       <textarea
                         value={message}

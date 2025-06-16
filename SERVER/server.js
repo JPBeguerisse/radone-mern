@@ -1,23 +1,51 @@
+// Chargement des variables d'environnement
 require("dotenv").config({ path: "./config/.env" });
+
+// Connexion à la base de données MongoDB
 require("./config/db");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocs = require("./swagger"); // Importer la configuration Swagger
 const path = require("path");
 
+// Importation des routes
 const userRoutes = require("./routes/user.routes");
 const postRoutes = require("./routes/post.routes");
 const cors = require("cors");
 
+// Importation des middlewares pour la vérification du token
 const { requireAuth, verifyToken } = require("./middlewares/checkToken");
 
 const app = express();
 
-const corsOption = {
-  origin: process.env.REACT_APP_CLIENT_URL,
+// Configuration CORS pour autoriser les requêtes du front-end
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_CLIENT_URL
+      : ["http://localhost:3000", "http://192.168.1.104:3000"], // mobile + dev
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     if (
+//       !origin || // permet les requêtes sans origin (comme Postman)
+//       origin.includes("localhost") ||
+//       origin.startsWith("http://192.168.")
+//     ) {
+//       callback(null, true);
+//     } else {
+//       console.log("Blocked origin:", origin); // Affiche les appels bloqués
+
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// };
 
 //Pour tester sur mon mobile
 // app.use(
@@ -27,16 +55,12 @@ const corsOption = {
 //   })
 // );
 
-app.use(cors(corsOption));
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configuration de Swagger pour servir la documentation
+// Documentation Swagger disponible à /api-docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-// router.get("/profile", verifyToken, (req, res) => {
-//   res.send(req.userId);
-// });
 
 // Route pour obtenir les informations de l'utilisateur (juste l'id) connecté depuis le token
 /**
@@ -105,10 +129,36 @@ app.get("/api", (req, res) => {
   res.send("Bienvenue sur l'API");
 });
 
+// Routes pour les utilisateurs et les posts
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
-app.use("/api/uploads", express.static(path.join(__dirname, "uploads"))); // Pour servir les fichiers statiques (images, vidéos, etc.)
 
+// Pour servir les fichiers statiques (images, vidéos, etc.)
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Démarrage du serveur
 app.listen(process.env.PORT, () => {
   console.log(`Listenning on port ${process.env.PORT}`);
+});
+
+// Middleware global de gestion des erreurs
+app.use((err, req, res, next) => {
+  console.error("❌ Erreur non capturée :", err.stack || err);
+  res.status(500).json({ message: "Erreur serveur", error: err.message });
+});
+
+const morgan = require("morgan");
+app.use(morgan("dev"));
+
+// Désactiver les ETags (évite les 304 automatiques)
+app.disable("etag");
+
+// Forcer les routes à ne pas être mises en cache
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
+
+app.patch("/api/health", (req, res) => {
+  res.status(200).json({ message: "API is healthy" });
 });

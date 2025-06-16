@@ -9,6 +9,8 @@ import ConfirmEmail from "../log/ConfirmEmail";
 import { Login } from "../log/Login";
 import { Register } from "../log/Register";
 import { ProtectedRoute } from "../log/ProtectedRoute";
+import { ForgotPasswordForm } from "../log/ForgotPasswordForm";
+import ResetPasswordForm from "../log/ResetPasswordForm";
 
 const index = () => {
   return (
@@ -18,6 +20,8 @@ const index = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/confirmation/:token" element={<ConfirmEmail />} />
+        <Route path="forgot-password" element={<ForgotPasswordForm />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
 
         {/* Toutes les autres routes passent par ProtectedRoute */}
         <Route

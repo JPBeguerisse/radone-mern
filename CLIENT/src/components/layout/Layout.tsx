@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SideBar from "./SideBar";
 import { Outlet } from "react-router-dom";
 
@@ -12,7 +12,7 @@ const Layout = () => {
 
       {/* Contenu principal */}
       <div
-        className={`main-content flex-grow h-full min-h-screen pt-8 ${
+        className={`main-content flex-grow h-full min-h-screen pb-20 md:pb-0 pt-8 ${
           isOpen ? "ml-64" : "ml-0"
         } md:ml-64 transition-all duration-300`}
       >

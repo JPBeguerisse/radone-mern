@@ -12,6 +12,10 @@ export interface FollowersResponse {
   total: number;
 }
 
+export type ForgotPasswordResponse = {
+  message: string;
+};
+
 export const createUser = async (data: User): Promise<User> => {
   const response = await api.post("/user/register", data);
   return response.data;
@@ -112,7 +116,6 @@ export const unFollowUser = async (
 
 //Récupérer les followers d'un utilisateur
 export const getFollowers = async (
-  userId: string,
   page: number = 1,
   limit: number = 5,
   search?: string
@@ -125,7 +128,7 @@ export const getFollowers = async (
     params.append("search", search);
   }
   const response = await api.get<FollowersResponse>(
-    `/user/${userId}/followers?${params}`
+    `/user/followers?${params}`
   );
   console.log("Followers: ", response.data);
   return response.data;
@@ -133,7 +136,6 @@ export const getFollowers = async (
 
 //Récupérer les utilisateurs suivis par un utilisateur
 export const getFollowing = async (
-  userId: string,
   page: number = 1,
   limit: number = 5,
   search?: string
@@ -148,7 +150,7 @@ export const getFollowing = async (
   }
 
   const response = await api.get<FollowingResponse>(
-    `/user/${userId}/following?${params}`
+    `/user/following?${params}`
   );
   console.log("Following: ", response.data);
   return response.data;
@@ -165,3 +167,39 @@ export const getFollowing = async (
 //   const response = await api.get(`/user/${userId}/following`);
 //   return response.data;
 // };
+
+// Récupérer les followers d'un profil pour la page de profil
+export const getProfileFollowers = async (userId: string): Promise<User[]> => {
+  const response = await api.get(`/user/${userId}/followers`);
+  return response.data;
+};
+
+// Récupérer les following d'un profil pour la page de profil
+export const getProfileFollowing = async (userId: string): Promise<User[]> => {
+  const response = await api.get(`/user/${userId}/following`);
+  return response.data;
+};
+
+// Supprimer le compte utilisateur
+export const deleteAccount = async (): Promise<string> => {
+  return await api.delete(`/user`);
+};
+
+// Mot de de passe oublié
+export const forgotPassword = async (
+  email: string
+): Promise<ForgotPasswordResponse> => {
+  const response = await api.post("/user/forgot-password", { email });
+  return response.data;
+};
+
+// Réinitialiser le mot de passe
+export const resetPassword = async (
+  token: string,
+  newPassword: string
+): Promise<ForgotPasswordResponse> => {
+  const response = await api.post(`/user/reset-password/${token}`, {
+    newPassword,
+  });
+  return response.data;
+};

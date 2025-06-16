@@ -4,7 +4,6 @@ import { User } from "src/types/user.types";
 
 const UpdatePictureForm = () => {
   const currentUser: User = useSelector((state: any) => state.userReducer.user);
-  //console.log(currentUser);
   const [file, setFile] = useState(); // Stocke l'image sélectionnée
 
   return (
