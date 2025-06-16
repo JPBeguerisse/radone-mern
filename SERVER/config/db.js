@@ -14,9 +14,3 @@ mongoose
   })
   .then(() => console.log("✅ Connexion à MongoDB réussie"))
   .catch((err) => console.log("❌ Erreur MongoDB : %s", err.message));
-// mongoose
-//   .connect(
-//     "mongodb+srv://jeanbeguerisse:cxmtjHHAXm8P3gD@cluster0.kzxeufr.mongodb.net/social-network"
-//   )
-//   .then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.log("Failed to connect to MongoDB", err));
