@@ -1,4 +1,5 @@
 const PostModel = require("../../models/post.model");
+const logger = require("../../utils/logger");
 const ObjectID = require("mongoose").Types.ObjectId;
 
 //Obtenir tous les posts (triés)
@@ -14,9 +15,12 @@ module.exports.getAllPosts = async (req, res) => {
     }));
 
     res.status(200).json(sortedPosts);
+    logger.info("✅ Tous les posts récupérés avec succès");
   } catch (error) {
     res.status(500).json({
       message: "Une erreur est survenue lors de la récupération des posts.",
+    });
+    logger.error("❌ Erreur lors de la récupération des posts:", {
       error: error.message,
     });
   }
@@ -75,10 +79,16 @@ module.exports.getPost = async (req, res) => {
     }
 
     res.status(200).json(post);
+    logger.info("✅ Post récupéré avec succès:", {
+      postId,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Une erreur est survenue lors de la récupération du post.",
+    });
+    logger.error("❌ Erreur lors de la récupération du post:", {
       error: error.message,
+      postId,
     });
   }
 };

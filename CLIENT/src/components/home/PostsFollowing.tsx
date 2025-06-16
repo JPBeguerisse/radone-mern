@@ -25,10 +25,15 @@ export const PostsFollowing = ({
   // tous les utilisateurs présents en Redux
   const users = useSelector((state: any) => state.usersReducer.users);
 
+  console.log("users following", users);
+
   // Ne garder que les posts dont l'auteur est connu
-  const filteredPosts = posts.filter((post: Post) =>
-    users.some((user: User) => user._id === post.posterId)
-  );
+  const filteredPosts =
+    Array.isArray(users) && Array.isArray(posts)
+      ? posts.filter((post: Post) =>
+          users.some((user: User) => user._id === post.posterId)
+        )
+      : [];
 
   // Intersection Observer pour le scroll infini
   const sentinelRef = useRef<HTMLDivElement | null>(null);

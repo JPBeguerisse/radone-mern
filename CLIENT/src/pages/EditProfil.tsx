@@ -11,7 +11,7 @@ import {
 } from "src/redux/reducers/user.reducer";
 import { toast } from "react-toastify";
 
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Loader } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "src/components/AppContext";
 import { uploadToCloudinary } from "src/services/posts/uploadToCloudinary";
@@ -109,7 +109,7 @@ export const EditProfil = () => {
 
   // En cours de chargement (token en cours de vérification)
   if (userContext?.isLoading) {
-    return <div>Chargement...</div>; // ou un spinner
+    return <Loader className="mt-20" />;
   }
 
   // ❌ Pas connecté
@@ -219,7 +219,7 @@ export const EditProfil = () => {
           <div className="w-full sm:w-auto flex justify-center items-center">
             <label
               htmlFor="file-upload"
-              className={`w-full sm:w-auto text-center px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300 cursor-pointer ${
+              className={`w-full sm:w-auto text-center text-sm px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition duration-300 cursor-pointer ${
                 isGuest ? "opacity-50 cursor-not-allowed" : ""
               }`}
               style={{
@@ -234,7 +234,7 @@ export const EditProfil = () => {
             {user && user.picture && user.picture !== defaultPicture && (
               <button
                 onClick={deleteProfilePicture}
-                className={`w-full sm:w-auto bg-red-500 text-white font-bold hover:bg-red-800 px-4 py-2 rounded-lg transition" ${
+                className={`w-full sm:w-auto bg-red-500 text-white text-sm font-bold hover:bg-red-800 px-4 py-2 rounded-lg transition" ${
                   isGuest ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isGuest}
@@ -384,25 +384,25 @@ export const EditProfil = () => {
         </div>
 
         {/* Bouton Submit */}
-        <div className="flex justify-end gap-4">
-          <button
-            type="button"
-            onClick={() => setOpenConfirmModal(true)}
-            disabled={isGuest}
-            className={`bg-red-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-red-800 transition w-full sm:w-auto ${
-              isGuest ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            Supprimer mon compte
-          </button>
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-8  justify-end gap-4">
           <button
             type="submit"
             disabled={isGuest}
-            className={`bg-primary text-white font-bold px-6 py-2 rounded-lg hover:bg-secondary transition w-full sm:w-auto ${
+            className={`bg-primary text-white text-sm font-bold px-6 py-2 rounded-lg hover:bg-secondary transition w-full sm:w-auto ${
               isGuest ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             Enregistrer les modifications
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpenConfirmModal(true)}
+            disabled={isGuest}
+            className={`bg-red-600 text-sm text-white font-bold px-6 py-2 rounded-lg hover:bg-red-800 transition w-full sm:w-auto ${
+              isGuest ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            Supprimer mon compte
           </button>
         </div>
       </form>

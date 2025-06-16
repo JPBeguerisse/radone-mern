@@ -1,4 +1,5 @@
 const PostModel = require("../../models/post.model");
+const logger = require("../../utils/logger");
 const ObjectID = require("mongoose").Types.ObjectId;
 
 require("dotenv").config();
@@ -28,9 +29,15 @@ module.exports.createPost = async (req, res) => {
 
     // Retourne le post créé en réponse
     res.status(201).json(savedPost);
+    logger.info("✅ Post créé avec succès:", {
+      postId: savedPost._id,
+      posterId: savedPost.posterId,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Une erreur est survenue lors de la création du post.",
+    });
+    logger.error("❌ Erreur lors de la création du post:", {
       error: error.message,
     });
   }

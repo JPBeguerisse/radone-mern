@@ -2,7 +2,7 @@
 import React from "react";
 
 type Props = {
-  message: string;
+  message: string | "cool";
 };
 
 export const FormattedMessage: React.FC<Props> = ({ message }) => {

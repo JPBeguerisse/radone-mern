@@ -195,6 +195,15 @@ export const Login = () => {
           S'inscrire
         </button>
       </p>
+      <p className="mt-2 text-sm text-gray-600">
+        Mot de passe oublié ?{" "}
+        <button
+          onClick={() => navigate("/forgot-password")}
+          className="text-blue-500 hover:underline"
+        >
+          Réinitialiser
+        </button>
+      </p>
     </AuthLayout>
   );
 };

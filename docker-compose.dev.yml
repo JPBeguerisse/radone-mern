@@ -1,7 +1,9 @@
 #docker-compose
 services:
   client:
-    build: ./CLIENT
+    build: 
+      context: ./CLIENT
+      dockerfile: Dockerfile.dev
     container_name: SOCIAL_APP_CLIENT
     environment:
       # - REACT_APP_API_URL=http://localhost:8000/
@@ -13,7 +15,9 @@ services:
       - /app/node_modules  # Évite les conflits avec node_modules
       - ./server/uploads:/app/uploads
   server:
-    build: ./SERVER
+    build: 
+      context: ./SERVER
+      dockerfile: Dockerfile.dev
     container_name: SOCIAL_APP_SERVER
     ports:
       - '8000:8000'

@@ -2,17 +2,33 @@ services:
   client:
     build:
       context: ./CLIENT
-    container_name: SOCIAL_APP_CLIENT
+      dockerfile: Dockerfile.prod
+    container_name: SOCIAL_APP_CLIENT_PROD
     ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=https://monsite.com/api
+      - "80:80"
+    # environment:
+    #   - REACT_APP_API_URL=http://socialapp.com/api
+    env_file:
+      - ./CLIENT/.env.production
 
   server:
     build:
       context: ./SERVER
-    container_name: SOCIAL_APP_SERVER
+      dockerfile: Dockerfile.prod
+    container_name: SOCIAL_APP_SERVER_PROD
     ports:
       - "8000:8000"
     env_file:
       - ./SERVER/.env.production
+
+  # nginx:
+  #   image: nginx:1-alpine
+  #   container_name: SOCIAL_APP_NGINX_PROD
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  #     - ./server/uploads:/www/uploads
+  #   depends_on:
+  #     - client
+  #     - server

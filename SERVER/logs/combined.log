@@ -89,3 +89,95 @@
 {"level":"info","message":"✅Mot de passe réinitialisé pour l'utilisateur junior_b (juniorbeguerisse@gmail.com)","service":"social-app","timestamp":"2025-06-13 14:39:31"}
 {"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 14:40:03"}
 {"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 14:40:45"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à juniorbeguerisse@gmail.com pour l'utilisateur junior_b","service":"social-app","timestamp":"2025-06-13 15:07:40"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à juniorbeguerisse@gmail.com pour l'utilisateur junior_b","service":"social-app","timestamp":"2025-06-13 15:13:32"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à juniorbeguerisse@gmail.com pour l'utilisateur junior_b","service":"social-app","timestamp":"2025-06-13 15:15:02"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 15:16:17"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à juniorbeguerisse@gmail.com pour l'utilisateur junior_b","service":"social-app","timestamp":"2025-06-13 15:29:08"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à jeanbeguerisse@gmail.com pour l'utilisateur jpbeguerisse","service":"social-app","timestamp":"2025-06-13 15:33:16"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à jeanbeguerisse@gmail.com pour l'utilisateur jpbeguerisse","service":"social-app","timestamp":"2025-06-13 15:33:17"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à juniorbeguerisse@gmail.com pour l'utilisateur junior_b","service":"social-app","timestamp":"2025-06-13 15:37:43"}
+{"0":"j","1":"w","10":"d","2":"t","3":" ","4":"e","5":"x","6":"p","7":"i","8":"r","9":"e","level":"error","message":"❌ Erreur de réinitialisation du mot de passe","service":"social-app","timestamp":"2025-06-13 16:02:53"}
+{"level":"info","message":"✅Email de réinitialisation envoyé à juniorbeguerisse@gmail.com pour l'utilisateur junior_b","service":"social-app","timestamp":"2025-06-13 16:05:16"}
+{"level":"info","message":"✅ Mot de passe réinitialisé pour l'utilisateur junior_b (juniorbeguerisse@gmail.com)","service":"social-app","timestamp":"2025-06-13 16:06:02"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:23:31"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:23:35"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:23:53"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:24:57"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:25:00"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:25:31"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:25:48"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:26:05"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:26:12"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:26:29"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:26:59"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:27:26"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:27:36"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:27:52"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:28:12"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:28:52"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:29:16"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:29:30"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:29:51"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:31:22"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:31:28"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:31:51"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:31:58"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:32:43"}
+{"level":"info","message":"✅ Connexion à MongoDB réussie","service":"social-app","timestamp":"2025-06-13 16:32:48"}
+{"level":"info","message":"✅ Utilisateur invité guest_user (guest@example.com) connecté avec succès","service":"social-app","timestamp":"2025-06-13 16:33:00"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684c2e499d903ea03e082bf6","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:33:00","userId":"684c2e499d903ea03e082bf6"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684c2e499d903ea03e082bf6","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:33:01","userId":"684c2e499d903ea03e082bf6"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684c2e499d903ea03e082bf6","postsCount":2,"service":"social-app","timestamp":"2025-06-13 16:33:19","userId":"684c2e499d903ea03e082bf6"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:33:49","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:33:50","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:33:58","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:33:59","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":2,"service":"social-app","timestamp":"2025-06-13 16:34:01","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:34:09"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:34:10"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:05"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:07"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:08"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:09"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:36:11","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:36:12","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:12"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:13"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:14"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:17"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:26"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:36:27"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:37:32"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:37:33"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:37:39"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:37:40"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:40"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:41"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:43"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:43"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:44"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:44"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:47"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:38:47"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:39:09"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:39:11"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:39:20"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:39:23"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:39:56"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:39:58"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:42:12","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:42:13","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:42:13"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae7c6e11aa53946dfd2a3","service":"social-app","timestamp":"2025-06-13 16:42:14"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:42:20","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-13 16:42:21","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ab3b07efbb4b0be35caa8","service":"social-app","timestamp":"2025-06-13 16:42:37"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ab3b07efbb4b0be35caa8","service":"social-app","timestamp":"2025-06-13 16:42:39"}
+{"level":"info","message":"✅ Utilisateur invité guest_user (guest@example.com) connecté avec succès","service":"social-app","timestamp":"2025-06-15 20:30:14"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-15 20:30:14","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-15 20:30:15","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-15 20:30:25","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":5,"service":"social-app","timestamp":"2025-06-15 20:30:26","userId":"684a053536c69e4de72c2e87"}
+{"level":"info","message":"✅ Post récupéré avec succès:","postId":"684ae68ae11aa53946dfd273","service":"social-app","timestamp":"2025-06-15 20:31:53"}
+{"level":"info","message":"✅ Posts 'For You' récupérés pour l'utilisateur 684a053536c69e4de72c2e87","postsCount":0,"service":"social-app","timestamp":"2025-06-15 20:32:38","userId":"684a053536c69e4de72c2e87"}

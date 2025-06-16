@@ -1,10 +1,12 @@
 const PostModel = require("../../models/post.model");
 const ObjectID = require("mongoose").Types.ObjectId;
 const UserModel = require("../../models/user.model");
+const logger = require("../../utils/logger");
 // Obtenir les posts des utilisateurs suivis
 module.exports.getPostsFollowing = async (req, res) => {
   try {
-    const userId = req.params.id;
+    // const userId = req.params.id;
+    const userId = req.userId; // Utiliser l'ID de l'utilisateur connecté
     const { skip = 0, limit = 5 } = req.query;
 
     if (!ObjectID.isValid(userId)) {
@@ -77,11 +79,19 @@ module.exports.getPostsForYou = async (req, res) => {
 
     // res.status(200).json({ posts: sortedPosts, total });
     res.status(200).json(sortedPosts);
+    logger.info(`✅ Posts 'For You' récupérés pour l'utilisateur ${userId}`, {
+      userId,
+      postsCount: sortedPosts.length,
+    });
   } catch (error) {
     res.status(500).json({
       message:
         "Une erreur est survenue lors de la récupération des posts 'For You'.",
-      error: error.message,
     });
+    logger.error(
+      "❌ Erreur lors de la récupération des posts 'For You':",
+      error.message,
+      { userId, error: error.message }
+    );
   }
 };

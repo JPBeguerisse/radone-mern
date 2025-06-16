@@ -12,6 +12,10 @@ export interface FollowersResponse {
   total: number;
 }
 
+export type ForgotPasswordResponse = {
+  message: string;
+};
+
 export const createUser = async (data: User): Promise<User> => {
   const response = await api.post("/user/register", data);
   return response.data;
@@ -176,6 +180,26 @@ export const getProfileFollowing = async (userId: string): Promise<User[]> => {
   return response.data;
 };
 
+// Supprimer le compte utilisateur
 export const deleteAccount = async (): Promise<string> => {
   return await api.delete(`/user`);
+};
+
+// Mot de de passe oublié
+export const forgotPassword = async (
+  email: string
+): Promise<ForgotPasswordResponse> => {
+  const response = await api.post("/user/forgot-password", { email });
+  return response.data;
+};
+
+// Réinitialiser le mot de passe
+export const resetPassword = async (
+  token: string,
+  newPassword: string
+): Promise<ForgotPasswordResponse> => {
+  const response = await api.post(`/user/reset-password/${token}`, {
+    newPassword,
+  });
+  return response.data;
 };

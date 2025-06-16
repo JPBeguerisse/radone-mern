@@ -1,4 +1,5 @@
 const PostModel = require("../../models/post.model");
+const logger = require("../../utils/logger");
 const ObjectID = require("mongoose").Types.ObjectId;
 
 // Ajouter un commentaire à un post
@@ -31,11 +32,16 @@ module.exports.addCommentPost = async (req, res) => {
     updatedPost
       ? res.status(200).json(updatedPost)
       : res.status(404).send("Post non trouvé");
+    logger.info(
+      `✅ Commentaire ajouté au post avec ID ${postId} par l'utilisateur ${commenterId}`
+    );
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de l'ajout du commentaire.",
-      error: error.message,
     });
+    logger.error(
+      `❌ Erreur lors de l'ajout du commentaire au post avec ID ${postId} : ${error.message}`
+    );
   }
 };
 
@@ -70,8 +76,10 @@ module.exports.updateComment = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la modification du commentaire.",
-      error: error.message,
     });
+    logger.error(
+      `❌ Erreur lors de la modification du commentaire sur le post avec ID ${postId} : ${error.message}`
+    );
   }
 };
 
@@ -104,10 +112,15 @@ module.exports.deleteComment = async (req, res) => {
     deletedComment
       ? res.status(200).json(deletedComment)
       : res.status(404).send("Post ou commentaire non trouvé");
+    logger.info(
+      `✅ Commentaire avec ID ${commentId} supprimé du post avec ID ${postId} par l'utilisateur ${req.userId}`
+    );
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la suppression du commentaire.",
-      error: error.message,
     });
+    logger.error(
+      `❌ Erreur lors de la suppression du commentaire sur le post avec ID ${postId} : ${error.message}`
+    );
   }
 };

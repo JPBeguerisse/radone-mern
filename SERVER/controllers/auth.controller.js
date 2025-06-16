@@ -135,9 +135,8 @@ module.exports.confirmEmail = async (req, res) => {
     });
     return res.status(201).json({ message: "Compte activé avec succès." });
   } catch (error) {
-    return res
-      .status(400)
-      .json({ message: "Lien invalide ou expiré.", error: error.message });
+    res.status(400).json({ message: "Lien invalide ou expiré." });
+    logger.error("❌ Erreur de confirmation d'email", error.message);
   }
 };
 
@@ -178,7 +177,9 @@ module.exports.forgotPassword = async (req, res) => {
       html: html,
     });
 
-    res.status(200).json({ message: "Email envoyé avec succès." });
+    res.status(200).json({
+      message: "Un lien de réinitialisation a été envoyé par e-mail.",
+    });
     logger.info(
       `✅Email de réinitialisation envoyé à ${user.email} pour l'utilisateur ${user.userName}`
     );
@@ -236,9 +237,12 @@ module.exports.login = async (req, res) => {
     );
 
     res.status(200).json({ token });
+    logger.info(
+      `✅ Utilisateur ${user.userName} (${user.email}) connecté avec succès`
+    );
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Erreur serveur" });
+    logger.error("❌ Erreur de connexion", error.message);
   }
 };
 
@@ -257,12 +261,18 @@ module.exports.loginGuest = async (req, res) => {
     });
 
     res.status(200).json({ token });
+    logger.info(
+      `✅ Utilisateur invité ${guestUser.userName} (${guestUser.email}) connecté avec succès`
+    );
   } catch (err) {
+    console.error("Erreur de connexion en tant qu'invité", err);
     res.status(500).json({ message: "Erreur serveur", error: err.message });
+    logger.error("❌ Erreur de connexion en tant qu'invité", err.message);
   }
 };
 
 // Déconnexion
 module.exports.logout = (req, res) => {
   res.status(200).json({ message: "Déconnexion réussie." });
+  logger.info("✅ Utilisateur déconnecté avec succès");
 };

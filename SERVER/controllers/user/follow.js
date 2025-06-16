@@ -137,20 +137,23 @@ module.exports.getProfileFollowing = async (req, res) => {
 
 // Suivre un utilisateur
 module.exports.follow = async (req, res) => {
-  const userId = req.params.id;
-  const { userIdToFollow } = req.body;
+  console.log("👉 [FOLLOW] Route appelée avec : ", req.params.id, req.body);
 
-  if (!ObjectID.isValid(userId) || !ObjectID.isValid(userIdToFollow)) {
-    return res.status(400).send("ID(s) invalide(s)");
-  }
-
-  const user = await UserModel.findById(userId).select("_id");
-  const userToFollow = await UserModel.findById(userIdToFollow).select("_id");
-
-  if (!user || !userToFollow) {
-    return res.status(404).send("Utilisateur introuvable");
-  }
   try {
+    const userId = req.params.id;
+    const { userIdToFollow } = req.body;
+
+    if (!ObjectID.isValid(userId) || !ObjectID.isValid(userIdToFollow)) {
+      return res.status(400).send("ID(s) invalide(s)");
+    }
+
+    const user = await UserModel.findById(userId).select("_id");
+    const userToFollow = await UserModel.findById(userIdToFollow).select("_id");
+
+    console.log("✅user:", user);
+    if (!user || !userToFollow) {
+      return res.status(404).send("Utilisateur introuvable");
+    }
     // suivre un utilisateur
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
@@ -162,6 +165,7 @@ module.exports.follow = async (req, res) => {
       },
       { new: true }
     ).select("-password");
+    console.log("✅updatedUser:", updatedUser);
 
     // Mettre à jour l'utilisateur suivi pour ajouter l'ID de l'utilisateur qui le suit
     await UserModel.findByIdAndUpdate(
@@ -176,8 +180,10 @@ module.exports.follow = async (req, res) => {
 
     return res.status(200).json(updatedUser);
   } catch (error) {
+    console.error("Erreur lors de l'ajout en tant que follower:", error);
     res.status(500).json({
       message: "Erreur lors de l'ajout en tant que follower.",
+      error: error.message,
     });
   }
 };

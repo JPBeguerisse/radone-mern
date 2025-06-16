@@ -112,7 +112,14 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
             </button>
           ) : (
             <button onClick={handleLike}>
-              <Heart width={30} height={30} />
+              <Heart
+                width={30}
+                height={30}
+                className={`transition-transform duration-300 ${
+                  isLiked ? "scale-125 text-red-500" : "hover:scale-110"
+                }`}
+                fill={isLiked ? "currentColor" : "none"}
+              />
             </button>
           )}
           {/* Avertissement si non connecté */}
@@ -149,9 +156,12 @@ const PostButtonAction: React.FC<PostButtonActionProps> = ({
           ) : (
             <div className="flex gap-2 mt-4 relative">
               <Bookmark
-                className="cursor-pointer"
                 width={30}
                 height={30}
+                className={`transition-transform duration-300 ${
+                  isSaved ? "scale-125 text-black" : "hover:scale-110"
+                }`}
+                fill={isSaved ? "currentColor" : "none"}
                 onClick={handleSave} // Appelle la fonction pour ajouter le post aux favoris
               />
             </div>

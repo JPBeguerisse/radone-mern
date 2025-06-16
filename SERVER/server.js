@@ -27,6 +27,8 @@ const corsOptions = {
       ? process.env.REACT_APP_CLIENT_URL
       : ["http://localhost:3000", "http://192.168.1.104:3000"], // mobile + dev
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 // const corsOptions = {
 //   origin: (origin, callback) => {
@@ -137,4 +139,26 @@ app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 // Démarrage du serveur
 app.listen(process.env.PORT, () => {
   console.log(`Listenning on port ${process.env.PORT}`);
+});
+
+// Middleware global de gestion des erreurs
+app.use((err, req, res, next) => {
+  console.error("❌ Erreur non capturée :", err.stack || err);
+  res.status(500).json({ message: "Erreur serveur", error: err.message });
+});
+
+const morgan = require("morgan");
+app.use(morgan("dev"));
+
+// Désactiver les ETags (évite les 304 automatiques)
+app.disable("etag");
+
+// Forcer les routes à ne pas être mises en cache
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
+
+app.patch("/api/health", (req, res) => {
+  res.status(200).json({ message: "API is healthy" });
 });

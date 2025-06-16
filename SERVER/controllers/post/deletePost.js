@@ -1,4 +1,5 @@
 const PostModel = require("../../models/post.model");
+const logger = require("../../utils/logger");
 const ObjectID = require("mongoose").Types.ObjectId;
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
@@ -44,10 +45,15 @@ module.exports.deletePost = async (req, res) => {
 
     // Retourner un message de succès après la suppression
     res.status(200).json({ message: "Post et image supprimés avec succès." });
+    logger.info(
+      `✅ Post avec ID ${postId} supprimé avec succès par l'utilisateur ${userId}`
+    );
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la suppression du post",
-      error: error.message,
     });
+    logger.error(
+      `❌ Erreur lors de la suppression du post avec ID ${postId} : ${error.message}`
+    );
   }
 };

@@ -180,7 +180,8 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
               expanded={false}
               width={0}
             >
-              <FormattedMessage message={post.message!} />
+              {/* <FormattedMessage message={post.message!} /> */}
+              {post.message || "Aucun message"}
             </ShowMoreText>
           </div>
         </div>

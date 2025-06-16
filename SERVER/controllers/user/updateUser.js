@@ -2,6 +2,7 @@ const UserModel = require("../../models/user.model");
 const ObjectID = require("mongoose").Types.ObjectId;
 const DeletedUserModel = require("../../models/deletedUser.model");
 const PostModel = require("../../models/post.model");
+const logger = require("../../utils/logger");
 // Mise à jour d’un utilisateur
 module.exports.updateUser = async (req, res) => {
   const userId = req.params.id;
@@ -141,11 +142,22 @@ module.exports.deleteUser = async (req, res) => {
     res.status(200).json({
       message: "Compte supprimé avec succès.",
     });
+    logger.info("Utilisateur supprimé avec succès", {
+      userId,
+      userName: user.userName,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la suppression de l'utilisateur.",
-      error: error.message,
     });
+    logger.error(
+      "Erreur lors de la suppression de l'utilisateur:",
+      error.message,
+      {
+        userId,
+        error: error.message,
+      }
+    );
   }
 };
 

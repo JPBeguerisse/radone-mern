@@ -1,5 +1,4 @@
-import React, { ReactNode } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { ReactNode } from "react";
 
 interface AuthLayoutProps {
   children: ReactNode;

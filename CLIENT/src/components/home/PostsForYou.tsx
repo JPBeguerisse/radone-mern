@@ -6,6 +6,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../AppContext";
 import { useSelector } from "react-redux";
 import { getPostsForYouRequested } from "src/redux/reducers/posts.reducer";
+import { User } from "src/types/user.types";
 
 type Props = {
   posts: Post[];
@@ -25,14 +26,18 @@ export const PostsForYou = ({
   // Liste des utilisateurs pour filtrer les posts valides
   const users = useSelector((state: any) => state.usersReducer.users);
 
+  console.log("users for you", users);
+
   // Référence à l'élément observé pour le scroll infini
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Ne garder que les posts dont le créateur existe dans `users`
-  const filteredPosts = posts.filter((post: Post) =>
-    users.some((user: any) => user._id === post.posterId)
-  );
-
+  const filteredPosts =
+    Array.isArray(users) && Array.isArray(posts)
+      ? posts.filter((post: Post) =>
+          users.some((user: User) => user._id === post.posterId)
+        )
+      : [];
   // Scroll infini grâce à Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(

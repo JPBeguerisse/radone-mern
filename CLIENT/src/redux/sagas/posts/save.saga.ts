@@ -28,7 +28,7 @@ export function* handleSavePost(
     yield put(getPostRequested(action.payload.postId)); // 🔄 Met à jour le post avec les données mises à jour
     yield put(getPostsSavedRequested(action.payload.userId)); // 🔄 Rafraîchir la liste des posts sauvegardés
 
-    toast.success("Post ajouté aux favoris !");
+    // toast.success("Post ajouté aux favoris !");
   } catch (error: any) {
     console.error("Erreur lors de la sauvegarde du post :", error);
     yield put(savePostFailed(error.message));
@@ -51,7 +51,7 @@ export function* handleUnSavePost(
     yield put(getPostRequested(action.payload.postId)); // 🔄 Met à jour le post
     yield put(getPostsSavedRequested(action.payload.userId)); // 🔄 Met à jour les favoris
 
-    toast.success("Post retiré des favoris !");
+    // toast.success("Post retiré des favoris !");
   } catch (error: any) {
     console.error("Erreur lors de la suppression des favoris :", error);
     yield put(unSavePostFailed(error.message));

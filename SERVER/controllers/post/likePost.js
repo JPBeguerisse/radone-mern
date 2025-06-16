@@ -3,30 +3,76 @@ const ObjectID = require("mongoose").Types.ObjectId;
 const UserModel = require("../../models/user.model");
 
 //Liiker un post
+// module.exports.like = async (req, res) => {
+//   try {
+//     const postId = req.params.id;
+
+//     if (!ObjectID.isValid(postId)) res.status(404).send("Unknow ID");
+//     const liked = await PostModel.findByIdAndUpdate(
+//       postId,
+//       {
+//         $addToSet: {
+//           //adToset ajoute seulement si l'id n'existe pas déjà
+//           likers: req.userId,
+//         },
+//       },
+//       { new: true }
+//     );
+
+//     if (!liked) {
+//       return res.status(404).send("Post non trouvé");
+//     }
+
+//     console.log("✅Liked post:", liked);
+
+//     return res.status(200).json(liked);
+
+//     // liked
+//     //   ? res.status(200).json(liked)
+//     //   : res.status(404).send("Post non trouvé");
+//   } catch (error) {
+//     console.error("❌ Erreur lors du like du post:", error.message);
+//     res.status(500).json({
+//       message: "Erreur lors du like du post.",
+//     });
+//   }
+// };
+
 module.exports.like = async (req, res) => {
-  const postId = req.params.id;
-
-  if (!ObjectID.isValid(postId)) res.status(404).send("Unknow ID");
-
   try {
+    const postId = req.params.id;
+    console.log("▶️ Requête PATCH reçue pour post:", postId);
+    console.log("▶️ Utilisateur connecté:", req.userId);
+
+    if (!ObjectID.isValid(postId)) {
+      console.log("❌ ID invalide");
+      return res.status(404).send("Unknow ID");
+    }
+
+    if (!req.userId) {
+      console.log("❌ Utilisateur non connecté");
+      return res.status(401).json({ message: "Non authentifié" });
+    }
+
     const liked = await PostModel.findByIdAndUpdate(
       postId,
       {
         $addToSet: {
-          //adToset ajoute seulement si l'id n'existe pas déjà
           likers: req.userId,
         },
       },
       { new: true }
     );
 
-    liked
-      ? res.status(200).json(liked)
-      : res.status(404).send("Post non trouvé");
+    if (!liked) {
+      return res.status(404).send("Post non trouvé");
+    }
+
+    console.log("✅ Liked avec succès :", liked._id);
+    return res.status(200).json(liked);
   } catch (error) {
-    res.status(500).json({
-      message: "Erreur lors du like du post.",
-    });
+    console.error("❌ Erreur dans la route LIKE :", error.message);
+    return res.status(500).json({ message: "Erreur serveur" });
   }
 };
 
