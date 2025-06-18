@@ -3,7 +3,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createUser } from "src/services/userService";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AuthLayout } from "./AuthLayout";
 
@@ -34,7 +34,7 @@ export const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   type userRegisterForm = z.infer<typeof userRegisterSchema>;
 
   // Hook React Hook Form avec validation Zod
@@ -54,6 +54,7 @@ export const Register = () => {
 
   // Soumission du formulaire d'inscription
   const onSubmit = async (data: userRegisterForm) => {
+    setIsLoading(true);
     try {
       const res = await createUser(data);
       navigate("/login", { state: { confirmationMessage: res.message } });
@@ -68,6 +69,8 @@ export const Register = () => {
           });
         });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -203,9 +206,21 @@ export const Register = () => {
         {/* Bouton de soumission */}
         <button
           type="submit"
-          className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+          disabled={isLoading}
+          className={`w-full p-2 text-white rounded-md transition ${
+            isLoading
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-primary hover:bg-secondary"
+          }`}
         >
-          S'inscrire
+          {isLoading ? (
+            <span className="flex justify-center items-center gap-2">
+              <Loader className="animate-spin" width={18} height={18} />
+              Inscription...
+            </span>
+          ) : (
+            "S'inscrire"
+          )}
         </button>
       </form>
 

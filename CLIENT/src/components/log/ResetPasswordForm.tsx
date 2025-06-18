@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { resetPassword } from "src/services/userService";
 import { z } from "zod";
 import { AuthLayout } from "./AuthLayout";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Loader } from "lucide-react";
 
 export const resetPasswordSchema = z
   .object({
@@ -31,6 +31,7 @@ const ResetPasswordForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const param = useParams();
   const token = param.token;
 
@@ -53,6 +54,7 @@ const ResetPasswordForm = () => {
   }
 
   const onSubmit = async (data: ResetPasswordForm) => {
+    setIsLoading(true);
     try {
       // Appel à la fonction de service pour réinitialiser le mot de passe
       const response = await resetPassword(token, data.password);
@@ -148,9 +150,21 @@ const ResetPasswordForm = () => {
         {/* Bouton de soumission */}
         <button
           type="submit"
-          className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+          disabled={isLoading}
+          className={`w-full p-2 text-white rounded-md transition ${
+            isLoading
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-primary hover:bg-secondary"
+          }`}
         >
-          S'inscrire
+          {isLoading ? (
+            <span className="flex justify-center items-center gap-2">
+              <Loader className="animate-spin" width={18} height={18} />
+              Réinitialisation...
+            </span>
+          ) : (
+            "Réinitialiser le mot de passe"
+          )}
         </button>
       </form>
       {responseMessage && (

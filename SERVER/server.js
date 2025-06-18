@@ -21,15 +21,43 @@ const { requireAuth, verifyToken } = require("./middlewares/checkToken");
 const app = express();
 
 // Configuration CORS pour autoriser les requêtes du front-end
+// const corsOptions = {
+//   origin:
+//     process.env.NODE_ENV === "production"
+//       ? process.env.REACT_APP_CLIENT_URL
+//       : ["http://localhost:3000", "http://192.168.1.104:3000"], // mobile + dev
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// };
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     if (
+//       !origin || // permet les requêtes sans origin (comme Postman)
+//       origin.includes("localhost") ||
+//       origin.startsWith("http://192.168.") ||
+//       origin === "http://socialapp.com"
+//     ) {
+//       callback(null, true);
+//     } else {
+//       console.log("Blocked origin:", origin); // Affiche les appels bloqués
+
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// };
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.REACT_APP_CLIENT_URL
-      : ["http://localhost:3000", "http://192.168.1.104:3000"], // mobile + dev
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: process.env.REACT_APP_CLIENT_URL,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
+app.use(cors(corsOptions));
+
+console.log("env", process.env.REACT_APP_CLIENT_URL);
+
 // const corsOptions = {
 //   origin: (origin, callback) => {
 //     if (
@@ -55,7 +83,6 @@ const corsOptions = {
 //   })
 // );
 
-app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -160,5 +187,18 @@ app.use((req, res, next) => {
 });
 
 app.patch("/api/health", (req, res) => {
-  res.status(200).json({ message: "API is healthy" });
+  res.status(200).json({ message: "API is healthy PATCH" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ message: "API is healthy GET" });
+});
+app.post("/api/health", (req, res) => {
+  res.status(200).json({ message: "API is healthy POST" });
+});
+app.put("/api/health", (req, res) => {
+  res.status(200).json({ message: "API is healthy PUT" });
+});
+app.delete("/api/health", (req, res) => {
+  res.status(200).json({ message: "API is healthy DELETE" });
 });

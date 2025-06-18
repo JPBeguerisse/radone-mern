@@ -1,3 +1,4 @@
+import { Loader } from "lucide-react";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { User } from "src/types/user.types";
@@ -5,7 +6,8 @@ import { User } from "src/types/user.types";
 const UpdatePictureForm = () => {
   const currentUser: User = useSelector((state: any) => state.userReducer.user);
   const [file, setFile] = useState(); // Stocke l'image sélectionnée
-
+  const isLoading = useSelector((state: any) => state.userReducer.isLoading); // Indique si une action est en cours
+  const error = useSelector((state: any) => state.userReducer.error); // Stocke les erreurs éventuelles
   return (
     <form action="">
       <div>
@@ -33,7 +35,14 @@ const UpdatePictureForm = () => {
           {/* Bouton pour soumettre le formulaire */}
           <div className="w-full sm:w-auto flex items-center">
             <button className="w-full sm:w-auto bg-primary text-white font-bold hover:bg-secondary px-4 py-2 rounded-lg transition">
-              Modifier la photo
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader className="animate-spin" width={18} height={18} />
+                  Mise à jour...
+                </span>
+              ) : (
+                "Modifier la photo"
+              )}
             </button>
           </div>
         </div>

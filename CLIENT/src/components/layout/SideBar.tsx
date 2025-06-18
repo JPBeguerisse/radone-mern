@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../AppContext";
 import { Logout } from "../log/Logout";
 import { Home, Plus, Search, Settings } from "lucide-react";
@@ -15,7 +15,8 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
   const currentUserUid = useContext(UserContext)?.uid;
   const user = useSelector((state: any) => state.userReducer.user);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
+  const location = useLocation();
+  const navigate = useNavigate();
   // Bascule l'état d'ouverture de la sidebar
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -37,7 +38,19 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
           <div className="nav-link flex flex-col gap-4">
             <NavLink
               to="/"
-              onClick={toggleSidebar}
+              onClick={(e) => {
+                if (location.pathname === "/") {
+                  e.preventDefault();
+
+                  navigate("/temps", { replace: true });
+                  console.log(location.pathname);
+                  setTimeout(() => {
+                    navigate("/");
+                  }, 10);
+                } else {
+                  toggleSidebar();
+                }
+              }}
               className={({ isActive }) =>
                 `flex items-center gap-4 px-4 py-2 rounded-lg hover:bg-gray-100 transition ${
                   isActive ? "text-black font-semibold" : "text-gray-600"
@@ -137,12 +150,24 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
       <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around py-2 md:hidden z-50">
         <NavLink
           to="/"
+          onClick={(e) => {
+            setIsSearchOpen(false);
+            if (location.pathname === "/") {
+              e.preventDefault();
+
+              navigate("/temps", { replace: true });
+              console.log(location.pathname);
+              setTimeout(() => {
+                navigate("/");
+              }, 10);
+            }
+          }}
           className={({ isActive }) =>
             `flex flex-col items-center text-xs ${
               isActive ? "text-black" : "text-gray-500"
             }`
           }
-          onClick={() => setIsSearchOpen(false)}
+          // onClick={() => setIsSearchOpen(false)}
         >
           <Home className="w-6 h-6" />
           <span className="text-[10px]">Accueil</span>

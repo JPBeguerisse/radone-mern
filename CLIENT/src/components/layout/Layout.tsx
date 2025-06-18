@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { RefObject, useRef, useState } from "react";
 import SideBar from "./SideBar";
 import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   const [isOpen, setIsOpen] = useState(false); // Contrôle l'ouverture de la sidebar
-
   return (
     <div className="flex h-full">
       {/* Sidebar */}

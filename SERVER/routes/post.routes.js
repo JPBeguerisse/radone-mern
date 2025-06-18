@@ -723,7 +723,7 @@ router.delete("/:id", verifyToken, postController.deletePost);
  *                   type: string
  *                   example: "Une erreur est survenue lors du like."
  */
-router.patch("/like/:id", verifyToken, postController.like);
+router.put("/like/:id", verifyToken, postController.like);
 
 //UNLIKER UN POST
 /**
@@ -793,7 +793,7 @@ router.patch("/like/:id", verifyToken, postController.like);
  *                   type: string
  *                   example: "Une erreur est survenue lors du unlike."
  */
-router.patch("/unlike/:id", verifyToken, postController.unlike);
+router.put("/unlike/:id", verifyToken, postController.unlike);
 
 //ADDCOMMENT
 /**
@@ -873,7 +873,7 @@ router.patch("/unlike/:id", verifyToken, postController.unlike);
  *                   type: string
  *                   example: "Une erreur est survenue lors de l'ajout du commentaire."
  */
-router.patch("/add-comment/:id", verifyToken, postController.addCommentPost);
+router.put("/add-comment/:id", verifyToken, postController.addCommentPost);
 
 //UPDATE COMMENT
 /**
@@ -1023,7 +1023,7 @@ router.patch("/edit-comment/:id", verifyToken, postController.updateComment);
  *                   type: string
  *                   example: "Une erreur est survenue lors de la suppression du commentaire."
  */
-router.patch("/comment/delete/:id", verifyToken, postController.deleteComment);
+router.put("/comment/delete/:id", verifyToken, postController.deleteComment);
 
 //LIKER UN COMMENT
 /**
@@ -1091,12 +1091,12 @@ router.patch("/comment/delete/:id", verifyToken, postController.deleteComment);
  *                   type: string
  *                   example: "Une erreur est survenue lors du like du commentaire."
  */
-router.patch("/comment/like/:id", verifyToken, postController.addLikeComment);
+router.put("/comment/like/:id", verifyToken, postController.addLikeComment);
 
 /**
  * @swagger
  * /api/post/comment/unlike/{id}:
- *   patch:
+ *   put:
  *     summary: Retirer un like d'un commentaire
  *     description: Permet à un utilisateur de retirer son like d’un commentaire spécifique dans un post.
  *     tags:
@@ -1154,12 +1154,12 @@ router.patch("/comment/like/:id", verifyToken, postController.addLikeComment);
  *                   type: string
  *                   example: "Une erreur est survenue lors du unlike du commentaire."
  */
-router.patch("/comment/unlike/:id", verifyToken, postController.unLikeComment);
+router.put("/comment/unlike/:id", verifyToken, postController.unLikeComment);
 
 /**
  * @swagger
  * /api/post/save/{id}:
- *   patch:
+ *   put:
  *     summary: Enregistrer un post (favori)
  *     description: Permet à un utilisateur d'enregistrer un post dans ses favoris.
  *     tags:
@@ -1197,12 +1197,12 @@ router.patch("/comment/unlike/:id", verifyToken, postController.unLikeComment);
  *       500:
  *         description: Erreur serveur
  */
-router.patch("/save/:id", verifyToken, postController.savePost);
+router.put("/save/:id", verifyToken, postController.savePost);
 
 /**
  * @swagger
  * /api/post/unsave/{id}:
- *   patch:
+ *   put:
  *     summary: Retirer un post des favoris
  *     description: Permet à un utilisateur de retirer un post de ses favoris.
  *     tags:
@@ -1240,7 +1240,7 @@ router.patch("/save/:id", verifyToken, postController.savePost);
  *       500:
  *         description: Erreur serveur
  */
-router.patch("/unsave/:id", verifyToken, postController.unsavePost);
+router.put("/unsave/:id", verifyToken, postController.unsavePost);
 
 router.get("/likers/:id", verifyToken, postController.getLikers);
 module.exports = router;

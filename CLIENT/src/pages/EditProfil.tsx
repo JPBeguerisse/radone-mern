@@ -41,6 +41,13 @@ export const updateUserSchema = z.object({
 
 export const EditProfil = () => {
   const user = useSelector((state: User) => state.userReducer.user);
+  const isLoading = useSelector((state: any) => state.userReducer.loading);
+  const isDeletingPicture = useSelector(
+    (state: any) => state.userReducer.isDeletingPicture
+  );
+  const isUpdatingPicture = useSelector(
+    (state: any) => state.userReducer.isUpdatingPicture
+  );
   const userContext = useContext(UserContext);
   const currentUserUid = userContext?.uid;
   // console.log("User", user);
@@ -60,6 +67,7 @@ export const EditProfil = () => {
     handleSubmit,
     reset,
     setError,
+    resetField,
     formState: { errors },
   } = useForm<UpdateUserForm>({
     resolver: zodResolver(updateUserSchema),
@@ -85,7 +93,7 @@ export const EditProfil = () => {
 
   useEffect(() => {
     if (errorsServer && typeof errorsServer === "object") {
-      // 🔁 Logique de mapping côté front pour afficher au bon champ
+      // Logique de mapping côté front pour afficher au bon champ
       if (errorsServer.oldPassword) {
         setError("oldPassword", { message: errorsServer.oldPassword });
       }
@@ -119,6 +127,8 @@ export const EditProfil = () => {
 
   const onSubmit = (data: UpdateUserForm) => {
     dispatch(updateUserRequested({ id: user._id!, data }));
+    resetField("oldPassword");
+    resetField("newPassword");
   };
 
   // const handleUpdatePicture = (e: any) => {
@@ -226,7 +236,14 @@ export const EditProfil = () => {
                 pointerEvents: isGuest ? "none" : "auto",
               }}
             >
-              Modifier la photo
+              {isUpdatingPicture ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader className="animate-spin" width={18} height={18} />
+                  Mise à jour...
+                </span>
+              ) : (
+                "Modifier la photo"
+              )}
             </label>
           </div>
 
@@ -239,7 +256,14 @@ export const EditProfil = () => {
                 }`}
                 disabled={isGuest}
               >
-                Supprimer la photo
+                {isDeletingPicture ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader className="animate-spin" width={18} height={18} />
+                    Suppression en cours...
+                  </span>
+                ) : (
+                  "Supprimer la photo"
+                )}
               </button>
             )}
           </div>
@@ -387,12 +411,19 @@ export const EditProfil = () => {
         <div className="flex flex-col md:flex-row gap-4 sm:gap-8  justify-end gap-4">
           <button
             type="submit"
-            disabled={isGuest}
+            disabled={isGuest || isLoading}
             className={`bg-primary text-white text-sm font-bold px-6 py-2 rounded-lg hover:bg-secondary transition w-full sm:w-auto ${
               isGuest ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            Enregistrer les modifications
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader className="animate-spin" width={18} height={18} />
+                Mise à jour...
+              </span>
+            ) : (
+              "Enregistrer les modifications"
+            )}
           </button>
           <button
             type="button"
