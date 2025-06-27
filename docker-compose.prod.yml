@@ -6,10 +6,12 @@ services:
     container_name: SOCIAL_APP_CLIENT_PROD
     ports:
       - "80:80"
+      
     # environment:
     #   - REACT_APP_API_URL=http://socialapp.com/api
     env_file:
       - ./CLIENT/.env.production
+   
 
   server:
     build:
@@ -26,39 +28,41 @@ services:
   #   container_name: SOCIAL_APP_NGINX_PROD
   #   ports:
   #     - "80:80"
+  #     - "443:443"
   #   volumes:
   #     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  #     - /etc/letsencrypt:/etc/letsencrypt:ro
   #     - ./server/uploads:/www/uploads
   #   depends_on:
   #     - client
   #     - server
 
-#for vps
-  # services:
-  # client:
-  #   image: ghcr.io/jpbeguerisse/socialapp-client:latest
-  #   container_name: SOCIAL_APP_CLIENT_PROD
-  #   restart: always
-  #   env_file:
-  #     - ./CLIENT/.env.production
+# for vps
+# services:
+#   client:
+#     image: ghcr.io/jpbeguerisse/socialapp-client:latest
+#     container_name: SOCIAL_APP_CLIENT_PROD
+#     restart: always
+#     env_file:
+#       - ./CLIENT/.env.production
+#     ports:
+#       - "80:80" # Nginx dans l’image servira les fichiers
+#       - "443:443" # Pour HTTPS
+#     volumes:
+#       - /etc/letsencrypt:/etc/letsencrypt:ro # Pour les certificats SSL
+#     networks:
+#       - app-network
 
-  # server:
-  #   image: ghcr.io/jpbeguerisse/socialapp-server:latest
-  #   container_name: SOCIAL_APP_SERVER_PROD
-  #   restart: always
-  #   ports:
-  #     - "8000:8000"
-  #   env_file:
-  #     - ./SERVER/.env.production
+#   server:
+#     image: ghcr.io/jpbeguerisse/socialapp-server:latest
+#     container_name: SOCIAL_APP_SERVER_PROD
+#     restart: always
+#     env_file:
+#       - ./SERVER/.env.production
+#     ports:
+#       - "8000:8000"
+#     networks:
+#       - app-network
 
-  # nginx:
-  #   image: nginx:1-alpine
-  #   container_name: SOCIAL_APP_NGINX_PROD
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-  #     - ./server/uploads:/www/uploads
-  #   depends_on:
-  #     - client
-  #     - server
+# networks:
+#   app-network:

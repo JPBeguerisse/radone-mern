@@ -61,7 +61,7 @@ export const Home = forwardRef((props, ref) => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY;
-      if (currentScroll < lastScrollTop.current) {
+      if (currentScroll <= 0 || currentScroll < lastScrollTop.current) {
         setShowTabBar(true); // Scroll vers le haut → montrer
       } else {
         setShowTabBar(false); // Scroll vers le bas → cacher

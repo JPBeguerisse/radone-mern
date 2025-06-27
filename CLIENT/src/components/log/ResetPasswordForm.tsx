@@ -82,7 +82,7 @@ const ResetPasswordForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md space-y-6"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+        <h2 className="text-xl font-bold text-center text-gray-700 mb-6">
           Réinitialisation du mot de passe
         </h2>
         {/* Champ Mot de passe */}

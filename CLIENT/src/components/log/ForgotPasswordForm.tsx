@@ -53,7 +53,9 @@ export const ForgotPasswordForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md space-y-6"
       >
-        <h2 className="text-xl font-bold mb-4">Mot de passe oublié</h2>
+        <h2 className="text-xl text-center font-bold  text-gray-700  mb-4">
+          Mot de passe oublié
+        </h2>
 
         <input
           type="email"

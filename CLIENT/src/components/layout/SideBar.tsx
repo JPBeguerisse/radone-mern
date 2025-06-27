@@ -30,8 +30,12 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen }) => {
       >
         <div className="sidebar flex flex-col h-full justify-between">
           {/* Logo */}
-          <div className="logo mb-8">
-            <img src="/logo192.png" alt="logo" className="w-16 h-16 mx-auto" />
+          <div className="logo ">
+            <img
+              src="/socialapp2.png"
+              alt="logo"
+              className="w-24 h-24 mx-auto"
+            />
           </div>
 
           {/* Liens de navigation */}
