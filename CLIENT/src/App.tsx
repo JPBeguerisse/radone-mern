@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import Routes from "./components/Routes";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { UserContext } from "./components/AppContext";
 import { getUserRequested } from "./redux/reducers/user.reducer";
 import { ToastContainer } from "react-toastify";
+import Routes from "./components/Routes/Index";
 
 function App() {
   // Utilisation du hook `useState` pour gérer l'état de l'UID, initialisé à `null`

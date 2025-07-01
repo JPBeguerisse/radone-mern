@@ -3,6 +3,7 @@ const ObjectID = require("mongoose").Types.ObjectId;
 const DeletedUserModel = require("../../models/deletedUser.model");
 const PostModel = require("../../models/post.model");
 const logger = require("../../utils/logger");
+const bcrypt = require("bcrypt");
 // Mise à jour d’un utilisateur
 module.exports.updateUser = async (req, res) => {
   const userId = req.params.id;
@@ -82,6 +83,7 @@ module.exports.updateUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors de la mise à jour de l'utilisateur.",
+      error: error.message,
     });
   }
 };
@@ -108,7 +110,7 @@ module.exports.deleteUser = async (req, res) => {
         .json({ message: "Le compte invité ne peut pas être supprimé." });
     }
 
-    // 🔁 Sauvegarder dans DeletedUser avant suppression
+    // Sauvegarder dans DeletedUser avant suppression
     await DeletedUserModel.create({
       originalId: user._id,
       userName: user.userName,
@@ -132,6 +134,16 @@ module.exports.deleteUser = async (req, res) => {
     await PostModel.updateMany(
       { likers: userId },
       { $pull: { likers: userId } }
+    );
+
+    // Supprimer les commentaires de l'utilisateur dans tous les posts
+    await PostModel.updateMany(
+      { "comments.commenterId": userId },
+      {
+        $pull: {
+          comments: { commenterId: userId },
+        },
+      }
     );
 
     // Supprimer les posts de l'utilisateur

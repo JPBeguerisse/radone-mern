@@ -97,7 +97,7 @@ module.exports.signUp = async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: `"Mon App" <${process.env.MAIL_USER}>`,
+      from: `"Social APP" <${process.env.MAIL_USER}>`,
       to: email,
       subject: "Confirmez votre inscription",
       html: `<p>Bonjour ${name},</p>
@@ -171,7 +171,7 @@ module.exports.forgotPassword = async (req, res) => {
     `;
 
     await transporter.sendMail({
-      from: `"Mon App" <${process.env.MAIL_USER}>`,
+      from: `"Social APP" <${process.env.MAIL_USER}>`,
       to: user.email,
       subject: "Réinitialisation de mot de passe",
       html: html,

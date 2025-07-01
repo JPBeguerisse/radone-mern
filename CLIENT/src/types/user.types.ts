@@ -27,6 +27,8 @@ export interface UserState {
   posts?: Post[] | null; // Liste des posts de l'utilisateur
   savedPosts?: Post[] | null; // Liste des posts sauvegardés par l'utilisateur
   loading?: boolean; // Indicateur de chargement
+  isDeletingPicture?: boolean; // Indicateur de suppression en cours
+  isUpdatingPicture?: boolean; // Indicateur de mise à jour en cours
 }
 
 export interface UsersState {

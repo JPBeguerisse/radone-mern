@@ -1,5 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { UserContext } from "src/components/AppContext";
 import { PostsFollowing } from "src/components/home/PostsFollowing";
@@ -10,7 +18,7 @@ import {
 } from "src/redux/reducers/posts.reducer";
 import { Post } from "src/types/post.types";
 
-export const Home: React.FC = () => {
+export const Home = forwardRef((props, ref) => {
   const [tab, setTab] = useState("yourFollowing");
   const currentUserUid = useContext(UserContext)?.uid;
   const dispatch = useDispatch();
@@ -18,12 +26,52 @@ export const Home: React.FC = () => {
   const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
   const [loadingForYou, setLoadingForYou] = useState(false);
   const [loadingFollowingPosts, setLoadingFollowingPosts] = useState(false);
+  const [showTabBar, setShowTabBar] = useState(true);
+  const lastScrollTop = useRef(0);
+
   const hasMoreForYou = useSelector(
     (state: any) => state.postsReducer.hasMoreForYou
   );
   const hasMoreFollowing = useSelector(
     (state: any) => state.postsReducer.hasMoreFollowingPosts
   );
+
+  // Gère l'affichage de la barre de navigation en fonction du scroll
+
+  useImperativeHandle(ref, () => ({
+    scrollToTopAndReload() {
+      window.scrollTo({ top: 0, behavior: "smooth" }); // remonte en haut
+
+      // Recharge les posts
+      if (currentUserUid) {
+        dispatch(
+          getPostsByFollowingRequested({
+            userId: currentUserUid,
+            skip: 0,
+            limit: 5,
+          })
+        );
+        dispatch(
+          getPostsForYouRequested({ userId: currentUserUid, skip: 0, limit: 5 })
+        );
+      }
+    },
+  }));
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll <= 0 || currentScroll < lastScrollTop.current) {
+        setShowTabBar(true); // Scroll vers le haut → montrer
+      } else {
+        setShowTabBar(false); // Scroll vers le bas → cacher
+      }
+      lastScrollTop.current = currentScroll <= 0 ? 0 : currentScroll;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (
@@ -100,8 +148,14 @@ export const Home: React.FC = () => {
 
   return (
     <div className="flex">
-      <div className="flex-1 px-4 h-screen overflow-y-auto">
-        <div className="sticky top-0 bg-white z-10 shadow-px-4 lg:pr-24 lg:pl-24 ">
+      <div className="flex-1 px-4">
+        {" "}
+        <div
+          className={`sticky top-0 bg-white z-10 transition-all duration-300 ${
+            showTabBar ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
+          {" "}
           {followingPosts.length > 0 ? (
             <div className="flex gap-4 border-b-2 border-gray-200 pb-4 pt-2">
               <button
@@ -144,7 +198,6 @@ export const Home: React.FC = () => {
             </p>
           </div>
         )}
-
         {/* Posts */}
         {tab === "yourFollowing" ? (
           <PostsFollowing
@@ -166,4 +219,4 @@ export const Home: React.FC = () => {
       </div>
     </div>
   );
-};
+});

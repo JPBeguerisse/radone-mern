@@ -12,22 +12,23 @@ module.exports.updatePost = async (req, res) => {
   }
 
   // Vérifier si au moins un champ à mettre à jour est fourni
-  if (!message) {
-    return res.status(400).send("Aucun champ à mettre à jour fourni");
-  }
+  // if (!message) {
+  //   return res.status(400).send("Aucun champ à mettre à jour fourni");
+  // }
 
   // Vérifier si les champs message et picture sont valides
-  if (message && typeof message !== "string") {
-    return res
-      .status(400)
-      .send("Le message doit être une chaîne de caractères");
-  }
+  // if (message && typeof message !== "string") {
+  //   return res
+  //     .status(400)
+  //     .send("Le message doit être une chaîne de caractères");
+  // }
+  console.log("message", message);
 
   //si le user a le droit de mettre à jour le post
 
   // Créer un objet updateFields avec uniquement les champs à mettre à jour
   const updateFields = {};
-  if (message) updateFields.message = message;
+  if (message !== undefined) updateFields.message = message; // Permet d'insérer une chaîne vide
   if (picture) updateFields.picture = picture;
 
   try {

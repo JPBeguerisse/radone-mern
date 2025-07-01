@@ -169,9 +169,9 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
         />
 
         {/* Description du post */}
-        <div className="flex gap-2 flex-wrap text-sm">
+        <div className="flex flex-col text-sm">
           <p className="font-semibold text-gray-900">{poster.userName}</p>
-          <div className="whitespace-pre-line break-words overflow-hidden">
+          <div className="whitespace-pre-line break-words w-full">
             <ShowMoreText
               lines={3}
               more="Voir plus"
@@ -180,12 +180,10 @@ export const PostHomeCard: React.FC<PostHomeCardProps> = ({ post }) => {
               expanded={false}
               width={0}
             >
-              {/* <FormattedMessage message={post.message!} /> */}
-              {post.message || "Aucun message"}
+              {post.message || ""}
             </ShowMoreText>
           </div>
         </div>
-
         {/* Lien vers les commentaires */}
         {post.comments?.length! > 0 && (
           <p

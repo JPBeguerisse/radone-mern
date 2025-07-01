@@ -6,7 +6,7 @@ import { loginUser } from "src/services/userService";
 import { z } from "zod";
 import { UserContext } from "../AppContext";
 import { api } from "src/api/api";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Loader } from "lucide-react";
 import { AuthLayout } from "./AuthLayout";
 import { toast } from "react-toastify";
 
@@ -21,6 +21,7 @@ export const Login = () => {
   const location = useLocation();
   const userContext = useContext(UserContext);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState<
     string | null
   >();
@@ -48,6 +49,7 @@ export const Login = () => {
 
   // Soumission du formulaire principal
   const onSubmit = async (data: userLoginForm) => {
+    setIsLoading(true);
     try {
       const res = await loginUser(data);
       const accessToken = res.token;
@@ -73,6 +75,8 @@ export const Login = () => {
           message: serverErrors.data.message,
         });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -104,7 +108,7 @@ export const Login = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md space-y-6"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+        <h2 className="text-4xl font-bold text-center text-gray-700 mb-6">
           Connexion
         </h2>
 
@@ -164,9 +168,21 @@ export const Login = () => {
         {/* Bouton de connexion */}
         <button
           type="submit"
-          className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+          disabled={isLoading}
+          className={`w-full p-2 text-white rounded-md transition ${
+            isLoading
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-primary hover:bg-secondary"
+          }`}
         >
-          Se connecter
+          {isLoading ? (
+            <span className="flex justify-center items-center gap-2">
+              <Loader className="animate-spin" width={18} height={18} />
+              Connexion...
+            </span>
+          ) : (
+            "Se connecter"
+          )}
         </button>
 
         {/* Message de confirmation email */}

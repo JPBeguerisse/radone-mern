@@ -605,7 +605,7 @@ router.get("/by-username/:username", userController.getUserByUsername);
  *       500:
  *         description: Erreur serveur
  */
-router.patch("/:id", verifyToken, userController.updateUser);
+router.put("/:id", verifyToken, userController.updateUser);
 
 //DELETE USER
 /**
@@ -699,7 +699,7 @@ router.delete("/", verifyToken, userController.deleteUser);
  *         description: Erreur serveur
  */
 router.put(
-  "/update-profil-picture",
+  "/update/profil-picture",
   verifyToken,
   uploadController.updatePicture
 );
@@ -875,7 +875,7 @@ router.put(
 /**
  * @swagger
  * /api/user/follow/{id}:
- *   patch:
+ *   put:
  *     summary: Suivre un utilisateur
  *     description: Ajoute l'utilisateur `userIdToFollow` à la liste des abonnements (`following`) de l'utilisateur `id`, et met à jour les followers de l'autre utilisateur.
  *     tags:
@@ -933,13 +933,13 @@ router.put(
  *                   type: string
  *                   example: Une erreur est survenue lors du follow.
  */
-router.patch("/follow/:id", verifyToken, userController.follow);
+router.put("/follow/:id", verifyToken, userController.follow);
 
 // UNFOLLOW USER
 /**
  * @swagger
  * /api/user/unfollow/{id}:
- *   patch:
+ *   put:
  *     summary: Se désabonner d’un utilisateur
  *     description: Supprime `userIdToUnFollow` de la liste des abonnements de l’utilisateur `id`, et retire également `id` de la liste des followers de l’autre utilisateur.
  *     tags:
@@ -997,7 +997,7 @@ router.patch("/follow/:id", verifyToken, userController.follow);
  *                   type: string
  *                   example: Une erreur est survenue lors du follow.
  */
-router.patch("/unfollow/:id", verifyToken, userController.unfollow);
+router.put("/unfollow/:id", verifyToken, userController.unfollow);
 module.exports = router;
 
 //se connecter en tant qu'invité

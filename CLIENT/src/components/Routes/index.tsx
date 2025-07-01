@@ -11,8 +11,9 @@ import { Register } from "../log/Register";
 import { ProtectedRoute } from "../log/ProtectedRoute";
 import { ForgotPasswordForm } from "../log/ForgotPasswordForm";
 import ResetPasswordForm from "../log/ResetPasswordForm";
+import { useRef } from "react";
 
-const index = () => {
+const Index = () => {
   return (
     <Router>
       <Routes>
@@ -32,7 +33,8 @@ const index = () => {
             </ProtectedRoute>
           }
         >
-          <Route path="/" element={<Home />} />
+          <Route path="/temps" element={null} />
+          <Route path="/" element={<Home />} />{" "}
           <Route path="/profil/:id" element={<ViewedProfil />} />
           <Route path="/my-profil" element={<MyProfile />} />
           <Route path="/ajouter" element={<AddPost />} />
@@ -43,4 +45,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;

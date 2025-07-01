@@ -68,7 +68,7 @@ module.exports.like = async (req, res) => {
       return res.status(404).send("Post non trouvé");
     }
 
-    console.log("✅ Liked avec succès :", liked._id);
+    console.log("✅ Liked avec succès :", liked);
     return res.status(200).json(liked);
   } catch (error) {
     console.error("❌ Erreur dans la route LIKE :", error.message);
@@ -94,9 +94,11 @@ module.exports.unlike = async (req, res) => {
       { new: true }
     );
 
-    unliked
-      ? res.status(200).json(unliked)
-      : res.status(404).send("Post non trouvé");
+    if (!unliked) {
+      return res.status(404).send("Post non trouvé");
+    }
+    console.log("✅ Unliked post:", unliked);
+    return res.status(200).json(unliked);
   } catch (error) {
     res.status(500).json({
       message: "Erreur lors du unlike.",

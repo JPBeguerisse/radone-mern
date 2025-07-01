@@ -96,7 +96,12 @@ module.exports.deleteComment = async (req, res) => {
       return res.status(404).send("Post non trouvé");
     }
 
-    if (post.posterId.toString() !== req.userId) {
+    const comment = post.comments.find((comment) => comment.id === commentId);
+    if (!comment) {
+      return res.status(404).send("Commentaire non trouvé");
+    }
+
+    if (comment.commenterId.toString() !== req.userId) {
       return res
         .status(403)
         .send("Vous n'avez pas les droits pour supprimer ce commentaire.");

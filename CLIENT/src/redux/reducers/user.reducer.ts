@@ -8,6 +8,9 @@ const initialState: UserState = {
   error: null,
   savedPosts: null,
   posts: null,
+  loading: false,
+  isDeletingPicture: false,
+  isUpdatingPicture: false,
 };
 
 const userSlice = createSlice({
@@ -30,12 +33,16 @@ const userSlice = createSlice({
       action: PayloadAction<{ id: string; data: Partial<User> }>
     ) => {
       state.error = null;
+      state.loading = true;
     },
     updateUserSuccess: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      state.error = null;
+      state.loading = false;
     },
     updateUserFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
+      state.loading = false;
     },
 
     // 🟣 --- PHOTO DE PROFIL (Cloudinary) ---
@@ -46,20 +53,32 @@ const userSlice = createSlice({
         pictureUrl: string;
         public_id: string;
       }>
-    ) => {},
+    ) => {
+      state.error = null;
+      state.isUpdatingPicture = true;
+    },
     updateProfilePictureSuccess: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      state.error = null;
+      state.isUpdatingPicture = false;
     },
     updateProfilePictureFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
+      state.isUpdatingPicture = false;
     },
 
-    removeProfilePictureRequested: (state, action: PayloadAction<string>) => {},
+    removeProfilePictureRequested: (state, action: PayloadAction<string>) => {
+      state.error = null;
+      state.isDeletingPicture = true;
+    },
     removeProfilePictureSuccess: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      state.error = null;
+      state.isDeletingPicture = false;
     },
     removeProfilePictureFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
+      state.isDeletingPicture = false;
     },
 
     // 🔘 --- PHOTO DE PROFIL (multipart) ---
@@ -71,12 +90,18 @@ const userSlice = createSlice({
       state.error = action.payload;
     },
 
-    removePictureRequested: (state, action: PayloadAction<string>) => {},
+    removePictureRequested: (state, action: PayloadAction<string>) => {
+      state.error = null;
+      state.loading = true;
+    },
     removePictureSuccess: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      state.error = null;
+      state.loading = false;
     },
     removePictureFailed: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
+      state.loading = false;
     },
 
     // 🧡 --- FOLLOW / UNFOLLOW ---

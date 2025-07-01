@@ -54,7 +54,7 @@ export const updateUser = async (
   id: string,
   data: UpdateUserPayload
 ): Promise<User> => {
-  const response = await api.patch(`/user/${id}`, data);
+  const response = await api.put(`/user/${id}`, data);
   return response.data;
 };
 
@@ -72,7 +72,7 @@ export const updatePicture = async (
   url: string,
   public_id?: string
 ): Promise<User> => {
-  const res = await api.put(`/user/update-profil-picture`, {
+  const res = await api.put(`/user/update/profil-picture`, {
     userId: userId,
     pictureUrl: url,
     publicId: public_id,
@@ -97,7 +97,7 @@ export const followUser = async (
   userId: string,
   userIdToFollow: string
 ): Promise<User> => {
-  const response = await api.patch(`/user/follow/${userId}`, {
+  const response = await api.put(`/user/follow/${userId}`, {
     userIdToFollow,
   });
   return response.data;
@@ -108,7 +108,7 @@ export const unFollowUser = async (
   userId: string,
   userIdToUnfollow: string
 ): Promise<User> => {
-  const response = await api.patch(`/user/unfollow/${userId}`, {
+  const response = await api.put(`/user/unfollow/${userId}`, {
     userIdToUnfollow,
   });
   return response.data;

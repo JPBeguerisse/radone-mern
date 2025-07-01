@@ -5,6 +5,7 @@ import { forgotPassword } from "src/services/userService";
 import { z } from "zod";
 import { AuthLayout } from "./AuthLayout";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -14,7 +15,7 @@ export const ForgotPasswordForm = () => {
   const nagivate = useNavigate();
   type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
   const [responseMessage, setMessage] = React.useState<string | null>(null);
-
+  const [isLoading, setIsLoading] = React.useState(false);
   const {
     register,
     handleSubmit,
@@ -29,6 +30,8 @@ export const ForgotPasswordForm = () => {
 
   // Soumission du formulaire de mot de passe oublié
   const onSubmit = async (data: ForgotPasswordForm) => {
+    setIsLoading(true);
+    setMessage(null); // Réinitialiser le message de réponse
     try {
       // Appel à la fonction de service pour envoyer l'email de réinitialisation
       const response = await forgotPassword(data.email);
@@ -39,6 +42,8 @@ export const ForgotPasswordForm = () => {
         message:
           error.response.data.message || "Erreur lors de l'envoi de l'email",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -48,7 +53,9 @@ export const ForgotPasswordForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md space-y-6"
       >
-        <h2 className="text-xl font-bold mb-4">Mot de passe oublié</h2>
+        <h2 className="text-xl text-center font-bold  text-gray-700  mb-4">
+          Mot de passe oublié
+        </h2>
 
         <input
           type="email"
@@ -62,9 +69,21 @@ export const ForgotPasswordForm = () => {
         )}
         <button
           type="submit"
-          className="w-full p-2 text-white bg-primary rounded-md hover:bg-secondary transition"
+          disabled={isLoading}
+          className={`w-full p-2 text-white rounded-md transition ${
+            isLoading
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-primary hover:bg-secondary"
+          }`}
         >
-          Envoyer
+          {isLoading ? (
+            <span className="flex justify-center items-center gap-2">
+              <Loader className="animate-spin" width={18} height={18} />
+              Chargement...
+            </span>
+          ) : (
+            "Envoyer"
+          )}
         </button>
         {responseMessage && (
           <p className="text-green-500 text-sm mt-2">{responseMessage}</p>
