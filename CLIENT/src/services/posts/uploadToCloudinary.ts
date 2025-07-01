@@ -4,7 +4,7 @@ export const uploadToCloudinary = async (
 ): Promise<{ secure_url: string; public_id: string }> => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", "portfolio-upload"); // ← remplace par le tien
+  formData.append("upload_preset", "social-app"); // ← remplace par le tien
 
   const res = await fetch(
     "https://api.cloudinary.com/v1_1/djidfwdat/image/upload",
