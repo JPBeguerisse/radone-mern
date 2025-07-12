@@ -30,9 +30,6 @@ if (!MONGO_URL) {
     `❌ Erreur: MONGO_URL n'est pas définie dans le fichier ${envFile}`
   );
   console.log(`📝 Assurez-vous que votre fichier SERVER/${envFile} contient:`);
-  console.log(
-    "   MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/social-network"
-  );
   process.exit(1);
 }
 
