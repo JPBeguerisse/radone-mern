@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # Service de sauvegarde automatique
+  backup-service:
+    image: mongo:latest
+    container_name: mongo-backup-service
+    volumes:
+      - ./SERVER/backups:/backups
+      - ./SERVER/scripts:/scripts
+    environment:
+      - MONGO_URL=${MONGO_URL}
+    command: >
+      sh -c "
+        echo '🔄 Service de sauvegarde démarré...' &&
+        while true; do
+          echo '📅 $(date): Vérification des sauvegardes...' &&
+          node /scripts/backup.js backup &&
+          echo '💤 Attente 24h avant la prochaine sauvegarde...' &&
+          sleep 86400
+        done
+      "
+    restart: unless-stopped
+    depends_on:
+      - mongo
+
+  # Service de nettoyage automatique
+  cleanup-service:
+    image: alpine:latest
+    container_name: backup-cleanup-service
+    volumes:
+      - ./SERVER/backups:/backups
+    command: >
+      sh -c "
+        echo '🧹 Service de nettoyage démarré...' &&
+        while true; do
+          echo '📅 $(date): Nettoyage des anciennes sauvegardes...' &&
+          find /backups -name 'backup-*' -type d -mtime +7 -exec rm -rf {} \; &&
+          echo '💤 Attente 24h avant le prochain nettoyage...' &&
+          sleep 86400
+        done
+      "
+    restart: unless-stopped
+
+  # MongoDB (si vous utilisez MongoDB local)
+  mongo:
+    image: mongo:latest
+    container_name: SOCIAL_APP_MONGO
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=social-network
+
+volumes:
+  mongo-data: 

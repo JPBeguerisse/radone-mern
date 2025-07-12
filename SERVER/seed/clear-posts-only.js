@@ -9,17 +9,17 @@ mongoose
     dbName: "social-network",
   })
   .then(async () => {
-    console.log("✅ Connexion à MongoDB réussie");
+    // console.log("✅ Connexion à MongoDB réussie");
 
     // Supprimer tous les posts seulement
     const deletedPosts = await PostModel.deleteMany({});
-    console.log(`🗑️  ${deletedPosts.deletedCount} posts supprimés`);
-    console.log("👥 Utilisateurs conservés");
+    // console.log(`🗑️  ${deletedPosts.deletedCount} posts supprimés`);
+    // console.log("👥 Utilisateurs conservés");
 
-    console.log("✅ Posts supprimés avec succès !");
+    // console.log("✅ Posts supprimés avec succès !");
   })
   .catch((error) => {
-    console.error("❌ Erreur:", error.message);
+    // console.error("❌ Erreur:", error.message);
   })
   .finally(() => {
     mongoose.disconnect();

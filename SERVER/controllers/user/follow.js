@@ -137,7 +137,7 @@ module.exports.getProfileFollowing = async (req, res) => {
 
 // Suivre un utilisateur
 module.exports.follow = async (req, res) => {
-  console.log("👉 [FOLLOW] Route appelée avec : ", req.params.id, req.body);
+  // console.log("👉 [FOLLOW] Route appelée avec : ", req.params.id, req.body);
 
   try {
     const userId = req.params.id;
@@ -150,7 +150,7 @@ module.exports.follow = async (req, res) => {
     const user = await UserModel.findById(userId).select("_id");
     const userToFollow = await UserModel.findById(userIdToFollow).select("_id");
 
-    console.log("✅user:", user);
+    // console.log("✅user:", user);
     if (!user || !userToFollow) {
       return res.status(404).send("Utilisateur introuvable");
     }
@@ -165,7 +165,7 @@ module.exports.follow = async (req, res) => {
       },
       { new: true }
     ).select("-password");
-    console.log("✅updatedUser:", updatedUser);
+    // console.log("✅updatedUser:", updatedUser);
 
     // Mettre à jour l'utilisateur suivi pour ajouter l'ID de l'utilisateur qui le suit
     await UserModel.findByIdAndUpdate(

@@ -41,16 +41,16 @@ const UserModel = require("../../models/user.model");
 module.exports.like = async (req, res) => {
   try {
     const postId = req.params.id;
-    console.log("▶️ Requête PATCH reçue pour post:", postId);
-    console.log("▶️ Utilisateur connecté:", req.userId);
+    // console.log("▶️ Requête PATCH reçue pour post:", postId);
+    // console.log("▶️ Utilisateur connecté:", req.userId);
 
     if (!ObjectID.isValid(postId)) {
-      console.log("❌ ID invalide");
+      // console.log("❌ ID invalide");
       return res.status(404).send("Unknow ID");
     }
 
     if (!req.userId) {
-      console.log("❌ Utilisateur non connecté");
+      // console.log("❌ Utilisateur non connecté");
       return res.status(401).json({ message: "Non authentifié" });
     }
 
@@ -68,7 +68,7 @@ module.exports.like = async (req, res) => {
       return res.status(404).send("Post non trouvé");
     }
 
-    console.log("✅ Liked avec succès :", liked);
+    // console.log("✅ Liked avec succès :", liked);
     return res.status(200).json(liked);
   } catch (error) {
     console.error("❌ Erreur dans la route LIKE :", error.message);
@@ -97,7 +97,7 @@ module.exports.unlike = async (req, res) => {
     if (!unliked) {
       return res.status(404).send("Post non trouvé");
     }
-    console.log("✅ Unliked post:", unliked);
+    // console.log("✅ Unliked post:", unliked);
     return res.status(200).json(unliked);
   } catch (error) {
     res.status(500).json({
