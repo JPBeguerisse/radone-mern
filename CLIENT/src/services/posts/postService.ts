@@ -98,7 +98,7 @@ export const updatePost = async (
 // Supprime une publication
 export const deletePost = async (id: string): Promise<void> => {
   await api.delete(`/post/${id}`);
-  console.log("Post delete avec success");
+  // console.log("Post delete avec success");
 };
 
 //Ajouter un commentaire
@@ -119,23 +119,23 @@ export const deleteCommentPost = async (
   postId: string,
   commentId: string
 ): Promise<void> => {
-  console.log("Données envoyées :", { postId, commentId });
+  // console.log("Données envoyées :", { postId, commentId });
   await api.put(`/post/comment/delete/${postId}`, { commentId });
 };
 
 // Aimer une publication
 export const addLikePost = async (id: string): Promise<Post> => {
-  const response = await api.put(`post/like/${id}`);
-  console.log("Post liked successfully");
-  console.log("Response data:", response.data);
+  const response = await api.patch(`post/like/${id}`);
+  // console.log("Post liked successfully");
+  // console.log("Response data:", response.data);
   return response.data;
 };
 
 // Unlike une publication
 export const dislikePost = async (id: string): Promise<Post> => {
-  const response = await api.put(`post/unlike/${id}`);
-  console.log("Post unliked successfully");
-  console.log("Response data:", response.data);
+  const response = await api.patch(`post/unlike/${id}`);
+  // console.log("Post unliked successfully");
+  // console.log("Response data:", response.data);
   return response.data;
 };
 

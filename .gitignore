@@ -19,3 +19,7 @@ yarn-error.log
 #log files
 *.log
 logs/
+
+# Sauvegardes MongoDB
+SERVER/backups/
+backups/

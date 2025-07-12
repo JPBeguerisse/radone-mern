@@ -25,7 +25,7 @@ export const PostsFollowing = ({
   // tous les utilisateurs présents en Redux
   const users = useSelector((state: any) => state.usersReducer.users);
 
-  console.log("users following", users);
+  // console.log("users following", users);
 
   // Ne garder que les posts dont l'auteur est connu
   const filteredPosts =
@@ -55,7 +55,7 @@ export const PostsFollowing = ({
     };
   }, [hasMore, loading, loadMorePosts]);
 
-  console.log("posts", posts);
+  // console.log("posts", posts);
 
   return (
     <div>

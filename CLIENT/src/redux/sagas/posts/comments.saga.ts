@@ -60,7 +60,6 @@ export function* handleDeleteComment(
     yield put(deleteCommentSuccess(action.payload));
     yield put(getPostRequested(action.payload.postId));
   } catch (error: any) {
-    console.log("Erreur lors de la suppression du commentaire");
     yield put(deleteCommentFailed(error.message));
   }
 }

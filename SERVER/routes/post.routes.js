@@ -723,7 +723,7 @@ router.delete("/:id", verifyToken, postController.deletePost);
  *                   type: string
  *                   example: "Une erreur est survenue lors du like."
  */
-router.put("/like/:id", verifyToken, postController.like);
+router.patch("/like/:id", verifyToken, postController.like);
 
 //UNLIKER UN POST
 /**
@@ -793,7 +793,7 @@ router.put("/like/:id", verifyToken, postController.like);
  *                   type: string
  *                   example: "Une erreur est survenue lors du unlike."
  */
-router.put("/unlike/:id", verifyToken, postController.unlike);
+router.patch("/unlike/:id", verifyToken, postController.unlike);
 
 //ADDCOMMENT
 /**

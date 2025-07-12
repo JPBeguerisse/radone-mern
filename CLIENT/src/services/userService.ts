@@ -130,7 +130,7 @@ export const getFollowers = async (
   const response = await api.get<FollowersResponse>(
     `/user/followers?${params}`
   );
-  console.log("Followers: ", response.data);
+  // console.log("Followers: ", response.data);
   return response.data;
 };
 
@@ -152,7 +152,7 @@ export const getFollowing = async (
   const response = await api.get<FollowingResponse>(
     `/user/following?${params}`
   );
-  console.log("Following: ", response.data);
+  // console.log("Following: ", response.data);
   return response.data;
 };
 

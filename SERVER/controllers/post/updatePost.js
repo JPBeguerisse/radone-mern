@@ -22,7 +22,7 @@ module.exports.updatePost = async (req, res) => {
   //     .status(400)
   //     .send("Le message doit être une chaîne de caractères");
   // }
-  console.log("message", message);
+  // console.log("message", message);
 
   //si le user a le droit de mettre à jour le post
 

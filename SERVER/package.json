@@ -9,7 +9,17 @@
     "seed": "node seed/seed-data.js",
     "seed-guest": "node seed/seed-guest.js",
     "clear-db": "node seed/clear-database.js",
-    "clear-posts": "node seed/clear-posts-only.js"
+    "clear-posts": "node seed/clear-posts-only.js",
+    "backup": "NODE_ENV=development node scripts/backup.js backup",
+    "backup:prod": "NODE_ENV=production node scripts/backup.js backup",
+    "backup:list": "NODE_ENV=development node scripts/backup.js list",
+    "backup:restore": "NODE_ENV=development node scripts/backup.js restore",
+    "backup:gdrive": "./scripts/backup-to-gdrive.sh",
+    "backup:full": "npm run backup && npm run backup:gdrive",
+    "backup:setup-prod": "chmod +x scripts/setup-production-backup.sh && ./scripts/setup-production-backup.sh",
+    "health-check": "NODE_ENV=development node scripts/health-check.js",
+    "health-check:prod": "NODE_ENV=production node scripts/health-check.js",
+    "monitor": "node scripts/monitor-backups.js"
   },
   "author": "",
   "license": "ISC",
